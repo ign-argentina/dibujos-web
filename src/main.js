@@ -54,11 +54,38 @@ mapsCatalog.forEach((map) => {
   cardsContainer.appendChild(card)
 })
 
-// --- ESCUCHAR CAMBIOS EN EL ESTADO GLOBAL (REACTIVIDAD) ---
+// --- ESCUCHAR CAMBIOS EN EL ESTADO GLOBAL (REACTIVIDAD Y PERSISTENCIA) ---
+let previousMapId = null
+
+function saveDrawingState() {
+  const currentMapId = appState.getActiveMapId()
+  if (currentMapId && canvasManager.canvas) {
+    const jsonString = canvasManager.serialize()
+    if (jsonString) {
+      localStorage.setItem(`drawing_${currentMapId}`, jsonString)
+    } else {
+      localStorage.removeItem(`drawing_${currentMapId}`)
+    }
+  }
+}
+
 appState.subscribe(async (state) => {
   if (!state.activeMapId) return
 
-  // 1. Actualizar clase activa en las tarjetas del catálogo
+  // 1. Guardar el estado del dibujo de la provincia anterior
+  if (previousMapId && previousMapId !== state.activeMapId) {
+    const prevJson = canvasManager.serialize()
+    if (prevJson) {
+      localStorage.setItem(`drawing_${previousMapId}`, prevJson)
+    } else {
+      localStorage.removeItem(`drawing_${previousMapId}`)
+    }
+  }
+  
+  // Actualizar el ID previo para la próxima iteración
+  previousMapId = state.activeMapId
+
+  // 2. Actualizar clase activa en las tarjetas del catálogo
   document.querySelectorAll('.nbi-map-card').forEach((card) => {
     card.classList.remove('is-active')
   })
@@ -68,22 +95,38 @@ appState.subscribe(async (state) => {
     activeCard.classList.add('is-active')
   }
   
-  // 2. Cargar el mapa en el Canvas con pantalla de carga juguetona
+  // 3. Limpiar dibujos transitorios antes de cargar el nuevo mapa
+  canvasManager.clearCanvas()
+  
+  // 4. Cargar el mapa en el Canvas con pantalla de carga juguetona
   const mapData = mapsCatalog.find((m) => m.id === state.activeMapId)
   if (mapData) {
     loaderOverlay.classList.remove('hidden')
     try {
       await canvasManager.loadMap(mapData.imageUrl)
+      
+      // 5. Cargar dibujos guardados de la provincia activa (si existen)
+      const savedJson = localStorage.getItem(`drawing_${state.activeMapId}`)
+      if (savedJson) {
+        await canvasManager.deserialize(savedJson)
+      }
     } catch (err) {
       console.error('Error cargando el mapa en el lienzo:', err)
     } finally {
-      // Pequeño retraso intencional para suavizar el rebote del loader de NBI-DS
+      // Pequeño retraso intencional para la física del loader de NBI-DS
       setTimeout(() => {
         loaderOverlay.classList.add('hidden')
       }, 600)
     }
   }
 })
+
+// Suscribirse a eventos del canvas para autoguardado en tiempo real
+if (canvasManager.canvas) {
+  canvasManager.canvas.on('object:added', saveDrawingState)
+  canvasManager.canvas.on('object:modified', saveDrawingState)
+  canvasManager.canvas.on('object:removed', saveDrawingState)
+}
 
 // --- INTERACTIVIDAD DE LA BARRA DE HERRAMIENTAS DE DIBUJO ---
 const toolButtons = {
@@ -164,6 +207,14 @@ strokeSlider.addEventListener('input', (e) => {
   const width = e.target.value
   strokeValueDisplay.textContent = `${width}px`
   canvasManager.setActiveStrokeWidth(width)
+})
+
+// --- ACCIONES DEL SISTEMA (DESCARGA DE PNG) ---
+document.getElementById('action-export').addEventListener('click', () => {
+  const currentMapId = appState.getActiveMapId()
+  const mapData = mapsCatalog.find((m) => m.id === currentMapId)
+  const name = mapData ? mapData.name.replace(/\s+/g, '_') : 'mapa'
+  canvasManager.exportToPNG(`mapa_${name}_anotado.png`)
 })
 
 // --- INICIALIZACIÓN DE LA APLICACIÓN ---

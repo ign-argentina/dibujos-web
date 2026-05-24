@@ -1,4 +1,4 @@
-import { Canvas, FabricImage, Rect, Circle, Textbox, Path } from 'fabric'
+import { Canvas, FabricImage, Rect, Circle, Textbox, Path, util } from 'fabric'
 
 export class CanvasManager {
   constructor(container, options = {}) {
@@ -484,6 +484,66 @@ export class CanvasManager {
     this.canvas.discardActiveObject()
     this.canvas.requestRenderAll()
     this.canvas.fire('object:modified')
+  }
+
+  serialize() {
+    if (!this.canvas) return null
+    
+    // Excluir la imagen del mapa base para ahorrar espacio y evitar exceder la cuota
+    const objects = this.canvas.getObjects().filter(obj => obj !== this.currentMapImage)
+    
+    // Serializar los trazos y formas a un formato JSON compatible
+    const serializedObjects = objects.map(obj => obj.toObject())
+    return JSON.stringify(serializedObjects)
+  }
+
+  async deserialize(jsonString) {
+    if (!this.canvas || !jsonString) return
+    
+    try {
+      const jsonObjects = JSON.parse(jsonString)
+      if (!Array.isArray(jsonObjects) || jsonObjects.length === 0) return
+      
+      // Recrear objetos usando la utilidad asincrónica de Fabric v7 (retorna Promesa)
+      const objects = await util.enlivenObjects(jsonObjects)
+      
+      this.canvas.renderOnAddRemove = false
+      objects.forEach((obj) => {
+        this.canvas.add(obj)
+      })
+      this.canvas.renderOnAddRemove = true
+      this.canvas.requestRenderAll()
+    } catch (error) {
+      console.error('Error deserializando trazos de dibujo:', error)
+    }
+  }
+
+  exportToPNG(fileName = 'mapa_anotado.png') {
+    if (!this.canvas) return
+
+    // Deseleccionar el objeto activo antes de tomar la captura para que no salgan los controles del recuadro
+    this.canvas.discardActiveObject()
+    this.canvas.requestRenderAll()
+
+    // Un retraso minúsculo para asegurar que se limpie el recuadro de controles en pantalla
+    setTimeout(() => {
+      try {
+        const dataUrl = this.canvas.toDataURL({
+          format: 'png',
+          quality: 1.0,
+          multiplier: 2 // Duplicar el tamaño para una descarga ultra-nítida
+        })
+
+        const link = document.createElement('a')
+        link.download = fileName
+        link.href = dataUrl
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+      } catch (error) {
+        console.error('Error exportando lienzo a PNG:', error)
+      }
+    }, 50)
   }
 
   dispose() {
