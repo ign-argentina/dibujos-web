@@ -88,9 +88,41 @@ body {
   transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
+/* --- NAVBAR SUPERIOR FLOTANTE --- */
+.nbi-navbar {
+  top: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 10px 24px;
+  background-color: var(--nbi-pastel-blue);
+  white-space: nowrap;
+}
+
+.nbi-navbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.nbi-navbar-title {
+  font-size: 1.3rem;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.nbi-navbar-subtitle {
+  font-size: 0.85rem;
+  font-weight: 500;
+  opacity: 0.7;
+}
+
 /* --- PANEL LATERAL DE MAPAS (CATÁLOGO) --- */
 .nbi-sidebar-catalog {
-  top: 20px;
+  top: 80px;
   left: 20px;
   bottom: 20px;
   width: 320px;
@@ -143,13 +175,13 @@ body {
 /* BOTÓN DE COLAPSAR SIDEBAR */
 .nbi-toggle-sidebar-btn {
   position: absolute;
-  top: 24px;
+  top: 84px;
   left: 20px;
   z-index: 9;
   background-color: var(--nbi-pastel-purple);
 }
 
-/* TARJETAS DE PROVINCIAS */
+/* TARJETAS DE PROVINCIAS (CUADRADAS) */
 .nbi-map-card {
   background-color: var(--nbi-white);
   border: 3px solid var(--nbi-black);
@@ -158,6 +190,9 @@ body {
   margin-bottom: 16px;
   cursor: pointer;
   overflow: hidden;
+  aspect-ratio: 1 / 1;
+  display: flex;
+  flex-direction: column;
   transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.2), box-shadow 0.3s ease;
 }
 
@@ -180,38 +215,52 @@ body {
 
 .nbi-map-card-image {
   width: 100%;
-  height: 120px;
+  flex: 1;
   object-fit: cover;
   border-bottom: 3px solid var(--nbi-black);
   background-color: var(--nbi-bg-main);
 }
 
 .nbi-map-card-info {
-  padding: 12px;
+  padding: 10px 8px;
   font-weight: 600;
   text-align: center;
-  font-size: 1rem;
+  font-size: 0.85rem;
 }
 
-/* --- BARRA FLOTANTE DE DIBUJO --- */
+/* --- BARRA FLOTANTE DE DIBUJO (SIN ANIDACIÓN) --- */
 .nbi-toolbar-drawing {
+  position: absolute;
   bottom: 20px;
   left: 50%;
   transform: translateX(-50%);
+  z-index: 10;
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
   background-color: var(--nbi-pastel-yellow);
-  padding: 12px 18px;
+  border: 3px solid var(--nbi-black);
+  border-radius: var(--nbi-radius-infant);
+  box-shadow: 6px 6px 0px 0px var(--nbi-black);
+  padding: 10px 14px;
+  transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 .nbi-toolbar-drawing:hover {
   transform: translateX(-50%) translateY(-2px);
 }
 
+.nbi-toolbar-separator {
+  width: 3px;
+  height: 32px;
+  background: var(--nbi-black);
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
 /* --- PANEL DE PROPIEDADES --- */
 .nbi-properties-panel {
-  top: 20px;
+  top: 80px;
   right: 20px;
   width: 260px;
   background-color: var(--nbi-white);

@@ -14,9 +14,18 @@
   </head>
   <body>
     <div id="app">
+      <!-- NAVBAR SUPERIOR FLOTANTE (IDENTIDAD) -->
+      <nav class="nbi-window-floating nbi-navbar" id="navbar">
+        <div class="nbi-navbar-brand">
+          <i data-lucide="map-pin" style="width: 28px; height: 28px; stroke-width: 2.5;"></i>
+          <span class="nbi-navbar-title">Dibujos de Mapas</span>
+        </div>
+        <span class="nbi-navbar-subtitle">IGN Argentina</span>
+      </nav>
+
       <!-- BOTÓN FLOTANTE PARA EXPANDIR EL CATÁLOGO -->
       <button class="nbi-btn nbi-toggle-sidebar-btn hidden" id="toggle-sidebar-btn" title="Mostrar Mapas">
-        <i data-lucide="map-map-pin"></i>
+        <i data-lucide="map"></i>
       </button>
 
       <!-- CATÁLOGO DE MAPAS DE PROVINCIAS (PANEL LATERAL) -->
@@ -28,22 +37,22 @@
           </button>
         </div>
         <div class="nbi-sidebar-scroll" id="map-cards-container">
-          <!-- Las tarjetas de provincias se generarán dinámicamente desde JS -->
+          <!-- Las tarjetas se generarán dinámicamente desde JS -->
         </div>
       </aside>
 
       <!-- LIENZO PRINCIPAL (CONTENEDOR DEL CANVAS) -->
       <div id="editor-container" class="canvas-root"></div>
 
-      <!-- BARRA DE HERRAMIENTAS FLOTANTE JUGUETONA (NBI-DS TOOLBAR) -->
-      <div class="nbi-window-floating nbi-toolbar-drawing" id="toolbar-drawing">
+      <!-- BARRA DE HERRAMIENTAS FLOTANTE (SIN ANIDACIÓN nbi-window-floating) -->
+      <div class="nbi-toolbar-drawing" id="toolbar-drawing">
         <button class="nbi-btn is-active" id="tool-select" title="Puntero para seleccionar y mover">
           <i data-lucide="mouse-pointer"></i>
         </button>
         <button class="nbi-btn" id="tool-brush" title="Lápiz para dibujar libre">
           <i data-lucide="pencil"></i>
         </button>
-        <div style="width: 3px; height: 32px; background: var(--nbi-black); border-radius: 2px;"></div>
+        <div class="nbi-toolbar-separator"></div>
         <button class="nbi-btn" id="tool-rect" title="Agregar Rectángulo">
           <i data-lucide="square"></i>
         </button>
@@ -51,12 +60,12 @@
           <i data-lucide="circle"></i>
         </button>
         <button class="nbi-btn" id="tool-arrow" title="Agregar Flecha">
-          <i data-lucide="arrow-right-left" style="transform: rotate(45deg);"></i>
+          <i data-lucide="move-right"></i>
         </button>
         <button class="nbi-btn" id="tool-text" title="Agregar Texto">
           <i data-lucide="type"></i>
         </button>
-        <div style="width: 3px; height: 32px; background: var(--nbi-black); border-radius: 2px;"></div>
+        <div class="nbi-toolbar-separator"></div>
         <button class="nbi-btn nbi-btn-danger" id="tool-delete" title="Borrar elemento seleccionado">
           <i data-lucide="trash-2"></i>
         </button>
@@ -68,7 +77,7 @@
       <!-- PANEL DE PROPIEDADES (ESTILOS Y COLORES NBI-DS) -->
       <div class="nbi-window-floating nbi-properties-panel" id="properties-panel">
         <span class="nbi-properties-title">Pintura y Trazo</span>
-        
+
         <!-- SELECCIÓN DE COLOR -->
         <div style="display: flex; flex-direction: column; gap: 8px;">
           <span style="font-weight: 600; font-size: 0.9rem;">Elegí el Color:</span>

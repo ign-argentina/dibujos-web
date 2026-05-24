@@ -1,4 +1,4 @@
-import { Canvas, FabricImage, Rect, Circle, Textbox, Path, util } from 'fabric'
+import { Canvas, FabricImage, Rect, Circle, Textbox, Path, PencilBrush, util } from 'fabric'
 
 export class CanvasManager {
   constructor(container, options = {}) {
@@ -11,20 +11,20 @@ export class CanvasManager {
     this.canvas = null
     this.canvasEl = null
     this.resizeObserver = null
-    
+
     // Dimensiones en caché para evitar bucles de redimensionamiento
     this.canvasWidth = 0
     this.canvasHeight = 0
-    
+
     // Almacenamiento para el mapa base y la imagen
     this.currentMapImage = null
     this.currentMapUrl = null
-    
+
     // Propiedades de herramientas NBI-DS
-    this.activeColor = '#FFF4B0' // Color pastel inicial (Amarillo)
-    this.activeStrokeWidth = 8   // Grosor inicial del lápiz
-    this.activeTool = 'select'   // Herramienta inicial (Puntero)
-    
+    this.activeColor = '#FFF4B0'
+    this.activeStrokeWidth = 8
+    this.activeTool = 'select'
+
     // Prevenir el menú contextual para permitir arrastrar con botón derecho
     this.container.addEventListener('contextmenu', (e) => {
       e.preventDefault()
@@ -33,14 +33,13 @@ export class CanvasManager {
 
   init() {
     this.createCanvasElement()
-    
-    // Crear el canvas de Fabric.js v7
+
     this.canvas = new Canvas(this.canvasEl, {
       selection: true,
       preserveObjectStacking: true,
       ...this.options,
     })
-    
+
     this.configureDrawingBrush()
     this.observeZoomAndPan()
     this.observeResize()
@@ -55,12 +54,13 @@ export class CanvasManager {
 
   configureDrawingBrush() {
     if (!this.canvas) return
-    
-    // Configurar pincel libre de Fabric v7
-    if (this.canvas.freeDrawingBrush) {
-      this.canvas.freeDrawingBrush.color = this.activeColor
-      this.canvas.freeDrawingBrush.width = this.activeStrokeWidth
+
+    // En Fabric v7 el brush no se crea automáticamente, hay que instanciarlo
+    if (!this.canvas.freeDrawingBrush) {
+      this.canvas.freeDrawingBrush = new PencilBrush(this.canvas)
     }
+    this.canvas.freeDrawingBrush.color = this.activeColor
+    this.canvas.freeDrawingBrush.width = this.activeStrokeWidth
   }
 
   resizeCanvas() {
@@ -72,19 +72,14 @@ export class CanvasManager {
 
     if (!width || !height) return
 
-    // Evitar bucles: solo redimensionar si las dimensiones cambiaron
     if (this.canvasWidth !== width || this.canvasHeight !== height) {
       this.canvasWidth = width
       this.canvasHeight = height
-      
-      // Fabric.js v7 usa setDimensions({ width, height })
+
       this.canvas.setDimensions({ width, height })
-      
-      // Recalcular offsets para mantener correcta la interacción táctil/puntero
       this.canvas.calcOffset()
       this.canvas.requestRenderAll()
-      
-      // Reajustar la escala del mapa si está cargado
+
       if (this.currentMapImage) {
         this.fitMapToCanvas()
       }
@@ -103,7 +98,6 @@ export class CanvasManager {
   async loadMap(url) {
     if (!this.canvas) return
 
-    // Si ya hay un mapa cargado, removerlo primero
     if (this.currentMapImage) {
       this.canvas.remove(this.currentMapImage)
       this.currentMapImage = null
@@ -111,13 +105,12 @@ export class CanvasManager {
 
     try {
       this.currentMapUrl = url
-      
-      // FabricImage.fromURL es asincrónico y retorna una Promesa en v7
-      const img = await FabricImage.fromURL(url, {
-        crossOrigin: 'anonymous'
-      })
 
-      // Bloquear la imagen del mapa (NBI-DS base locked layer)
+      // FabricImage.fromURL en v7: (url, loadOptions, imageOptions)
+      const img = await FabricImage.fromURL(url, {
+        crossOrigin: 'anonymous',
+      }, {})
+
       img.set({
         selectable: false,
         evented: false,
@@ -131,13 +124,10 @@ export class CanvasManager {
       })
 
       this.currentMapImage = img
-      
-      // Añadir la imagen en el fondo
+
       this.canvas.insertAt(0, img)
-      
-      // Centrar y escalar (Contain)
       this.fitMapToCanvas()
-      
+
       return img
     } catch (error) {
       console.error('Error cargando el mapa de fondo:', error)
@@ -150,13 +140,11 @@ export class CanvasManager {
 
     const canvasWidth = this.canvasWidth
     const canvasHeight = this.canvasHeight
-
     const imgWidth = this.currentMapImage.width
     const imgHeight = this.currentMapImage.height
 
     if (!imgWidth || !imgHeight) return
 
-    // Determinar factor de escala (Contain)
     const canvasRatio = canvasWidth / canvasHeight
     const imgRatio = imgWidth / imgHeight
 
@@ -167,7 +155,6 @@ export class CanvasManager {
       scale = canvasHeight / imgHeight
     }
 
-    // Calcular posiciones de centrado
     const left = (canvasWidth - imgWidth * scale) / 2
     const top = (canvasHeight - imgHeight * scale) / 2
 
@@ -178,7 +165,6 @@ export class CanvasManager {
       top: top,
     })
 
-    // Resetear el viewport transform al cargar un mapa
     this.canvas.setViewportTransform([1, 0, 0, 1, 0, 0])
     this.canvas.requestRenderAll()
   }
@@ -192,14 +178,11 @@ export class CanvasManager {
     let lastPosY = 0
     let isSpacePressed = false
 
-    // Escuchar la barra espaciadora
     window.addEventListener('keydown', (e) => {
       if (e.code === 'Space') {
         isSpacePressed = true
-        if (canvas.defaultCursor === 'default') {
-          canvas.defaultCursor = 'grab'
-          canvas.setCursor('grab')
-        }
+        canvas.defaultCursor = 'grab'
+        canvas.setCursor('grab')
         canvas.selection = false
       }
     })
@@ -208,29 +191,26 @@ export class CanvasManager {
       if (e.code === 'Space') {
         isSpacePressed = false
         canvas.defaultCursor = 'default'
-        canvas.setCursor('default' || 'default')
+        canvas.setCursor('default')
         canvas.selection = true
       }
     })
 
-    // Zoom con la rueda del ratón
     canvas.on('mouse:wheel', (opt) => {
       const delta = opt.e.deltaY
       let zoom = canvas.getZoom()
-      
+
       zoom *= 0.999 ** delta
 
-      // Limitar zoom entre 0.5x y 8x para no perderse
       if (zoom > 8) zoom = 8
       if (zoom < 0.5) zoom = 0.5
 
       canvas.zoomToPoint({ x: opt.e.offsetX, y: opt.e.offsetY }, zoom)
-      
+
       opt.e.preventDefault()
       opt.e.stopPropagation()
     })
 
-    // Arrastre con barra espaciadora o botón secundario del ratón
     canvas.on('mouse:down', (opt) => {
       const e = opt.e
       const isRightClick = e.button === 2 || e.which === 3
@@ -249,12 +229,12 @@ export class CanvasManager {
       if (isDragging) {
         const e = opt.e
         const vpt = canvas.viewportTransform
-        
+
         vpt[4] += e.clientX - lastPosX
         vpt[5] += e.clientY - lastPosY
-        
+
         canvas.requestRenderAll()
-        
+
         lastPosX = e.clientX
         lastPosY = e.clientY
       }
@@ -270,9 +250,8 @@ export class CanvasManager {
     })
   }
 
-  // --- MÉTODOS DE HERRAMIENTAS Y ANOTACIONES NBI-DS ---
+  // --- HERRAMIENTAS ---
 
-  // Obtener el centro visual del canvas teniendo en cuenta el zoom y paneo
   getViewportCenter() {
     const vpt = this.canvas.viewportTransform
     const zoom = this.canvas.getZoom()
@@ -296,19 +275,16 @@ export class CanvasManager {
   setActiveColor(color) {
     this.activeColor = color
     this.configureDrawingBrush()
-    
-    // Si hay un elemento seleccionado, actualizar su color en tiempo real (premium style)
+
     if (this.canvas) {
       const activeObject = this.canvas.getActiveObject()
       if (activeObject) {
         if (activeObject instanceof Textbox) {
-          activeObject.set({ backgroundColor: color })
+          activeObject.set({ fill: color })
         } else if (activeObject instanceof Path && activeObject.fill === 'transparent') {
-          // Para líneas/flechas vacías, actualizar el stroke
           activeObject.set({ stroke: color })
         } else {
-          // Para formas sólidas, actualizar el relleno
-          activeObject.set({ fill: color })
+          activeObject.set({ fill: color, stroke: color })
         }
         this.canvas.requestRenderAll()
         this.canvas.fire('object:modified')
@@ -319,8 +295,7 @@ export class CanvasManager {
   setActiveStrokeWidth(width) {
     this.activeStrokeWidth = parseInt(width, 10)
     this.configureDrawingBrush()
-    
-    // Si hay un elemento seleccionado que usa bordes, actualizarlo
+
     if (this.canvas) {
       const activeObject = this.canvas.getActiveObject()
       if (activeObject && !(activeObject instanceof Textbox)) {
@@ -334,27 +309,22 @@ export class CanvasManager {
   addRect() {
     if (!this.canvas) return
     const center = this.getViewportCenter()
-    
+
     const rect = new Rect({
       left: center.left,
       top: center.top,
       width: 140,
       height: 100,
       fill: this.activeColor,
-      stroke: '#000000',
-      strokeWidth: 4,
-      rx: 12, // Esquinas perfectamente redondeadas
-      ry: 12,
+      stroke: this.activeColor,
+      strokeWidth: 2,
+      rx: 4,
+      ry: 4,
       originX: 'center',
       originY: 'center',
-      shadow: {
-        color: '#000000',
-        blur: 0,
-        offsetX: 5,
-        offsetY: 5
-      }
+      opacity: 0.7,
     })
-    
+
     this.canvas.add(rect)
     this.canvas.setActiveObject(rect)
     this.canvas.requestRenderAll()
@@ -364,24 +334,19 @@ export class CanvasManager {
   addCircle() {
     if (!this.canvas) return
     const center = this.getViewportCenter()
-    
+
     const circle = new Circle({
       left: center.left,
       top: center.top,
       radius: 60,
       fill: this.activeColor,
-      stroke: '#000000',
-      strokeWidth: 4,
+      stroke: this.activeColor,
+      strokeWidth: 2,
       originX: 'center',
       originY: 'center',
-      shadow: {
-        color: '#000000',
-        blur: 0,
-        offsetX: 5,
-        offsetY: 5
-      }
+      opacity: 0.7,
     })
-    
+
     this.canvas.add(circle)
     this.canvas.setActiveObject(circle)
     this.canvas.requestRenderAll()
@@ -391,26 +356,19 @@ export class CanvasManager {
   addArrow() {
     if (!this.canvas) return
     const center = this.getViewportCenter()
-    
-    // Una flecha brutalista con trazo grueso negro de tipo Path
+
     const arrow = new Path('M -50 0 L 50 0 M 20 -15 L 50 0 L 20 15', {
       left: center.left,
       top: center.top,
-      stroke: '#000000',
-      strokeWidth: 6,
+      stroke: this.activeColor,
+      strokeWidth: this.activeStrokeWidth,
       fill: 'transparent',
       strokeLineCap: 'round',
       strokeLineJoin: 'round',
       originX: 'center',
       originY: 'center',
-      shadow: {
-        color: '#000000',
-        blur: 0,
-        offsetX: 4,
-        offsetY: 4
-      }
     })
-    
+
     this.canvas.add(arrow)
     this.canvas.setActiveObject(arrow)
     this.canvas.requestRenderAll()
@@ -420,39 +378,21 @@ export class CanvasManager {
   addText() {
     if (!this.canvas) return
     const center = this.getViewportCenter()
-    
+
     const text = new Textbox('Escribí acá', {
       left: center.left,
       top: center.top,
       fontFamily: 'Fredoka',
-      fontSize: 26,
-      fontWeight: 'bold',
-      fill: '#000000',
+      fontSize: 24,
+      fontWeight: '500',
+      fill: this.activeColor,
       stroke: 'transparent',
-      backgroundColor: this.activeColor,
-      padding: 10,
       originX: 'center',
       originY: 'center',
       textAlign: 'center',
       width: 180,
-      borderColor: '#000000',
-      cornerColor: '#000000',
-      cornerStyle: 'circle',
-      borderScaleFactor: 2,
-      shadow: {
-        color: '#000000',
-        blur: 0,
-        offsetX: 4,
-        offsetY: 4
-      }
     })
-    
-    // Ocultar controles superior/inferior centrales para mantener la caja limpia
-    text.setControlsVisibility({
-      mb: false,
-      mt: false
-    })
-    
+
     this.canvas.add(text)
     this.canvas.setActiveObject(text)
     this.canvas.requestRenderAll()
@@ -472,9 +412,8 @@ export class CanvasManager {
 
   clearCanvas() {
     if (!this.canvas) return
-    
+
     const objects = this.canvas.getObjects()
-    // Remover todos los objetos excepto el mapa de fondo
     for (let i = objects.length - 1; i >= 0; i--) {
       const obj = objects[i]
       if (obj !== this.currentMapImage) {
@@ -488,25 +427,21 @@ export class CanvasManager {
 
   serialize() {
     if (!this.canvas) return null
-    
-    // Excluir la imagen del mapa base para ahorrar espacio y evitar exceder la cuota
+
     const objects = this.canvas.getObjects().filter(obj => obj !== this.currentMapImage)
-    
-    // Serializar los trazos y formas a un formato JSON compatible
     const serializedObjects = objects.map(obj => obj.toObject())
     return JSON.stringify(serializedObjects)
   }
 
   async deserialize(jsonString) {
     if (!this.canvas || !jsonString) return
-    
+
     try {
       const jsonObjects = JSON.parse(jsonString)
       if (!Array.isArray(jsonObjects) || jsonObjects.length === 0) return
-      
-      // Recrear objetos usando la utilidad asincrónica de Fabric v7 (retorna Promesa)
+
       const objects = await util.enlivenObjects(jsonObjects)
-      
+
       this.canvas.renderOnAddRemove = false
       objects.forEach((obj) => {
         this.canvas.add(obj)
@@ -521,17 +456,15 @@ export class CanvasManager {
   exportToPNG(fileName = 'mapa_anotado.png') {
     if (!this.canvas) return
 
-    // Deseleccionar el objeto activo antes de tomar la captura para que no salgan los controles del recuadro
     this.canvas.discardActiveObject()
     this.canvas.requestRenderAll()
 
-    // Un retraso minúsculo para asegurar que se limpie el recuadro de controles en pantalla
     setTimeout(() => {
       try {
         const dataUrl = this.canvas.toDataURL({
           format: 'png',
           quality: 1.0,
-          multiplier: 2 // Duplicar el tamaño para una descarga ultra-nítida
+          multiplier: 2,
         })
 
         const link = document.createElement('a')
