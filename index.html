@@ -13,7 +13,34 @@
     <script src="https://unpkg.com/lucide@latest"></script>
   </head>
   <body>
-    <div id="app"></div>
+    <div id="app">
+      <!-- BOTÓN FLOTANTE PARA EXPANDIR EL CATÁLOGO -->
+      <button class="nbi-btn nbi-toggle-sidebar-btn hidden" id="toggle-sidebar-btn" title="Mostrar Mapas">
+        <i data-lucide="map-map-pin"></i>
+      </button>
+
+      <!-- CATÁLOGO DE MAPAS DE PROVINCIAS (PANEL LATERAL) -->
+      <aside class="nbi-window-floating nbi-sidebar-catalog" id="sidebar-catalog">
+        <div class="nbi-sidebar-header">
+          <span class="nbi-sidebar-title">Elegí tu Mapa</span>
+          <button class="nbi-btn" id="close-sidebar-btn" style="min-width: 40px; min-height: 40px; padding: 6px;" title="Cerrar Menú">
+            <i data-lucide="chevron-left"></i>
+          </button>
+        </div>
+        <div class="nbi-sidebar-scroll" id="map-cards-container">
+          <!-- Las tarjetas de provincias se generarán dinámicamente desde JS -->
+        </div>
+      </aside>
+
+      <!-- LIENZO PRINCIPAL (CONTENEDOR DEL CANVAS) -->
+      <div id="editor-container" class="canvas-root"></div>
+
+      <!-- PANTALLA JUGUETONA DE CARGA -->
+      <div id="loader-overlay" class="nbi-loader-overlay hidden">
+        <div class="nbi-loader"></div>
+        <div class="nbi-loader-text">¡Preparando tu mapa...!</div>
+      </div>
+    </div>
     <script type="module" src="/src/main.js"></script>
   </body>
 </html>
