@@ -65,6 +65,36 @@
         </button>
       </div>
 
+      <!-- PANEL DE PROPIEDADES (ESTILOS Y COLORES NBI-DS) -->
+      <div class="nbi-window-floating nbi-properties-panel" id="properties-panel">
+        <span class="nbi-properties-title">Pintura y Trazo</span>
+        
+        <!-- SELECCIÓN DE COLOR -->
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+          <span style="font-weight: 600; font-size: 0.9rem;">Elegí el Color:</span>
+          <div class="nbi-color-selector" id="color-chips-container">
+            <div class="nbi-color-chip is-active" style="background-color: #FFF4B0;" data-color="#FFF4B0" title="Amarillo Pastel"></div>
+            <div class="nbi-color-chip" style="background-color: #B3E5FC;" data-color="#B3E5FC" title="Azul Pastel"></div>
+            <div class="nbi-color-chip" style="background-color: #C8E6C9;" data-color="#C8E6C9" title="Verde Pastel"></div>
+            <div class="nbi-color-chip" style="background-color: #FFCDD2;" data-color="#FFCDD2" title="Rosa Pastel"></div>
+            <div class="nbi-color-chip" style="background-color: #E1BEE7;" data-color="#E1BEE7" title="Violeta Pastel"></div>
+            <div class="nbi-color-chip" style="background-color: #FFFFFF;" data-color="#FFFFFF" title="Blanco Nítido"></div>
+            <div class="nbi-color-chip" style="background-color: #000000;" data-color="#000000" title="Negro Contraste"></div>
+          </div>
+        </div>
+
+        <!-- CONTROL DE GROSOR ELÁSTICO -->
+        <div class="nbi-stroke-control">
+          <div class="nbi-stroke-header">
+            <span>Grosor del Lápiz:</span>
+            <span id="stroke-value-display">8px</span>
+          </div>
+          <div class="nbi-slider-wrapper">
+            <input class="nbi-slider" id="stroke-slider" type="range" min="4" max="24" value="8" />
+          </div>
+        </div>
+      </div>
+
       <!-- PANTALLA JUGUETONA DE CARGA -->
       <div id="loader-overlay" class="nbi-loader-overlay hidden">
         <div class="nbi-loader"></div>

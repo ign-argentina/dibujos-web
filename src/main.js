@@ -143,6 +143,29 @@ document.getElementById('tool-clear').addEventListener('click', () => {
   canvasManager.clearCanvas()
 })
 
+// --- INTERACTIVIDAD DEL PANEL DE ESTILOS ---
+const colorChips = document.querySelectorAll('.nbi-color-chip')
+const strokeSlider = document.getElementById('stroke-slider')
+const strokeValueDisplay = document.getElementById('stroke-value-display')
+
+// Cambiar color
+colorChips.forEach((chip) => {
+  chip.addEventListener('click', () => {
+    colorChips.forEach((c) => c.classList.remove('is-active'))
+    chip.classList.add('is-active')
+    
+    const selectedColor = chip.getAttribute('data-color')
+    canvasManager.setActiveColor(selectedColor)
+  })
+})
+
+// Cambiar grosor de trazo
+strokeSlider.addEventListener('input', (e) => {
+  const width = e.target.value
+  strokeValueDisplay.textContent = `${width}px`
+  canvasManager.setActiveStrokeWidth(width)
+})
+
 // --- INICIALIZACIÓN DE LA APLICACIÓN ---
 // Refrescar iconos cargados dinámicamente por si acaso
 if (window.lucide) {
