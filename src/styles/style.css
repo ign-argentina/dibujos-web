@@ -1,24 +1,409 @@
+:root {
+  /* Colores de Fondo de Bloques y UI (Tonos Pastel Neo-Brutalistas) */
+  --nbi-bg-main: #FAFAFA;
+  --nbi-pastel-yellow: #FFF4B0; /* Destacados y Barra de Herramientas */
+  --nbi-pastel-blue: #B3E5FC;   /* Acciones Generales (Exportar/Guardar) */
+  --nbi-pastel-green: #C8E6C9;  /* Confirmaciones / Éxito */
+  --nbi-pastel-pink: #FFCDD2;   /* Herramientas de Borrado / Acciones Peligrosas */
+  --nbi-pastel-purple: #E1BEE7; /* Catálogo / Elementos Especiales */
+  
+  /* Estructura y Neutros */
+  --nbi-black: #000000;
+  --nbi-white: #FFFFFF;
+  --nbi-grey: #E5E5E5;
+  
+  /* Radios de Bordes */
+  --nbi-radius-infant: 16px;
+  --nbi-radius-teen: 4px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
 html,
 body {
   margin: 0;
   padding: 0;
   height: 100%;
+  width: 100%;
   overflow: hidden;
+  font-family: 'Fredoka', 'Quicksand', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  background-color: var(--nbi-bg-main);
+  color: var(--nbi-black);
+  user-select: none;
 }
 
 #app {
   width: 100vw;
   height: 100vh;
+  position: relative;
+  overflow: hidden;
 }
 
+/* --- CANVAS LAYOUT & ISOLATION --- */
 .canvas-root {
   width: 100%;
   height: 100%;
-  position: relative;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  background-size: 20px 20px;
+  background-image: 
+    linear-gradient(to right, var(--nbi-grey) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--nbi-grey) 1px, transparent 1px);
 }
 
-.fabric-canvas {
-  display: block;
+.fabric-canvas-wrapper {
   width: 100%;
   height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  overflow: hidden;
+}
+
+/* Sobrescribir contenedor de Fabric para evitar bucles */
+.canvas-container {
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  max-width: 100% !important;
+  max-height: 100% !important;
+  z-index: 2;
+}
+
+/* --- VENTANAS FLOTANTES BRUTALISTAS --- */
+.nbi-window-floating {
+  background-color: var(--nbi-white);
+  border: 3px solid var(--nbi-black);
+  border-radius: var(--nbi-radius-infant);
+  box-shadow: 6px 6px 0px 0px var(--nbi-black);
+  position: absolute;
+  z-index: 10;
+  padding: 16px;
+  transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* --- PANEL LATERAL DE MAPAS (CATÁLOGO) --- */
+.nbi-sidebar-catalog {
+  top: 20px;
+  left: 20px;
+  bottom: 20px;
+  width: 320px;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--nbi-pastel-purple);
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.1), opacity 0.3s ease;
+}
+
+.nbi-sidebar-catalog.is-collapsed {
+  transform: translateX(-340px);
+}
+
+.nbi-sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 3px solid var(--nbi-black);
+}
+
+.nbi-sidebar-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.nbi-sidebar-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+/* Custom scrollbar para estética brutalista */
+.nbi-sidebar-scroll::-webkit-scrollbar {
+  width: 12px;
+}
+.nbi-sidebar-scroll::-webkit-scrollbar-track {
+  background: var(--nbi-white);
+  border-left: 3px solid var(--nbi-black);
+  border-radius: 6px;
+}
+.nbi-sidebar-scroll::-webkit-scrollbar-thumb {
+  background: var(--nbi-black);
+  border: 2px solid var(--nbi-white);
+  border-radius: 6px;
+}
+
+/* BOTÓN DE COLAPSAR SIDEBAR */
+.nbi-toggle-sidebar-btn {
+  position: absolute;
+  top: 24px;
+  left: 20px;
+  z-index: 9;
+  background-color: var(--nbi-pastel-purple);
+}
+
+/* TARJETAS DE PROVINCIAS */
+.nbi-map-card {
+  background-color: var(--nbi-white);
+  border: 3px solid var(--nbi-black);
+  border-radius: 12px;
+  box-shadow: 4px 4px 0px 0px var(--nbi-black);
+  margin-bottom: 16px;
+  cursor: pointer;
+  overflow: hidden;
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.2), box-shadow 0.3s ease;
+}
+
+.nbi-map-card:hover {
+  transform: scale(1.04) translateY(-2px);
+  box-shadow: 6px 6px 0px 0px var(--nbi-black);
+}
+
+.nbi-map-card:active {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0px 0px var(--nbi-black);
+}
+
+.nbi-map-card.is-active {
+  border-color: var(--nbi-black);
+  background-color: var(--nbi-pastel-yellow);
+  box-shadow: 4px 4px 0px 0px var(--nbi-black);
+  transform: scale(1.02);
+}
+
+.nbi-map-card-image {
+  width: 100%;
+  height: 120px;
+  object-fit: cover;
+  border-bottom: 3px solid var(--nbi-black);
+  background-color: var(--nbi-bg-main);
+}
+
+.nbi-map-card-info {
+  padding: 12px;
+  font-weight: 600;
+  text-align: center;
+  font-size: 1rem;
+}
+
+/* --- BARRA FLOTANTE DE DIBUJO --- */
+.nbi-toolbar-drawing {
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background-color: var(--nbi-pastel-yellow);
+  padding: 12px 18px;
+}
+
+.nbi-toolbar-drawing:hover {
+  transform: translateX(-50%) translateY(-2px);
+}
+
+/* --- PANEL DE PROPIEDADES --- */
+.nbi-properties-panel {
+  top: 20px;
+  right: 20px;
+  width: 260px;
+  background-color: var(--nbi-white);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.nbi-properties-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  border-bottom: 3px solid var(--nbi-black);
+  padding-bottom: 6px;
+}
+
+/* --- CHIPS DE COLORES NBI-DS --- */
+.nbi-color-selector {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.nbi-color-chip {
+  width: 36px;
+  height: 36px;
+  border: 3px solid var(--nbi-black);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.5);
+  box-shadow: 2px 2px 0px 0px var(--nbi-black);
+}
+
+.nbi-color-chip:hover {
+  transform: scale(1.15);
+}
+
+.nbi-color-chip.is-active {
+  transform: scale(1.15);
+  box-shadow: 0px 0px 0px 3px var(--nbi-white), 0px 0px 0px 6px var(--nbi-black);
+}
+
+/* CONTROL DE GROSOR ELÁSTICO */
+.nbi-stroke-control {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.nbi-stroke-header {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.nbi-slider-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.nbi-slider {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 12px;
+  border: 3px solid var(--nbi-black);
+  border-radius: 6px;
+  background: var(--nbi-bg-main);
+  outline: none;
+  cursor: pointer;
+}
+
+.nbi-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 22px;
+  height: 22px;
+  border: 3px solid var(--nbi-black);
+  border-radius: 50%;
+  background: var(--nbi-pastel-blue);
+  cursor: pointer;
+  box-shadow: 2px 2px 0px var(--nbi-black);
+  transition: transform 0.1s ease;
+}
+
+.nbi-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+}
+
+.nbi-slider::-webkit-slider-thumb:active {
+  background: var(--nbi-pastel-green);
+}
+
+/* --- BOTONES BRUTALISTAS --- */
+.nbi-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 48px;
+  min-height: 48px;
+  border: 3px solid var(--nbi-black);
+  border-radius: 12px;
+  background-color: var(--nbi-pastel-blue);
+  cursor: pointer;
+  padding: 10px;
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.15s ease;
+  box-shadow: 4px 4px 0px 0px var(--nbi-black);
+  color: var(--nbi-black);
+  outline: none;
+}
+
+.nbi-btn svg {
+  width: 24px;
+  height: 24px;
+  stroke-width: 2.5;
+}
+
+.nbi-btn:hover {
+  transform: scale(1.08) translateY(-2px);
+  box-shadow: 6px 6px 0px 0px var(--nbi-black);
+}
+
+.nbi-btn:active {
+  transform: translate(4px, 4px) scale(0.95);
+  box-shadow: 0px 0px 0px 0px var(--nbi-black);
+  transition: transform 0.05s ease;
+}
+
+.nbi-btn.is-active {
+  background-color: var(--nbi-white);
+  border-width: 4px;
+  box-shadow: 2px 2px 0px 0px var(--nbi-black);
+  transform: translate(2px, 2px);
+  animation: popSelected 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.5);
+}
+
+/* Colores para botones con significado */
+.nbi-btn-action {
+  background-color: var(--nbi-pastel-blue);
+}
+.nbi-btn-success {
+  background-color: var(--nbi-pastel-green);
+}
+.nbi-btn-danger {
+  background-color: var(--nbi-pastel-pink);
+}
+
+@keyframes popSelected {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.15); }
+  100% { transform: scale(1); }
+}
+
+/* --- INDICADOR DE CARGA --- */
+.nbi-loader-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(250, 250, 250, 0.8);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  gap: 16px;
+  transition: opacity 0.3s ease;
+}
+
+.nbi-loader {
+  width: 60px;
+  height: 60px;
+  border: 4px solid var(--nbi-black);
+  border-radius: var(--nbi-radius-infant);
+  background-color: var(--nbi-pastel-yellow);
+  box-shadow: 6px 6px 0px 0px var(--nbi-black);
+  animation: loadingPop 1s infinite alternate cubic-bezier(0.175, 0.885, 0.32, 1.2);
+}
+
+@keyframes loadingPop {
+  0% { transform: scale(0.9) rotate(0deg); }
+  100% { transform: scale(1.1) rotate(15deg); }
+}
+
+.nbi-loader-text {
+  font-weight: 700;
+  font-size: 1.2rem;
+  letter-spacing: -0.5px;
+}
+
+.hidden {
+  display: none !important;
+  opacity: 0;
+  pointer-events: none;
 }
