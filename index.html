@@ -35,6 +35,36 @@
       <!-- LIENZO PRINCIPAL (CONTENEDOR DEL CANVAS) -->
       <div id="editor-container" class="canvas-root"></div>
 
+      <!-- BARRA DE HERRAMIENTAS FLOTANTE JUGUETONA (NBI-DS TOOLBAR) -->
+      <div class="nbi-window-floating nbi-toolbar-drawing" id="toolbar-drawing">
+        <button class="nbi-btn is-active" id="tool-select" title="Puntero para seleccionar y mover">
+          <i data-lucide="mouse-pointer"></i>
+        </button>
+        <button class="nbi-btn" id="tool-brush" title="Lápiz para dibujar libre">
+          <i data-lucide="pencil"></i>
+        </button>
+        <div style="width: 3px; height: 32px; background: var(--nbi-black); border-radius: 2px;"></div>
+        <button class="nbi-btn" id="tool-rect" title="Agregar Rectángulo">
+          <i data-lucide="square"></i>
+        </button>
+        <button class="nbi-btn" id="tool-circle" title="Agregar Círculo">
+          <i data-lucide="circle"></i>
+        </button>
+        <button class="nbi-btn" id="tool-arrow" title="Agregar Flecha">
+          <i data-lucide="arrow-right-left" style="transform: rotate(45deg);"></i>
+        </button>
+        <button class="nbi-btn" id="tool-text" title="Agregar Texto">
+          <i data-lucide="type"></i>
+        </button>
+        <div style="width: 3px; height: 32px; background: var(--nbi-black); border-radius: 2px;"></div>
+        <button class="nbi-btn nbi-btn-danger" id="tool-delete" title="Borrar elemento seleccionado">
+          <i data-lucide="trash-2"></i>
+        </button>
+        <button class="nbi-btn nbi-btn-danger" id="tool-clear" title="Borrar todo el dibujo">
+          <i data-lucide="eraser"></i>
+        </button>
+      </div>
+
       <!-- PANTALLA JUGUETONA DE CARGA -->
       <div id="loader-overlay" class="nbi-loader-overlay hidden">
         <div class="nbi-loader"></div>

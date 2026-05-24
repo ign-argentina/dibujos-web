@@ -85,7 +85,70 @@ appState.subscribe(async (state) => {
   }
 })
 
+// --- INTERACTIVIDAD DE LA BARRA DE HERRAMIENTAS DE DIBUJO ---
+const toolButtons = {
+  select: document.getElementById('tool-select'),
+  brush: document.getElementById('tool-brush'),
+}
+
+function updateActiveToolUI(activeTool) {
+  Object.values(toolButtons).forEach(btn => btn.classList.remove('is-active'))
+  if (toolButtons[activeTool]) {
+    toolButtons[activeTool].classList.add('is-active')
+  }
+}
+
+// Alternar entre Selección (Puntero) y Dibujo Libre (Lápiz)
+toolButtons.select.addEventListener('click', () => {
+  canvasManager.setTool('select')
+  updateActiveToolUI('select')
+})
+
+toolButtons.brush.addEventListener('click', () => {
+  canvasManager.setTool('brush')
+  updateActiveToolUI('brush')
+})
+
+// Inserción dinámica de formas (y auto-retorno al puntero de selección)
+document.getElementById('tool-rect').addEventListener('click', () => {
+  canvasManager.addRect()
+  canvasManager.setTool('select')
+  updateActiveToolUI('select')
+})
+
+document.getElementById('tool-circle').addEventListener('click', () => {
+  canvasManager.addCircle()
+  canvasManager.setTool('select')
+  updateActiveToolUI('select')
+})
+
+document.getElementById('tool-arrow').addEventListener('click', () => {
+  canvasManager.addArrow()
+  canvasManager.setTool('select')
+  updateActiveToolUI('select')
+})
+
+document.getElementById('tool-text').addEventListener('click', () => {
+  canvasManager.addText()
+  canvasManager.setTool('select')
+  updateActiveToolUI('select')
+})
+
+// Borrado de objetos y Limpieza
+document.getElementById('tool-delete').addEventListener('click', () => {
+  canvasManager.deleteSelected()
+})
+
+document.getElementById('tool-clear').addEventListener('click', () => {
+  canvasManager.clearCanvas()
+})
+
 // --- INICIALIZACIÓN DE LA APLICACIÓN ---
+// Refrescar iconos cargados dinámicamente por si acaso
+if (window.lucide) {
+  window.lucide.createIcons()
+}
+
 // Activar por defecto la primera provincia (Buenos Aires)
 if (mapsCatalog.length > 0) {
   appState.setActiveMapId(mapsCatalog[0].id)
