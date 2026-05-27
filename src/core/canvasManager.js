@@ -20,7 +20,7 @@ export class CanvasManager {
     this.currentMapImage = null
     this.currentMapUrl = null
 
-    // Propiedades de herramientas NBI-DS
+    // Propiedades de herramientas NBI
     this.activeColor = '#FFF4B0'
     this.activeStrokeWidth = 8
     this.activeTool = 'select'
@@ -55,7 +55,7 @@ export class CanvasManager {
   configureDrawingBrush() {
     if (!this.canvas) return
 
-    // En Fabric v7 el brush no se crea automáticamente, hay que instanciarlo
+    // Instancia el pincel de dibujo
     if (!this.canvas.freeDrawingBrush) {
       this.canvas.freeDrawingBrush = new PencilBrush(this.canvas)
     }

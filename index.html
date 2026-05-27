@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Dibujos de Mapas IGN - NBI Editor</title>
+    <title>Dibujos de Mapas IGN</title>
     <!-- Google Fonts - Fredoka -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -18,7 +18,7 @@
       <nav class="nbi-window-floating nbi-navbar" id="navbar">
         <div class="nbi-navbar-brand">
           <i data-lucide="map-pin" style="width: 28px; height: 28px; stroke-width: 2.5;"></i>
-          <span class="nbi-navbar-title">Dibujos de Mapas</span>
+          <span class="nbi-navbar-title">Mapas escolares</span>
         </div>
         <span class="nbi-navbar-subtitle">IGN Argentina</span>
       </nav>
@@ -74,7 +74,7 @@
         </button>
       </div>
 
-      <!-- PANEL DE PROPIEDADES (ESTILOS Y COLORES NBI-DS) -->
+      <!-- PANEL DE PROPIEDADES (ESTILOS Y COLORES) -->
       <div class="nbi-window-floating nbi-properties-panel" id="properties-panel">
         <span class="nbi-properties-title">Pintura y Trazo</span>
 
@@ -82,17 +82,17 @@
         <div style="display: flex; flex-direction: column; gap: 8px;">
           <span style="font-weight: 600; font-size: 0.9rem;">Elegí el Color:</span>
           <div class="nbi-color-selector" id="color-chips-container">
-            <div class="nbi-color-chip is-active" style="background-color: #FFF4B0;" data-color="#FFF4B0" title="Amarillo Pastel"></div>
-            <div class="nbi-color-chip" style="background-color: #B3E5FC;" data-color="#B3E5FC" title="Azul Pastel"></div>
-            <div class="nbi-color-chip" style="background-color: #C8E6C9;" data-color="#C8E6C9" title="Verde Pastel"></div>
-            <div class="nbi-color-chip" style="background-color: #FFCDD2;" data-color="#FFCDD2" title="Rosa Pastel"></div>
-            <div class="nbi-color-chip" style="background-color: #E1BEE7;" data-color="#E1BEE7" title="Violeta Pastel"></div>
+            <div class="nbi-color-chip is-active" style="background-color: #faeb8b;" data-color="#faeb8b" title="Amarillo Pastel"></div>
+            <div class="nbi-color-chip" style="background-color: #82d3f8;" data-color="#82d3f8" title="Azul Pastel"></div>
+            <div class="nbi-color-chip" style="background-color: #7abe7d;" data-color="#7abe7d" title="Verde Pastel"></div>
+            <div class="nbi-color-chip" style="background-color: #e5828c;" data-color="#e5828c" title="Rosa Pastel"></div>
+            <div class="nbi-color-chip" style="background-color: #cc94d6;" data-color="#cc94d6" title="Violeta Pastel"></div>
             <div class="nbi-color-chip" style="background-color: #FFFFFF;" data-color="#FFFFFF" title="Blanco Nítido"></div>
             <div class="nbi-color-chip" style="background-color: #000000;" data-color="#000000" title="Negro Contraste"></div>
           </div>
         </div>
 
-        <!-- CONTROL DE GROSOR ELÁSTICO -->
+        <!-- CONTROL DE GROSOR -->
         <div class="nbi-stroke-control">
           <div class="nbi-stroke-header">
             <span>Grosor del Lápiz:</span>
@@ -112,7 +112,7 @@
         </div>
       </div>
 
-      <!-- PANTALLA JUGUETONA DE CARGA -->
+      <!-- PANTALLA ANIMADA DE CARGA -->
       <div id="loader-overlay" class="nbi-loader-overlay hidden">
         <div class="nbi-loader"></div>
         <div class="nbi-loader-text">¡Preparando tu mapa...!</div>
