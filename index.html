@@ -1,123 +1,134 @@
 <!doctype html>
 <html lang="es">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Dibujos de Mapas IGN</title>
-    <!-- Google Fonts - Fredoka -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Lucide Icons CDN -->
-    <script src="https://unpkg.com/lucide@latest"></script>
-  </head>
-  <body>
-    <div id="app">
-      <!-- NAVBAR SUPERIOR FLOTANTE (IDENTIDAD) -->
-      <nav class="nbi-window-floating nbi-navbar" id="navbar">
-        <div class="nbi-navbar-brand">
-          <i data-lucide="map-pin" style="width: 28px; height: 28px; stroke-width: 2.5;"></i>
-          <span class="nbi-navbar-title">Mapas escolares</span>
-        </div>
-        <span class="nbi-navbar-subtitle">IGN Argentina</span>
-      </nav>
 
-      <!-- BOTÓN FLOTANTE PARA EXPANDIR EL CATÁLOGO -->
-      <button class="nbi-btn nbi-toggle-sidebar-btn hidden" id="toggle-sidebar-btn" title="Mostrar Mapas">
-        <i data-lucide="map"></i>
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dibujos de Mapas IGN</title>
+  <!-- Google Fonts - Fredoka -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+
+<body>
+  <div id="app">
+    <!-- NAVBAR SUPERIOR FLOTANTE (IDENTIDAD) -->
+    <nav class="nbi-window-floating nbi-navbar" id="navbar">
+      <div class="nbi-navbar-brand">
+        <img src="./public/logo-ign-blanco.svg" alt="nstituto Geográfico Nacional" class="nbi-navbar-logo" />
+        <span class="nbi-navbar-title">Mapas escolares</span>
+      </div>
+      <span class="nbi-navbar-subtitle">IGN Argentina</span>
+    </nav>
+
+    <!-- BOTÓN FLOTANTE PARA EXPANDIR EL CATÁLOGO -->
+    <button class="nbi-btn nbi-toggle-sidebar-btn hidden" id="toggle-sidebar-btn" title="Mostrar Mapas">
+      <i data-lucide="map"></i>
+    </button>
+
+    <!-- CATÁLOGO DE MAPAS DE PROVINCIAS (PANEL LATERAL) -->
+    <aside class="nbi-window-floating nbi-sidebar-catalog" id="sidebar-catalog">
+      <div class="nbi-sidebar-header">
+        <span class="nbi-sidebar-title">Elegí tu Mapa</span>
+        <button class="nbi-btn" id="close-sidebar-btn" style="min-width: 40px; min-height: 40px; padding: 6px;"
+          title="Cerrar Menú">
+          <i data-lucide="chevron-left"></i>
+        </button>
+      </div>
+      <div class="nbi-sidebar-scroll" id="map-cards-container">
+        <!-- Las tarjetas se generarán dinámicamente desde JS -->
+      </div>
+    </aside>
+
+    <!-- LIENZO PRINCIPAL (CONTENEDOR DEL CANVAS) -->
+    <div id="editor-container" class="canvas-root"></div>
+
+    <!-- BARRA DE HERRAMIENTAS FLOTANTE (SIN ANIDACIÓN nbi-window-floating) -->
+    <div class="nbi-toolbar-drawing" id="toolbar-drawing">
+      <button class="nbi-btn is-active" id="tool-select" title="Puntero para seleccionar y mover">
+        <i data-lucide="mouse-pointer"></i>
       </button>
+      <button class="nbi-btn" id="tool-brush" title="Lápiz para dibujar libre">
+        <i data-lucide="pencil"></i>
+      </button>
+      <div class="nbi-toolbar-separator"></div>
+      <button class="nbi-btn" id="tool-rect" title="Agregar Rectángulo">
+        <i data-lucide="square"></i>
+      </button>
+      <button class="nbi-btn" id="tool-circle" title="Agregar Círculo">
+        <i data-lucide="circle"></i>
+      </button>
+      <button class="nbi-btn" id="tool-arrow" title="Agregar Flecha">
+        <i data-lucide="move-right"></i>
+      </button>
+      <button class="nbi-btn" id="tool-text" title="Agregar Texto">
+        <i data-lucide="type"></i>
+      </button>
+      <div class="nbi-toolbar-separator"></div>
+      <button class="nbi-btn nbi-btn-danger" id="tool-delete" title="Borrar elemento seleccionado">
+        <i data-lucide="trash-2"></i>
+      </button>
+      <button class="nbi-btn nbi-btn-danger" id="tool-clear" title="Borrar todo el dibujo">
+        <i data-lucide="eraser"></i>
+      </button>
+    </div>
 
-      <!-- CATÁLOGO DE MAPAS DE PROVINCIAS (PANEL LATERAL) -->
-      <aside class="nbi-window-floating nbi-sidebar-catalog" id="sidebar-catalog">
-        <div class="nbi-sidebar-header">
-          <span class="nbi-sidebar-title">Elegí tu Mapa</span>
-          <button class="nbi-btn" id="close-sidebar-btn" style="min-width: 40px; min-height: 40px; padding: 6px;" title="Cerrar Menú">
-            <i data-lucide="chevron-left"></i>
-          </button>
-        </div>
-        <div class="nbi-sidebar-scroll" id="map-cards-container">
-          <!-- Las tarjetas se generarán dinámicamente desde JS -->
-        </div>
-      </aside>
+    <!-- PANEL DE PROPIEDADES (ESTILOS Y COLORES) -->
+    <div class="nbi-window-floating nbi-properties-panel" id="properties-panel">
+      <span class="nbi-properties-title">Pintura y Trazo</span>
 
-      <!-- LIENZO PRINCIPAL (CONTENEDOR DEL CANVAS) -->
-      <div id="editor-container" class="canvas-root"></div>
-
-      <!-- BARRA DE HERRAMIENTAS FLOTANTE (SIN ANIDACIÓN nbi-window-floating) -->
-      <div class="nbi-toolbar-drawing" id="toolbar-drawing">
-        <button class="nbi-btn is-active" id="tool-select" title="Puntero para seleccionar y mover">
-          <i data-lucide="mouse-pointer"></i>
-        </button>
-        <button class="nbi-btn" id="tool-brush" title="Lápiz para dibujar libre">
-          <i data-lucide="pencil"></i>
-        </button>
-        <div class="nbi-toolbar-separator"></div>
-        <button class="nbi-btn" id="tool-rect" title="Agregar Rectángulo">
-          <i data-lucide="square"></i>
-        </button>
-        <button class="nbi-btn" id="tool-circle" title="Agregar Círculo">
-          <i data-lucide="circle"></i>
-        </button>
-        <button class="nbi-btn" id="tool-arrow" title="Agregar Flecha">
-          <i data-lucide="move-right"></i>
-        </button>
-        <button class="nbi-btn" id="tool-text" title="Agregar Texto">
-          <i data-lucide="type"></i>
-        </button>
-        <div class="nbi-toolbar-separator"></div>
-        <button class="nbi-btn nbi-btn-danger" id="tool-delete" title="Borrar elemento seleccionado">
-          <i data-lucide="trash-2"></i>
-        </button>
-        <button class="nbi-btn nbi-btn-danger" id="tool-clear" title="Borrar todo el dibujo">
-          <i data-lucide="eraser"></i>
-        </button>
-      </div>
-
-      <!-- PANEL DE PROPIEDADES (ESTILOS Y COLORES) -->
-      <div class="nbi-window-floating nbi-properties-panel" id="properties-panel">
-        <span class="nbi-properties-title">Pintura y Trazo</span>
-
-        <!-- SELECCIÓN DE COLOR -->
-        <div style="display: flex; flex-direction: column; gap: 8px;">
-          <span style="font-weight: 600; font-size: 0.9rem;">Elegí el Color:</span>
-          <div class="nbi-color-selector" id="color-chips-container">
-            <div class="nbi-color-chip is-active" style="background-color: #faeb8b;" data-color="#faeb8b" title="Amarillo Pastel"></div>
-            <div class="nbi-color-chip" style="background-color: #82d3f8;" data-color="#82d3f8" title="Azul Pastel"></div>
-            <div class="nbi-color-chip" style="background-color: #7abe7d;" data-color="#7abe7d" title="Verde Pastel"></div>
-            <div class="nbi-color-chip" style="background-color: #e5828c;" data-color="#e5828c" title="Rosa Pastel"></div>
-            <div class="nbi-color-chip" style="background-color: #cc94d6;" data-color="#cc94d6" title="Violeta Pastel"></div>
-            <div class="nbi-color-chip" style="background-color: #FFFFFF;" data-color="#FFFFFF" title="Blanco Nítido"></div>
-            <div class="nbi-color-chip" style="background-color: #000000;" data-color="#000000" title="Negro Contraste"></div>
+      <!-- SELECCIÓN DE COLOR -->
+      <div style="display: flex; flex-direction: column; gap: 8px;">
+        <span style="font-weight: 600; font-size: 0.9rem;">Elegí el Color:</span>
+        <div class="nbi-color-selector" id="color-chips-container">
+          <div class="nbi-color-chip is-active" style="background-color: #faeb8b;" data-color="#faeb8b"
+            title="Amarillo Pastel"></div>
+          <div class="nbi-color-chip" style="background-color: #82d3f8;" data-color="#82d3f8" title="Azul Pastel"></div>
+          <div class="nbi-color-chip" style="background-color: #7abe7d;" data-color="#7abe7d" title="Verde Pastel">
           </div>
-        </div>
-
-        <!-- CONTROL DE GROSOR -->
-        <div class="nbi-stroke-control">
-          <div class="nbi-stroke-header">
-            <span>Grosor del Lápiz:</span>
-            <span id="stroke-value-display">8px</span>
+          <div class="nbi-color-chip" style="background-color: #e5828c;" data-color="#e5828c" title="Rosa Pastel"></div>
+          <div class="nbi-color-chip" style="background-color: #cc94d6;" data-color="#cc94d6" title="Violeta Pastel">
           </div>
-          <div class="nbi-slider-wrapper">
-            <input class="nbi-slider" id="stroke-slider" type="range" min="4" max="24" value="8" />
+          <div class="nbi-color-chip" style="background-color: #FFFFFF;" data-color="#FFFFFF" title="Blanco Nítido">
           </div>
-        </div>
-
-        <!-- ACCIONES DEL SISTEMA (DESCARGA) -->
-        <div style="display: flex; gap: 8px; margin-top: auto; border-top: 3px solid var(--nbi-black); padding-top: 16px;">
-          <button class="nbi-btn nbi-btn-success" id="action-export" style="flex: 1;" title="Descargar mapa con tus dibujos">
-            <i data-lucide="download"></i>
-            <span style="font-weight: bold; margin-left: 6px;">Guardar</span>
-          </button>
+          <div class="nbi-color-chip" style="background-color: #000000;" data-color="#000000" title="Negro Contraste">
+          </div>
         </div>
       </div>
 
-      <!-- PANTALLA ANIMADA DE CARGA -->
-      <div id="loader-overlay" class="nbi-loader-overlay hidden">
-        <div class="nbi-loader"></div>
-        <div class="nbi-loader-text">¡Preparando tu mapa...!</div>
+      <!-- CONTROL DE GROSOR -->
+      <div class="nbi-stroke-control">
+        <div class="nbi-stroke-header">
+          <span>Grosor del Lápiz:</span>
+          <span id="stroke-value-display">8px</span>
+        </div>
+        <div class="nbi-slider-wrapper">
+          <input class="nbi-slider" id="stroke-slider" type="range" min="4" max="24" value="8" />
+        </div>
+      </div>
+
+      <!-- ACCIONES DEL SISTEMA (DESCARGA) -->
+      <div
+        style="display: flex; gap: 8px; margin-top: auto; border-top: 3px solid var(--nbi-black); padding-top: 16px;">
+        <button class="nbi-btn nbi-btn-success" id="action-export" style="flex: 1;"
+          title="Descargar mapa con tus dibujos">
+          <i data-lucide="download"></i>
+          <span style="font-weight: bold; margin-left: 6px;">Guardar</span>
+        </button>
       </div>
     </div>
-    <script type="module" src="/src/main.js"></script>
-  </body>
+
+    <!-- PANTALLA ANIMADA DE CARGA -->
+    <div id="loader-overlay" class="nbi-loader-overlay hidden">
+      <div class="nbi-loader"></div>
+      <div class="nbi-loader-text">¡Preparando tu mapa...!</div>
+    </div>
+  </div>
+  <script type="module" src="/src/main.js"></script>
+</body>
+
 </html>
