@@ -2,6 +2,7 @@ import './styles/style.css'
 import { mapsCatalog } from './config/mapsCatalog.js'
 import { appState } from './state/appState.js'
 import { CanvasManager } from './core/canvasManager.js'
+import { MapSelector } from './components/MapSelector.js'
 
 // Inicializar Lucide Icons
 if (window.lucide) {
@@ -35,24 +36,8 @@ toggleSidebarBtn.addEventListener('click', () => {
   toggleSidebarBtn.classList.add('hidden')
 })
 
-// --- GENERACIÓN DINÁMICA DE TARJETAS DE PROVINCIAS ---
-mapsCatalog.forEach((map) => {
-  const card = document.createElement('div')
-  card.className = 'nbi-map-card'
-  card.id = `card-${map.id}`
-  
-  card.innerHTML = `
-    <img class="nbi-map-card-image" src="${map.thumbnailUrl}" alt="${map.name}" />
-    <div class="nbi-map-card-info">${map.name}</div>
-  `
-  
-  // Sincronizar clic con el estado de la app
-  card.addEventListener('click', () => {
-    appState.setActiveMapId(map.id)
-  })
-  
-  cardsContainer.appendChild(card)
-})
+// --- INICIALIZACIÓN DEL SELECTOR DE MAPAS MODULARIZADO ---
+new MapSelector(sidebar, cardsContainer)
 
 // --- ESCUCHAR CAMBIOS EN EL ESTADO GLOBAL (REACTIVIDAD Y PERSISTENCIA) ---
 let previousMapId = null
@@ -85,15 +70,7 @@ appState.subscribe(async (state) => {
   // Actualizar el ID previo para la próxima iteración
   previousMapId = state.activeMapId
 
-  // 2. Actualizar clase activa en las tarjetas del catálogo
-  document.querySelectorAll('.nbi-map-card').forEach((card) => {
-    card.classList.remove('is-active')
-  })
-  
-  const activeCard = document.getElementById(`card-${state.activeMapId}`)
-  if (activeCard) {
-    activeCard.classList.add('is-active')
-  }
+  // 2. La clase activa se actualiza automáticamente a través de la suscripción dentro de MapSelector
   
   // 3. Limpiar dibujos transitorios antes de cargar el nuevo mapa
   canvasManager.clearCanvas()

@@ -190,6 +190,11 @@ body {
   flex: 1;
   overflow-y: auto;
   padding-right: 4px;
+  display: grid;
+  grid-template-columns: repeat(2, 100px);
+  gap: 16px;
+  justify-content: center;
+  align-content: start;
 }
 
 /* Custom scrollbar para estética brutalista */
@@ -218,23 +223,24 @@ body {
   background-color: var(--nbi-pastel-purple);
 }
 
-/* TARJETAS DE PROVINCIAS (CUADRADAS) */
+/* TARJETAS DE PROVINCIAS (CUADRADAS 100x100px) */
 .nbi-map-card {
+  width: 110px;
+  height: 110px;
   background-color: var(--nbi-white);
   border: 3px solid var(--nbi-black);
   border-radius: 12px;
   box-shadow: 4px 4px 0px 0px var(--nbi-black);
-  margin-bottom: 16px;
   cursor: pointer;
   overflow: hidden;
-  /* aspect-ratio: 1 / 1; */
   display: flex;
   flex-direction: column;
-  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.2), box-shadow 0.3s ease;
+  position: relative;
+  transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.2s ease;
 }
 
 .nbi-map-card:hover {
-  transform: scale(1.02) translateY(-2px);
+  transform: scale(1.08) translateY(-2px);
   box-shadow: 6px 6px 0px 0px var(--nbi-black);
 }
 
@@ -247,22 +253,158 @@ body {
   border-color: var(--nbi-black);
   background-color: var(--nbi-pastel-yellow);
   box-shadow: 4px 4px 0px 0px var(--nbi-black);
-  transform: scale(1.01);
+  transform: scale(1.02);
 }
 
 .nbi-map-card-image {
   width: 100%;
+  height: auto;
   flex: 1;
+  min-height: 50px;
   object-fit: cover;
   border-bottom: 3px solid var(--nbi-black);
   background-color: var(--nbi-bg-main);
+  flex-shrink: 1;
 }
 
 .nbi-map-card-info {
-  padding: 10px 8px;
-  font-weight: 600;
+  min-height: 35px;
+  padding: 4px;
+  font-weight: 700;
   text-align: center;
-  font-size: 0.85rem;
+  font-size: 0.65rem;
+  line-height: 1.1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  word-break: normal;
+  overflow-wrap: anywhere;
+  background-color: var(--nbi-white);
+  transition: background-color 0.2s ease;
+  flex-shrink: 0;
+}
+
+.nbi-map-card.is-active .nbi-map-card-info {
+  background-color: var(--nbi-pastel-yellow);
+}
+
+/* --- CONTROLES DEL BUSCADOR Y FILTROS --- */
+.nbi-sidebar-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-bottom: 16px;
+  border-bottom: 3px solid var(--nbi-black);
+  margin-bottom: 16px;
+}
+
+.nbi-search-wrapper {
+  position: relative;
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.nbi-search-wrapper .nbi-input {
+  padding-left: 36px;  /* Icon on the left */
+  padding-right: 36px; /* Clear button on the right */
+}
+
+.nbi-search-icon {
+  position: absolute;
+  left: 12px;          /* Moved from right to left */
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+}
+
+.nbi-search-icon svg {
+  width: 16px;
+  height: 16px;
+  stroke-width: 2.5;
+  color: var(--nbi-black);
+}
+
+.nbi-search-clear-btn {
+  position: absolute;
+  right: 8px;          /* Placed on the right */
+  top: 50%;
+  transform: translateY(-50%);
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  z-index: 2;
+}
+
+.nbi-search-clear-btn svg {
+  width: 16px;
+  height: 16px;
+  stroke-width: 2.5;
+  color: var(--nbi-black);
+  transition: transform 0.2s ease;
+}
+
+.nbi-search-clear-btn:hover svg {
+  transform: scale(1.2) rotate(90deg);
+}
+
+.nbi-search-clear-btn:active svg {
+  transform: scale(0.9);
+}
+
+.nbi-filter-group {
+  display: flex;
+  gap: 6px;
+}
+
+.nbi-filter-btn {
+  flex: 1;
+  min-height: 36px;
+  padding: 6px 4px;
+  font-family: inherit;
+  font-size: 0.8rem;
+  font-weight: 700;
+  border: 3px solid var(--nbi-black);
+  border-radius: 8px;
+  background-color: var(--nbi-white);
+  cursor: pointer;
+  transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.2s ease, background-color 0.2s ease;
+  box-shadow: 2px 2px 0px 0px var(--nbi-black);
+  color: var(--nbi-black);
+  outline: none;
+}
+
+.nbi-filter-btn:hover {
+  transform: scale(1.02) translateY(-1px);
+  box-shadow: 3px 3px 0px 0px var(--nbi-black);
+}
+
+.nbi-filter-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: 0px 0px 0px 0px var(--nbi-black);
+}
+
+.nbi-filter-btn.is-active {
+  background-color: var(--nbi-pastel-blue);
+  box-shadow: 1px 1px 0px 0px var(--nbi-black);
+  transform: translate(1px, 1px);
+}
+
+.nbi-sidebar-empty {
+  grid-column: span 2;
+  text-align: center;
+  font-weight: 600;
+  color: var(--nbi-muted);
+  padding: 24px 0;
+  font-size: 0.9rem;
 }
 
 /* --- BARRA FLOTANTE DE DIBUJO --- */

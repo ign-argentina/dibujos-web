@@ -2,7 +2,7 @@ export const mapsCatalog = [
   {
     id: 'planisferio',
     name: 'Planisferio',
-    thumbnailUrl: '/maps/MapaEscolar000_Planisferio_2000x2500.png',
+    thumbnailUrl: '/maps/thumbnails/MapaEscolar000_Planisferio_2000x2500.png',
     imagePath: '/maps/MapaEscolar000_Planisferio_2000x2500.png',
     imageUrl: 'https://mapasescolares.ign.gob.ar/images/mapas/MapaEscolar000_Planisferio_2000x2500.png',
     category: 'otros'
@@ -10,7 +10,7 @@ export const mapsCatalog = [
   {
     id: 'america',
     name: 'Mapa de América',
-    thumbnailUrl: '/maps/MapaEscolar000_America_2000x2500.png',
+    thumbnailUrl: '/maps/thumbnails/MapaEscolar000_America_2000x2500.png',
     imagePath: '/maps/MapaEscolar000_America_2000x2500.png',
     imageUrl: 'https://mapasescolares.ign.gob.ar/images/mapas/MapaEscolar000_America_2000x2500.png',
     category: 'otros'
@@ -18,7 +18,7 @@ export const mapsCatalog = [
   {
     id: 'argentina',
     name: 'Mapa de Argentina Bicontinental',
-    thumbnailUrl: '/maps/MapaEscolar000_ArgentinaBicontinental_2000x2500.png',
+    thumbnailUrl: '/maps/thumbnails/MapaEscolar000_ArgentinaBicontinental_2000x2500.png',
     imagePath: '/maps/MapaEscolar000_ArgentinaBicontinental_2000x2500.png',
     imageUrl: 'https://mapasescolares.ign.gob.ar/images/mapas/MapaEscolar000_ArgentinaBicontinental_2000x2500.png',
     category: 'otros'
@@ -26,7 +26,7 @@ export const mapsCatalog = [
   {
     id: 'antartida',
     name: 'Mapa de Antártida',
-    thumbnailUrl: '/maps/MapaEscolar001_Antartida_2000x2500.png',
+    thumbnailUrl: '/maps/thumbnails/MapaEscolar001_Antartida_2000x2500.png',
     imagePath: '/maps/MapaEscolar001_Antartida_2000x2500.png',
     imageUrl: 'https://mapasescolares.ign.gob.ar/images/mapas/MapaEscolar001_Antartida_2000x2500.png',
     category: 'otros'
@@ -34,7 +34,7 @@ export const mapsCatalog = [
   {
     id: 'malvinas',
     name: 'Islas Malvinas',
-    thumbnailUrl: '/maps/MapaEscolar021_IslasMalvinas_2500x2000.png',
+    thumbnailUrl: '/maps/thumbnails/MapaEscolar021_IslasMalvinas_2500x2000.png',
     imagePath: '/maps/MapaEscolar021_IslasMalvinas_2500x2000.png',
     imageUrl: 'https://mapasescolares.ign.gob.ar/images/mapas/MapaEscolar021_IslasMalvinas_2500x2000.png',
     category: 'otros'
@@ -42,7 +42,7 @@ export const mapsCatalog = [
   {
     id: 'amba',
     name: 'AMBA - Área Metropolitana Buenos Aires',
-    thumbnailUrl: '/maps/MapaEscolar000_AMBA_2000x2500.png',
+    thumbnailUrl: '/maps/thumbnails/MapaEscolar000_AMBA_2000x2500.png',
     imagePath: '/maps/MapaEscolar000_AMBA_2000x2500.png',
     imageUrl: 'https://mapasescolares.ign.gob.ar/images/mapas/MapaEscolar000_AMBA_2000x2500.png',
     category: 'otros'
@@ -50,7 +50,7 @@ export const mapsCatalog = [
   {
     id: 'buenos-aires',
     name: 'Provincia de Buenos Aires',
-    thumbnailUrl: '/maps/MapaEscolar002_BsAs_2000x2500.png',
+    thumbnailUrl: '/maps/thumbnails/MapaEscolar002_BsAs_2000x2500.png',
     imagePath: '/maps/MapaEscolar002_BsAs_2000x2500.png',
     imageUrl: 'https://mapasescolares.ign.gob.ar/images/mapas/MapaEscolar002_BsAs_2000x2500.png',
     category: 'provincia'
@@ -58,7 +58,7 @@ export const mapsCatalog = [
   {
     id: 'cordoba',
     name: 'Provincia de Córdoba',
-    thumbnailUrl: '/maps/MapaEscolar005_Cordoba_2000x2500.png',
+    thumbnailUrl: '/maps/thumbnails/MapaEscolar005_Cordoba_2000x2500.png',
     imagePath: '/maps/MapaEscolar005_Cordoba_2000x2500.png',
     imageUrl: 'https://mapasescolares.ign.gob.ar/images/mapas/MapaEscolar005_Cordoba_2000x2500.png',
     category: 'provincia',
@@ -66,7 +66,7 @@ export const mapsCatalog = [
   {
     id: 'santa-fe',
     name: 'Provincia de Santa Fe',
-    thumbnailUrl: '/maps/MapaEscolar014_SantaFe_2000x2500.png',
+    thumbnailUrl: '/maps/thumbnails/MapaEscolar014_SantaFe_2000x2500.png',
     imagePath: '/maps/MapaEscolar014_SantaFe_2000x2500.png',
     imageUrl: 'https://mapasescolares.ign.gob.ar/images/mapas/MapaEscolar014_SantaFe_2000x2500.png',
     category: 'provincia',
@@ -74,7 +74,7 @@ export const mapsCatalog = [
   {
     id: 'caba',
     name: 'Ciudad Autónoma de Buenos Aires',
-    thumbnailUrl: '/maps/MapaEscolar018_CABA_2000x2500.png',
+    thumbnailUrl: '/maps/thumbnails/MapaEscolar018_CABA_2000x2500.png',
     imagePath: '/maps/MapaEscolar018_CABA_2000x2500.png',
     imageUrl: 'https://mapasescolares.ign.gob.ar/images/mapas/MapaEscolar018_CABA_2000x2500.png',
     category: 'provincia',
@@ -82,7 +82,7 @@ export const mapsCatalog = [
   {
     id: 'jujuy',
     name: 'Provincia de Jujuy',
-    thumbnailUrl: '/maps/MapaEscolar022_Jujuy_2500x2000.png',
+    thumbnailUrl: '/maps/thumbnails/MapaEscolar022_Jujuy_2500x2000.png',
     imagePath: '/maps/MapaEscolar022_Jujuy_2500x2000.png',
     imageUrl: 'https://mapasescolares.ign.gob.ar/images/mapas/MapaEscolar022_Jujuy_2500x2000.png',
     category: 'provincia',
@@ -90,7 +90,7 @@ export const mapsCatalog = [
   {
     id: 'salta',
     name: 'Provincia de Salta',
-    thumbnailUrl: '/maps/MapaEscolar023_Salta_2500x2000.png',
+    thumbnailUrl: '/maps/thumbnails/MapaEscolar023_Salta_2500x2000.png',
     imagePath: '/maps/MapaEscolar023_Salta_2500x2000.png',
     imageUrl: 'https://mapasescolares.ign.gob.ar/images/mapas/MapaEscolar023_Salta_2500x2000.png',
     category: 'provincia',
@@ -98,7 +98,7 @@ export const mapsCatalog = [
   {
     id: 'mendoza',
     name: 'Provincia de Mendoza',
-    thumbnailUrl: '/maps/MapaEscolar009_Mendoza_2000x2500.png',
+    thumbnailUrl: '/maps/thumbnails/MapaEscolar009_Mendoza_2000x2500.png',
     imagePath: '/maps/MapaEscolar009_Mendoza_2000x2500.png',
     imageUrl: 'https://mapasescolares.ign.gob.ar/images/mapas/MapaEscolar009_Mendoza_2000x2500.png',
     category: 'provincia',
@@ -106,7 +106,7 @@ export const mapsCatalog = [
   {
     id: 'misiones',
     name: 'Provincia de Misiones',
-    thumbnailUrl: '/maps/MapaEscolar010_Misiones_2000x2500.png',
+    thumbnailUrl: '/maps/thumbnails/MapaEscolar010_Misiones_2000x2500.png',
     imagePath: '/maps/MapaEscolar010_Misiones_2000x2500.png',
     imageUrl: 'https://mapasescolares.ign.gob.ar/images/mapas/MapaEscolar010_Misiones_2000x2500.png',
     category: 'provincia',
@@ -114,7 +114,7 @@ export const mapsCatalog = [
   {
     id: 'tierra-del-fuego',
     name: 'Provincia de Tierra del Fuego',
-    thumbnailUrl: '/maps/MapaEscolar000_TIerraDelFuego_2000x2500.png',
+    thumbnailUrl: '/maps/thumbnails/MapaEscolar000_TIerraDelFuego_2000x2500.png',
     imagePath: '/maps/MapaEscolar000_TIerraDelFuego_2000x2500.png',
     imageUrl: 'https://mapasescolares.ign.gob.ar/images/mapas/MapaEscolar000_TIerraDelFuego_2000x2500.png',
     category: 'provincia',
@@ -122,7 +122,7 @@ export const mapsCatalog = [
   {
     id: 'corrientes',
     name: 'Provincia de Corrientes',
-    thumbnailUrl: '/maps/MapaEscolar019_Corrientes_2500x2000.png',
+    thumbnailUrl: '/maps/thumbnails/MapaEscolar019_Corrientes_2500x2000.png',
     imagePath: '/maps/MapaEscolar019_Corrientes_2500x2000.png',
     imageUrl: 'https://mapasescolares.ign.gob.ar/images/mapas/MapaEscolar019_Corrientes_2500x2000.png',
     category: 'provincia',
@@ -130,7 +130,7 @@ export const mapsCatalog = [
   {
     id: 'chaco',
     name: 'Provincia del Chaco',
-    thumbnailUrl: '/maps/MapaEscolar004_Chaco_2000x2500.png',
+    thumbnailUrl: '/maps/thumbnails/MapaEscolar004_Chaco_2000x2500.png',
     imagePath: '/maps/MapaEscolar004_Chaco_2000x2500.png',
     imageUrl: 'https://mapasescolares.ign.gob.ar/images/mapas/MapaEscolar004_Chaco_2000x2500.png',
     category: 'provincia',
@@ -138,7 +138,7 @@ export const mapsCatalog = [
   {
     id: 'formosa',
     name: 'Provincia de Formosa',
-    thumbnailUrl: '/maps/MapaEscolar020_Formosa_2500x2000.png',
+    thumbnailUrl: '/maps/thumbnails/MapaEscolar020_Formosa_2500x2000.png',
     imagePath: '/maps/MapaEscolar020_Formosa_2500x2000.png',
     imageUrl: 'https://mapasescolares.ign.gob.ar/images/mapas/MapaEscolar020_Formosa_2500x2000.png',
     category: 'provincia',
@@ -146,7 +146,7 @@ export const mapsCatalog = [
   {
     id: 'santiago-del-estero',
     name: 'Provincia de Santiago del Estero',
-    thumbnailUrl: '/maps/MapaEscolar016_SantiagoDelEstero_2000x2500.png',
+    thumbnailUrl: '/maps/thumbnails/MapaEscolar016_SantiagoDelEstero_2000x2500.png',
     imagePath: '/maps/MapaEscolar016_SantiagoDelEstero_2000x2500.png',
     imageUrl: 'https://mapasescolares.ign.gob.ar/images/mapas/MapaEscolar016_SantiagoDelEstero_2000x2500.png',
     category: 'provincia',
@@ -154,7 +154,7 @@ export const mapsCatalog = [
   {
     id: 'tucuman',
     name: 'Provincia de Tucumán',
-    thumbnailUrl: '/maps/MapaEscolar017_Tucuman_2000x2500.png ',
+    thumbnailUrl: '/maps/thumbnails/MapaEscolar017_Tucuman_2000x2500.png ',
     imagePath: '/maps/MapaEscolar017_Tucuman_2000x2500.png',
     imageUrl: 'https://mapasescolares.ign.gob.ar/images/mapas/MapaEscolar017_Tucuman_2000x2500.png',
     category: 'provincia',
@@ -162,7 +162,7 @@ export const mapsCatalog = [
   {
     id: 'catamarca',
     name: 'Provincia de Catamarca',
-    thumbnailUrl: '/maps/MapaEscolar003_Catamarca_2000x2500.png',
+    thumbnailUrl: '/maps/thumbnails/MapaEscolar003_Catamarca_2000x2500.png',
     imagePath: '/maps/MapaEscolar003_Catamarca_2000x2500.png',
     imageUrl: 'https://mapasescolares.ign.gob.ar/images/mapas/MapaEscolar003_Catamarca_2000x2500.png',
     category: 'provincia',
@@ -170,7 +170,7 @@ export const mapsCatalog = [
   {
     id: 'la-rioja',
     name: 'Provincia de La Rioja',
-    thumbnailUrl: '/maps/MapaEscolar008_LaRioja_2000x2500.png',
+    thumbnailUrl: '/maps/thumbnails/MapaEscolar008_LaRioja_2000x2500.png',
     imagePath: '/maps/MapaEscolar008_LaRioja_2000x2500.png',
     imageUrl: 'https://mapasescolares.ign.gob.ar/images/mapas/MapaEscolar008_LaRioja_2000x2500.png',
     category: 'provincia',
@@ -178,7 +178,7 @@ export const mapsCatalog = [
   {
     id: 'san-juan',
     name: 'Provincia de San Juan',
-    thumbnailUrl: '/maps/MapaEscolar012_SanJuan_2000x2500.png',
+    thumbnailUrl: '/maps/thumbnails/MapaEscolar012_SanJuan_2000x2500.png',
     imagePath: '/maps/MapaEscolar012_SanJuan_2000x2500.png',
     imageUrl: 'https://mapasescolares.ign.gob.ar/images/mapas/MapaEscolar012_SanJuan_2000x2500.png',
     category: 'provincia',
@@ -186,7 +186,7 @@ export const mapsCatalog = [
   {
     id: 'san-luis',
     name: 'Provincia de San Luis',
-    thumbnailUrl: '/maps/MapaEscolar013_SanLuis_2000x2500.png',
+    thumbnailUrl: '/maps/thumbnails/MapaEscolar013_SanLuis_2000x2500.png',
     imagePath: '/maps/MapaEscolar013_SanLuis_2000x2500.png',
     imageUrl: 'https://mapasescolares.ign.gob.ar/images/mapas/MapaEscolar013_SanLuis_2000x2500.png',
     category: 'provincia',
@@ -194,7 +194,7 @@ export const mapsCatalog = [
   {
     id: 'neuquen',
     name: 'Provincia de Neuquén',
-    thumbnailUrl: '/maps/MapaEscolar011_Neuquén_2000x2500.png',
+    thumbnailUrl: '/maps/thumbnails/MapaEscolar011_Neuquén_2000x2500.png',
     imagePath: '/maps/MapaEscolar011_Neuquén_2000x2500.png',
     imageUrl: 'https://mapasescolares.ign.gob.ar/images/mapas/MapaEscolar011_Neuquén_2000x2500.png',
     category: 'provincia',
@@ -202,7 +202,7 @@ export const mapsCatalog = [
   {
     id: 'rio-negro',
     name: 'Provincia de Río Negro',
-    thumbnailUrl: '/maps/MapaEscolar023_RioNegro_2500x2000.png',
+    thumbnailUrl: '/maps/thumbnails/MapaEscolar023_RioNegro_2500x2000.png',
     imagePath: '/maps/MapaEscolar023_RioNegro_2500x2000.png',
     imageUrl: 'https://mapasescolares.ign.gob.ar/images/mapas/MapaEscolar023_RioNegro_2500x2000.png',
     category: 'provincia',
@@ -210,7 +210,7 @@ export const mapsCatalog = [
   {
     id: 'chubut',
     name: 'Provincia de Chubut',
-    thumbnailUrl: '/maps/MapaEscolar018_Chubut_2500x2000.png',
+    thumbnailUrl: '/maps/thumbnails/MapaEscolar018_Chubut_2500x2000.png',
     imagePath: '/maps/MapaEscolar018_Chubut_2500x2000.png',
     imageUrl: 'https://mapasescolares.ign.gob.ar/images/mapas/MapaEscolar018_Chubut_2500x2000.png',
     category: 'provincia',
@@ -218,7 +218,7 @@ export const mapsCatalog = [
   {
     id: 'santa-cruz',
     name: 'Provincia de Santa Cruz',
-    thumbnailUrl: '/maps/MapaEscolar015_SantaCruz_2000x2500.png',
+    thumbnailUrl: '/maps/thumbnails/MapaEscolar015_SantaCruz_2000x2500.png',
     imagePath: '/maps/MapaEscolar015_SantaCruz_2000x2500.png',
     imageUrl: 'https://mapasescolares.ign.gob.ar/images/mapas/MapaEscolar015_SantaCruz_2000x2500.png',
     category: 'provincia',
@@ -226,7 +226,7 @@ export const mapsCatalog = [
   {
     id: 'entre-rios',
     name: 'Provincia de Entre Ríos',
-    thumbnailUrl: '/maps/MapaEscolar006_EntreRios_2000x2500.png',
+    thumbnailUrl: '/maps/thumbnails/MapaEscolar006_EntreRios_2000x2500.png',
     imagePath: '/maps/MapaEscolar006_EntreRios_2000x2500.png',
     imageUrl: 'https://mapasescolares.ign.gob.ar/images/mapas/MapaEscolar006_EntreRios_2000x2500.png',
     category: 'provincia',
@@ -234,7 +234,7 @@ export const mapsCatalog = [
   {
     id: 'la-pampa',
     name: 'Provincia de La Pampa',
-    thumbnailUrl: '/maps/MapaEscolar007_LaPampa_2000x2500.png',
+    thumbnailUrl: '/maps/thumbnails/MapaEscolar007_LaPampa_2000x2500.png',
     imagePath: '/maps/MapaEscolar007_LaPampa_2000x2500.png',
     imageUrl: 'https://mapasescolares.ign.gob.ar/images/mapas/MapaEscolar007_LaPampa_2000x2500.png',
     category: 'provincia',
