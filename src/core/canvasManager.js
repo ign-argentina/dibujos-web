@@ -1,4 +1,4 @@
-import { Canvas, FabricImage, Rect, Circle, Textbox, Path, PencilBrush, util } from 'fabric'
+import { Canvas, FabricImage, Rect, Circle, Textbox, Path, PencilBrush, util, loadSVGFromURL } from 'fabric'
 
 export class CanvasManager {
   constructor(container, options = {}) {
@@ -165,7 +165,11 @@ export class CanvasManager {
       top: top,
     })
 
-    this.canvas.setViewportTransform([1, 0, 0, 1, 0, 0])
+    const zoom = 0.8
+    const xOffset = (canvasWidth - canvasWidth * zoom) / 2
+    const yOffset = (canvasHeight - canvasHeight * zoom) / 2
+
+    this.canvas.setViewportTransform([zoom, 0, 0, zoom, xOffset, yOffset])
     this.canvas.requestRenderAll()
   }
 
@@ -283,6 +287,8 @@ export class CanvasManager {
           activeObject.set({ fill: color })
         } else if (activeObject instanceof Path && activeObject.fill === 'transparent') {
           activeObject.set({ stroke: color })
+        } else if (activeObject.type === 'group' || activeObject.getObjects) {
+          this.colorSVGGroup(activeObject, color)
         } else {
           activeObject.set({ fill: color, stroke: color })
         }
@@ -399,6 +405,28 @@ export class CanvasManager {
     this.canvas.fire('object:modified')
   }
 
+  addPin() {
+    if (!this.canvas) return
+    const center = this.getViewportCenter()
+
+    // Crear un pin/marcador neo-brutalista (gota invertida con un círculo central calado)
+    const pin = new Path('M 0 0 C -12 -13 -18 -24 -18 -34 A 18 18 0 1 1 18 -34 C 18 -24 12 -13 0 0 Z M 0 -40 A 6 6 0 1 0 0 -28 A 6 6 0 1 0 0 -40 Z', {
+      left: center.left,
+      top: center.top,
+      fill: this.activeColor,
+      stroke: '#000000',
+      strokeWidth: 3,
+      originX: 'center',
+      originY: 'bottom', // El extremo inferior del marcador coincide con el punto del mapa
+      opacity: 0.9,
+    })
+
+    this.canvas.add(pin)
+    this.canvas.setActiveObject(pin)
+    this.canvas.requestRenderAll()
+    this.canvas.fire('object:modified')
+  }
+
   deleteSelected() {
     if (!this.canvas) return
     const activeObject = this.canvas.getActiveObject()
@@ -488,5 +516,64 @@ export class CanvasManager {
       this.canvas.dispose()
       this.canvas = null
     }
+  }
+
+  async addSticker(url) {
+    if (!this.canvas) return
+    const center = this.getViewportCenter()
+
+    try {
+      const { objects, options } = await loadSVGFromURL(url)
+      const stickerGroup = util.groupSVGElements(objects, options)
+
+      stickerGroup.set({
+        left: center.left,
+        top: center.top,
+        originX: 'center',
+        originY: 'center',
+        cornerColor: '#000000',
+        transparentCorners: false,
+        cornerSize: 10,
+        borderColor: '#000000',
+        borderScaleFactor: 2,
+        hasRotatingPoint: true,
+      })
+
+      // Escalar el sticker para que tenga un tamaño inicial óptimo de 100px max
+      const scale = Math.min(100 / stickerGroup.width, 100 / stickerGroup.height, 1)
+      stickerGroup.scale(scale)
+
+      // Colorear el sticker con el color activo
+      this.colorSVGGroup(stickerGroup, this.activeColor)
+
+      this.canvas.add(stickerGroup)
+      this.canvas.setActiveObject(stickerGroup)
+      this.canvas.requestRenderAll()
+      this.canvas.fire('object:modified')
+      return stickerGroup
+    } catch (err) {
+      console.error('Error cargando sticker en el canvas:', err)
+    }
+  }
+
+  colorSVGGroup(group, color) {
+    if (!group) return
+
+    const setElementColor = (el) => {
+      if (el.getObjects) {
+        el.getObjects().forEach((child) => setElementColor(child))
+      } else {
+        // Colorear rellenos existentes y trazos que no sean transparentes
+        if (el.fill && el.fill !== 'none' && el.fill !== 'transparent') {
+          el.set({ fill: color })
+        }
+        if (el.stroke && el.stroke !== 'none' && el.stroke !== 'transparent') {
+          el.set({ stroke: color })
+        }
+      }
+    }
+
+    setElementColor(group)
+    this.canvas.requestRenderAll()
   }
 }

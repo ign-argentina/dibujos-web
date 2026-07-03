@@ -3,6 +3,7 @@ import { mapsCatalog } from './config/mapsCatalog.js'
 import { appState } from './state/appState.js'
 import { CanvasManager } from './core/canvasManager.js'
 import { MapSelector } from './components/MapSelector.js'
+import { stickersCatalog } from './config/stickersCatalog.js'
 
 // Inicializar Lucide Icons
 if (window.lucide) {
@@ -154,6 +155,12 @@ document.getElementById('tool-text').addEventListener('click', () => {
   updateActiveToolUI('select')
 })
 
+document.getElementById('tool-pin').addEventListener('click', () => {
+  canvasManager.addPin()
+  canvasManager.setTool('select')
+  updateActiveToolUI('select')
+})
+
 // Borrado de objetos y Limpieza
 document.getElementById('tool-delete').addEventListener('click', () => {
   canvasManager.deleteSelected()
@@ -164,26 +171,192 @@ document.getElementById('tool-clear').addEventListener('click', () => {
 })
 
 // --- INTERACTIVIDAD DEL PANEL DE ESTILOS ---
-const colorChips = document.querySelectorAll('.nbi-color-chip')
+const colorChipsContainer = document.getElementById('color-chips-container')
 const strokeSlider = document.getElementById('stroke-slider')
 const strokeValueDisplay = document.getElementById('stroke-value-display')
+const customColorBtn = document.getElementById('custom-color-btn')
 
-// Cambiar color
-colorChips.forEach((chip) => {
-  chip.addEventListener('click', () => {
-    colorChips.forEach((c) => c.classList.remove('is-active'))
-    chip.classList.add('is-active')
-    
-    const selectedColor = chip.getAttribute('data-color')
-    canvasManager.setActiveColor(selectedColor)
+// Modal de Color Personalizado
+const customColorModal = document.getElementById('custom-color-modal')
+const closeColorModalBtn = document.getElementById('close-color-modal-btn')
+const confirmCustomColorBtn = document.getElementById('confirm-custom-color')
+
+const hueInput = document.getElementById('color-hue')
+const satInput = document.getElementById('color-saturation')
+const lightInput = document.getElementById('color-lightness')
+
+const hueVal = document.getElementById('hue-val')
+const satVal = document.getElementById('sat-val')
+const lightVal = document.getElementById('light-val')
+const colorPreviewBox = document.getElementById('color-preview-box')
+
+let customColors = [] // Almacena hasta 5 colores personalizados en HEX
+
+function hslToHex(h, s, l) {
+  l /= 100
+  const a = (s * Math.min(l, 1 - l)) / 100
+  const f = (n) => {
+    const k = (n + h / 30) % 12
+    const color = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1)
+    return Math.round(255 * color).toString(16).padStart(2, '0')
+  }
+  return `#${f(0)}${f(8)}${f(4)}`.toUpperCase()
+}
+
+function updateModalColorPreview() {
+  const h = parseInt(hueInput.value, 10)
+  const s = parseInt(satInput.value, 10)
+  const l = parseInt(lightInput.value, 10)
+  
+  hueVal.textContent = `${h}°`
+  satVal.textContent = `${s}%`
+  lightVal.textContent = `${l}%`
+  
+  colorPreviewBox.style.backgroundColor = `hsl(${h}, ${s}%, ${l}%)`
+}
+
+function selectColor(color, activeChip) {
+  // Remover clase activa de todos los chips existentes
+  colorChipsContainer.querySelectorAll('.nbi-color-chip').forEach((c) => {
+    c.classList.remove('is-active')
   })
+  
+  if (activeChip) {
+    activeChip.classList.add('is-active')
+  }
+  
+  canvasManager.setActiveColor(color)
+}
+
+// Delegación de eventos en el contenedor de chips
+colorChipsContainer.addEventListener('click', (e) => {
+  const chip = e.target.closest('.nbi-color-chip')
+  if (chip) {
+    const color = chip.getAttribute('data-color')
+    selectColor(color, chip)
+  }
 })
+
+// Abrir modal de color personalizado
+customColorBtn.addEventListener('click', () => {
+  customColorModal.classList.remove('hidden')
+  updateModalColorPreview()
+})
+
+// Cerrar modal
+closeColorModalBtn.addEventListener('click', () => {
+  customColorModal.classList.add('hidden')
+})
+
+// Deslizadores de HSL
+hueInput.addEventListener('input', updateModalColorPreview)
+satInput.addEventListener('input', updateModalColorPreview)
+lightInput.addEventListener('input', updateModalColorPreview)
+
+// Confirmar color personalizado
+confirmCustomColorBtn.addEventListener('click', () => {
+  const h = parseInt(hueInput.value, 10)
+  const s = parseInt(satInput.value, 10)
+  const l = parseInt(lightInput.value, 10)
+  const hexColor = hslToHex(h, s, l)
+
+  // Si ya existía, lo quitamos de la lista para empujarlo al final (el más reciente)
+  customColors = customColors.filter((c) => c !== hexColor)
+  customColors.push(hexColor)
+
+  // Mantener como máximo 5 colores personalizados
+  if (customColors.length > 5) {
+    customColors.shift()
+  }
+
+  // Volver a renderizar chips personalizados
+  renderCustomChips()
+
+  // Seleccionar la ficha recién creada
+  const targetChip = colorChipsContainer.querySelector(`.nbi-color-chip[data-color="${hexColor}"]`)
+  selectColor(hexColor, targetChip)
+
+  // Cerrar modal
+  customColorModal.classList.add('hidden')
+})
+
+function renderCustomChips() {
+  // Eliminar fichas personalizadas anteriores
+  colorChipsContainer.querySelectorAll('.nbi-color-chip.is-custom-chip').forEach((c) => c.remove())
+
+  // Insertar antes de la ficha negra (#000000)
+  const blackChip = colorChipsContainer.querySelector('.nbi-color-chip[data-color="#000000"]')
+  
+  customColors.forEach((color) => {
+    const chip = document.createElement('div')
+    chip.className = 'nbi-color-chip is-custom-chip'
+    chip.style.backgroundColor = color
+    chip.setAttribute('data-color', color)
+    chip.setAttribute('title', `Personalizado: ${color}`)
+    chip.setAttribute('aria-label', `Color personalizado ${color}`)
+    
+    if (blackChip) {
+      colorChipsContainer.insertBefore(chip, blackChip)
+    } else {
+      colorChipsContainer.appendChild(chip)
+    }
+  })
+}
 
 // Cambiar grosor de trazo
 strokeSlider.addEventListener('input', (e) => {
   const width = e.target.value
   strokeValueDisplay.textContent = `${width}px`
   canvasManager.setActiveStrokeWidth(width)
+})
+
+// --- INTERACTIVIDAD Y GENERACIÓN DEL PANEL DE STICKERS ---
+const stickersContainer = document.getElementById('stickers-container')
+const stickersPanel = document.getElementById('stickers-panel')
+const toggleStickersBtn = document.getElementById('toggle-stickers-btn')
+
+// Colapsar / expandir el panel
+toggleStickersBtn.addEventListener('click', () => {
+  stickersPanel.classList.toggle('is-collapsed')
+  const icon = toggleStickersBtn.querySelector('i')
+  if (stickersPanel.classList.contains('is-collapsed')) {
+    toggleStickersBtn.setAttribute('title', 'Expandir Panel')
+    toggleStickersBtn.setAttribute('aria-label', 'Expandir panel de stickers')
+    if (icon) {
+      icon.setAttribute('data-lucide', 'chevron-up')
+    }
+  } else {
+    toggleStickersBtn.setAttribute('title', 'Colapsar Panel')
+    toggleStickersBtn.setAttribute('aria-label', 'Colapsar panel de stickers')
+    if (icon) {
+      icon.setAttribute('data-lucide', 'chevron-down')
+    }
+  }
+  if (window.lucide) {
+    window.lucide.createIcons()
+  }
+})
+
+// Generar stickers dinámicamente
+stickersCatalog.forEach((name) => {
+  const item = document.createElement('button')
+  item.className = 'nbi-sticker-item'
+  item.setAttribute('title', `Agregar sticker de ${name.replace(/-/g, ' ')}`)
+  item.setAttribute('aria-label', `Agregar sticker de ${name.replace(/-/g, ' ')}`)
+  
+  const img = document.createElement('img')
+  img.src = `/stickers/${name}.svg`
+  img.alt = name
+  img.className = 'nbi-sticker-img'
+  img.setAttribute('loading', 'lazy')
+  
+  item.appendChild(img)
+  
+  item.addEventListener('click', () => {
+    canvasManager.addSticker(`/stickers/${name}.svg`)
+  })
+  
+  stickersContainer.appendChild(item)
 })
 
 // --- ACCIONES DEL SISTEMA (DESCARGA DE PNG) ---
