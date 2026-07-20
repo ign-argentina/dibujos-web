@@ -483,6 +483,40 @@ body {
   transform: scale(1.1);
 }
 
+.nbi-color-picker-input {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 38px;
+  border: 3px solid var(--nbi-black);
+  border-radius: var(--nbi-radius-teen);
+  background-color: var(--nbi-white);
+  cursor: pointer;
+  padding: 2px 4px;
+  box-shadow: 3px 3px 0px 0px var(--nbi-black);
+  transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.2s ease;
+}
+
+.nbi-color-picker-input::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+.nbi-color-picker-input::-webkit-color-swatch {
+  border: 2px solid var(--nbi-black);
+  border-radius: 4px;
+}
+
+.nbi-color-picker-input::-moz-color-swatch {
+  border: 2px solid var(--nbi-black);
+  border-radius: 4px;
+}
+
+.nbi-color-picker-input:hover {
+  transform: translateY(-1px);
+  box-shadow: 4px 4px 0px 0px var(--nbi-black);
+}
+
 .nbi-color-chip.is-active {
   transform: scale(1.1);
   box-shadow: 0px 0px 0px 3px var(--nbi-white), 0px 0px 0px 6px var(--nbi-black);
@@ -847,102 +881,4 @@ body {
 
 .nbi-sticker-item:hover .nbi-sticker-img {
   filter: grayscale(1) brightness(0.1);
-}
-
-/* --- MODAL DE COLOR PERSONALIZADO (NEO-BRUTALISTA) --- */
-.nbi-modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-color: rgba(0, 0, 0, 0.4);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-  backdrop-filter: blur(4px);
-  transition: opacity 0.3s ease;
-}
-
-.nbi-color-modal-content {
-  position: relative !important;
-  top: auto !important;
-  left: auto !important;
-  width: 320px;
-  background-color: var(--nbi-grey);
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  animation: modalPop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-
-@keyframes modalPop {
-  0% {
-    transform: scale(0.9) translateY(20px);
-    opacity: 0;
-  }
-  100% {
-    transform: scale(1) translateY(0);
-    opacity: 1;
-  }
-}
-
-.nbi-modal-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  border-bottom: 3px solid var(--nbi-black);
-  padding-bottom: 8px;
-}
-
-.nbi-modal-title {
-  font-size: 1.2rem;
-  font-weight: 700;
-}
-
-.nbi-modal-body {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.nbi-color-preview-box {
-  width: 100%;
-  height: 80px;
-  border: 3px solid var(--nbi-black);
-  border-radius: var(--nbi-radius-teen);
-  box-shadow: 4px 4px 0px 0px var(--nbi-black);
-  transition: background-color 0.1s ease;
-}
-
-.nbi-color-sliders {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.nbi-slider-control {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.nbi-slider-label-container {
-  display: flex;
-  justify-content: space-between;
-  font-weight: 600;
-  font-size: 0.85rem;
-}
-
-.nbi-slider-val {
-  font-weight: 700;
-  color: var(--nbi-black);
-}
-
-.nbi-modal-footer {
-  display: flex;
-  border-top: 3px solid var(--nbi-black);
-  padding-top: 14px;
-  margin-top: 4px;
 }

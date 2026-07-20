@@ -174,46 +174,9 @@ document.getElementById('tool-clear').addEventListener('click', () => {
 const colorChipsContainer = document.getElementById('color-chips-container')
 const strokeSlider = document.getElementById('stroke-slider')
 const strokeValueDisplay = document.getElementById('stroke-value-display')
-const customColorBtn = document.getElementById('custom-color-btn')
-
-// Modal de Color Personalizado
-const customColorModal = document.getElementById('custom-color-modal')
-const closeColorModalBtn = document.getElementById('close-color-modal-btn')
-const confirmCustomColorBtn = document.getElementById('confirm-custom-color')
-
-const hueInput = document.getElementById('color-hue')
-const satInput = document.getElementById('color-saturation')
-const lightInput = document.getElementById('color-lightness')
-
-const hueVal = document.getElementById('hue-val')
-const satVal = document.getElementById('sat-val')
-const lightVal = document.getElementById('light-val')
-const colorPreviewBox = document.getElementById('color-preview-box')
+const customColorPicker = document.getElementById('custom-color-picker')
 
 let customColors = [] // Almacena hasta 5 colores personalizados en HEX
-
-function hslToHex(h, s, l) {
-  l /= 100
-  const a = (s * Math.min(l, 1 - l)) / 100
-  const f = (n) => {
-    const k = (n + h / 30) % 12
-    const color = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1)
-    return Math.round(255 * color).toString(16).padStart(2, '0')
-  }
-  return `#${f(0)}${f(8)}${f(4)}`.toUpperCase()
-}
-
-function updateModalColorPreview() {
-  const h = parseInt(hueInput.value, 10)
-  const s = parseInt(satInput.value, 10)
-  const l = parseInt(lightInput.value, 10)
-  
-  hueVal.textContent = `${h}°`
-  satVal.textContent = `${s}%`
-  lightVal.textContent = `${l}%`
-  
-  colorPreviewBox.style.backgroundColor = `hsl(${h}, ${s}%, ${l}%)`
-}
 
 function selectColor(color, activeChip) {
   // Remover clase activa de todos los chips existentes
@@ -237,28 +200,9 @@ colorChipsContainer.addEventListener('click', (e) => {
   }
 })
 
-// Abrir modal de color personalizado
-customColorBtn.addEventListener('click', () => {
-  customColorModal.classList.remove('hidden')
-  updateModalColorPreview()
-})
-
-// Cerrar modal
-closeColorModalBtn.addEventListener('click', () => {
-  customColorModal.classList.add('hidden')
-})
-
-// Deslizadores de HSL
-hueInput.addEventListener('input', updateModalColorPreview)
-satInput.addEventListener('input', updateModalColorPreview)
-lightInput.addEventListener('input', updateModalColorPreview)
-
-// Confirmar color personalizado
-confirmCustomColorBtn.addEventListener('click', () => {
-  const h = parseInt(hueInput.value, 10)
-  const s = parseInt(satInput.value, 10)
-  const l = parseInt(lightInput.value, 10)
-  const hexColor = hslToHex(h, s, l)
+// Al cambiar el color en el picker nativo
+customColorPicker.addEventListener('change', (e) => {
+  const hexColor = e.target.value.toUpperCase()
 
   // Si ya existía, lo quitamos de la lista para empujarlo al final (el más reciente)
   customColors = customColors.filter((c) => c !== hexColor)
@@ -275,9 +219,6 @@ confirmCustomColorBtn.addEventListener('click', () => {
   // Seleccionar la ficha recién creada
   const targetChip = colorChipsContainer.querySelector(`.nbi-color-chip[data-color="${hexColor}"]`)
   selectColor(hexColor, targetChip)
-
-  // Cerrar modal
-  customColorModal.classList.add('hidden')
 })
 
 function renderCustomChips() {
