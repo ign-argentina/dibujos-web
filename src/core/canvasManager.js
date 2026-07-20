@@ -24,6 +24,12 @@ export class CanvasManager {
     this.activeColor = '#FFF4B0'
     this.activeStrokeWidth = 8
     this.activeTool = 'select'
+    this.onToolChange = null
+
+    // Estado de dibujo interactivo de figuras
+    this.isDrawingShape = false
+    this.drawStartPoint = null
+    this.previewShape = null
 
     // Prevenir el menú contextual para permitir arrastrar con botón derecho
     this.container.addEventListener('contextmenu', (e) => {
@@ -194,9 +200,15 @@ export class CanvasManager {
     window.addEventListener('keyup', (e) => {
       if (e.code === 'Space') {
         isSpacePressed = false
-        canvas.defaultCursor = 'default'
-        canvas.setCursor('default')
-        canvas.selection = true
+        if (this.activeTool === 'select') {
+          canvas.defaultCursor = 'default'
+          canvas.setCursor('default')
+          canvas.selection = true
+        } else if (['rect', 'circle', 'arrow', 'text', 'pin'].includes(this.activeTool)) {
+          canvas.defaultCursor = 'crosshair'
+          canvas.setCursor('crosshair')
+          canvas.selection = false
+        }
       }
     })
 
@@ -226,6 +238,11 @@ export class CanvasManager {
         lastPosY = e.clientY
         canvas.defaultCursor = 'grabbing'
         canvas.setCursor('grabbing')
+        return
+      }
+
+      if (['rect', 'circle', 'arrow', 'text', 'pin'].includes(this.activeTool) && (e.button === 0 || !e.button)) {
+        this.startShapeDrawing(opt)
       }
     })
 
@@ -241,15 +258,33 @@ export class CanvasManager {
 
         lastPosX = e.clientX
         lastPosY = e.clientY
+        return
+      }
+
+      if (this.isDrawingShape) {
+        this.updateShapeDrawing(opt)
       }
     })
 
-    canvas.on('mouse:up', () => {
-      isDragging = false
-      canvas.defaultCursor = isSpacePressed ? 'grab' : 'default'
-      canvas.setCursor(canvas.defaultCursor)
-      if (!isSpacePressed) {
-        canvas.selection = true
+    canvas.on('mouse:up', (opt) => {
+      if (isDragging) {
+        isDragging = false
+        if (isSpacePressed) {
+          canvas.defaultCursor = 'grab'
+        } else if (['rect', 'circle', 'arrow', 'text', 'pin'].includes(this.activeTool)) {
+          canvas.defaultCursor = 'crosshair'
+        } else {
+          canvas.defaultCursor = 'default'
+        }
+        canvas.setCursor(canvas.defaultCursor)
+        if (!isSpacePressed && this.activeTool === 'select') {
+          canvas.selection = true
+        }
+        return
+      }
+
+      if (this.isDrawingShape) {
+        this.finishShapeDrawing(opt)
       }
     })
   }
@@ -271,8 +306,20 @@ export class CanvasManager {
     if (tool === 'brush') {
       this.canvas.isDrawingMode = true
       this.configureDrawingBrush()
-    } else {
+      this.canvas.defaultCursor = 'default'
+      this.canvas.setCursor('default')
+      this.canvas.selection = false
+    } else if (['rect', 'circle', 'arrow', 'text', 'pin'].includes(tool)) {
       this.canvas.isDrawingMode = false
+      this.canvas.selection = false
+      this.canvas.defaultCursor = 'crosshair'
+      this.canvas.setCursor('crosshair')
+    } else {
+      this.activeTool = 'select'
+      this.canvas.isDrawingMode = false
+      this.canvas.selection = true
+      this.canvas.defaultCursor = 'default'
+      this.canvas.setCursor('default')
     }
   }
 
@@ -309,6 +356,298 @@ export class CanvasManager {
         this.canvas.requestRenderAll()
         this.canvas.fire('object:modified')
       }
+    }
+  }
+
+  // --- DIBUJO INTERACTIVO EN TIEMPO REAL (CLICK & DRAG) ---
+
+  createArrowPath(x1, y1, x2, y2) {
+    const dx = x2 - x1
+    const dy = y2 - y1
+    const dist = Math.hypot(dx, dy)
+
+    if (dist < 1e-4) {
+      return `M ${x1} ${y1} L ${x1 + 1} ${y1}`
+    }
+
+    const angle = Math.atan2(dy, dx)
+    const headLen = Math.min(Math.max(15, this.activeStrokeWidth * 2.5), Math.max(15, dist * 0.35))
+    const arrowAngle = Math.PI / 6
+
+    const x3 = x2 - headLen * Math.cos(angle - arrowAngle)
+    const y3 = y2 - headLen * Math.sin(angle - arrowAngle)
+    const x4 = x2 - headLen * Math.cos(angle + arrowAngle)
+    const y4 = y2 - headLen * Math.sin(angle + arrowAngle)
+
+    return `M ${x1} ${y1} L ${x2} ${y2} M ${x3} ${y3} L ${x2} ${y2} L ${x4} ${y4}`
+  }
+
+  startShapeDrawing(opt) {
+    if (!this.canvas) return
+    const pointer = this.canvas.getScenePoint(opt.e)
+    this.isDrawingShape = true
+    this.drawStartPoint = pointer
+
+    const x = pointer.x
+    const y = pointer.y
+
+    switch (this.activeTool) {
+      case 'rect':
+        this.previewShape = new Rect({
+          left: x,
+          top: y,
+          width: 1,
+          height: 1,
+          fill: this.activeColor,
+          stroke: this.activeColor,
+          strokeWidth: 2,
+          rx: 4,
+          ry: 4,
+          originX: 'left',
+          originY: 'top',
+          opacity: 0.7,
+          selectable: false,
+          evented: false,
+        })
+        break
+      case 'circle':
+        this.previewShape = new Circle({
+          left: x,
+          top: y,
+          radius: 1,
+          fill: this.activeColor,
+          stroke: this.activeColor,
+          strokeWidth: 2,
+          originX: 'left',
+          originY: 'top',
+          opacity: 0.7,
+          selectable: false,
+          evented: false,
+        })
+        break
+      case 'arrow':
+        this.previewShape = new Path(this.createArrowPath(x, y, x + 1, y + 1), {
+          stroke: this.activeColor,
+          strokeWidth: this.activeStrokeWidth,
+          fill: 'transparent',
+          strokeLineCap: 'round',
+          strokeLineJoin: 'round',
+          selectable: false,
+          evented: false,
+        })
+        break
+      case 'text':
+        this.previewShape = new Textbox('Escribí acá', {
+          left: x,
+          top: y,
+          fontFamily: 'Fredoka',
+          fontSize: 24,
+          fontWeight: '500',
+          fill: this.activeColor,
+          stroke: 'transparent',
+          originX: 'left',
+          originY: 'top',
+          textAlign: 'left',
+          width: 1,
+          selectable: false,
+          evented: false,
+        })
+        break
+      case 'pin':
+        this.previewShape = new Path('M 0 0 C -12 -13 -18 -24 -18 -34 A 18 18 0 1 1 18 -34 C 18 -24 12 -13 0 0 Z M 0 -40 A 6 6 0 1 0 0 -28 A 6 6 0 1 0 0 -40 Z', {
+          left: x,
+          top: y,
+          fill: this.activeColor,
+          stroke: '#000000',
+          strokeWidth: 3,
+          originX: 'center',
+          originY: 'bottom',
+          opacity: 0.9,
+          scaleX: 0.1,
+          scaleY: 0.1,
+          selectable: false,
+          evented: false,
+        })
+        break
+    }
+
+    if (this.previewShape) {
+      this.canvas.add(this.previewShape)
+      this.canvas.requestRenderAll()
+    }
+  }
+
+  updateShapeDrawing(opt) {
+    if (!this.isDrawingShape || !this.drawStartPoint || !this.previewShape) return
+
+    const pointer = this.canvas.getScenePoint(opt.e)
+    const startX = this.drawStartPoint.x
+    const startY = this.drawStartPoint.y
+    const currentX = pointer.x
+    const currentY = pointer.y
+
+    const deltaX = currentX - startX
+    const deltaY = currentY - startY
+
+    switch (this.activeTool) {
+      case 'rect': {
+        const left = Math.min(startX, currentX)
+        const top = Math.min(startY, currentY)
+        const width = Math.max(Math.abs(deltaX), 1)
+        const height = Math.max(Math.abs(deltaY), 1)
+        this.previewShape.set({ left, top, width, height })
+        break
+      }
+      case 'circle': {
+        const diameter = Math.max(Math.abs(deltaX), Math.abs(deltaY))
+        const radius = Math.max(diameter / 2, 1)
+        const left = Math.min(startX, currentX)
+        const top = Math.min(startY, currentY)
+        this.previewShape.set({ left, top, radius })
+        break
+      }
+      case 'arrow': {
+        this.canvas.remove(this.previewShape)
+        this.previewShape = new Path(this.createArrowPath(startX, startY, currentX, currentY), {
+          stroke: this.activeColor,
+          strokeWidth: this.activeStrokeWidth,
+          fill: 'transparent',
+          strokeLineCap: 'round',
+          strokeLineJoin: 'round',
+          selectable: false,
+          evented: false,
+        })
+        this.canvas.add(this.previewShape)
+        break
+      }
+      case 'text': {
+        const left = Math.min(startX, currentX)
+        const top = Math.min(startY, currentY)
+        const width = Math.max(Math.abs(deltaX), 120)
+        this.previewShape.set({ left, top, width })
+        break
+      }
+      case 'pin': {
+        const dist = Math.hypot(deltaX, deltaY)
+        const scale = Math.max(0.2, Math.min(3, dist / 50))
+        this.previewShape.set({ left: startX, top: startY, scaleX: scale, scaleY: scale })
+        break
+      }
+    }
+
+    this.canvas.requestRenderAll()
+  }
+
+  finishShapeDrawing(opt) {
+    if (!this.isDrawingShape || !this.drawStartPoint || !this.previewShape) return
+
+    const pointer = this.canvas.getScenePoint(opt.e)
+    const startX = this.drawStartPoint.x
+    const startY = this.drawStartPoint.y
+    const currentX = pointer.x
+    const currentY = pointer.y
+
+    const dist = Math.hypot(currentX - startX, currentY - startY)
+    const isClick = dist < 5
+
+    const toolWas = this.activeTool
+    const finalShape = this.previewShape
+
+    this.isDrawingShape = false
+    this.drawStartPoint = null
+    this.previewShape = null
+
+    if (isClick) {
+      switch (toolWas) {
+        case 'rect':
+          finalShape.set({
+            left: startX,
+            top: startY,
+            width: 140,
+            height: 100,
+            originX: 'center',
+            originY: 'center',
+          })
+          break
+        case 'circle':
+          finalShape.set({
+            left: startX,
+            top: startY,
+            radius: 60,
+            originX: 'center',
+            originY: 'center',
+          })
+          break
+        case 'arrow':
+          this.canvas.remove(finalShape)
+          const defaultArrow = new Path(this.createArrowPath(startX - 50, startY, startX + 50, startY), {
+            stroke: this.activeColor,
+            strokeWidth: this.activeStrokeWidth,
+            fill: 'transparent',
+            strokeLineCap: 'round',
+            strokeLineJoin: 'round',
+          })
+          this.canvas.add(defaultArrow)
+          this.finishCreatedObject(defaultArrow, toolWas)
+          return
+        case 'text':
+          finalShape.set({
+            left: startX,
+            top: startY,
+            width: 180,
+            originX: 'center',
+            originY: 'center',
+            textAlign: 'center',
+          })
+          break
+        case 'pin':
+          finalShape.set({
+            left: startX,
+            top: startY,
+            scaleX: 1,
+            scaleY: 1,
+            originX: 'center',
+            originY: 'bottom',
+          })
+          break
+      }
+    } else {
+      if (toolWas === 'rect' || toolWas === 'circle' || toolWas === 'text') {
+        finalShape.set({
+          originX: 'left',
+          originY: 'top',
+        })
+      } else if (toolWas === 'pin') {
+        finalShape.set({
+          left: startX,
+          top: startY,
+          originX: 'center',
+          originY: 'bottom',
+        })
+      }
+    }
+
+    this.finishCreatedObject(finalShape, toolWas)
+  }
+
+  finishCreatedObject(shape, toolWas) {
+    shape.set({
+      selectable: true,
+      evented: true,
+    })
+
+    this.canvas.setActiveObject(shape)
+    this.canvas.requestRenderAll()
+    this.canvas.fire('object:modified')
+
+    if (toolWas === 'text' && typeof shape.enterEditing === 'function') {
+      shape.enterEditing()
+      shape.selectAll()
+    }
+
+    this.setTool('select')
+    if (typeof this.onToolChange === 'function') {
+      this.onToolChange('select')
     }
   }
 

@@ -110,55 +110,35 @@ if (canvasManager.canvas) {
 const toolButtons = {
   select: document.getElementById('tool-select'),
   brush: document.getElementById('tool-brush'),
+  rect: document.getElementById('tool-rect'),
+  circle: document.getElementById('tool-circle'),
+  arrow: document.getElementById('tool-arrow'),
+  text: document.getElementById('tool-text'),
+  pin: document.getElementById('tool-pin'),
 }
 
 function updateActiveToolUI(activeTool) {
-  Object.values(toolButtons).forEach(btn => btn.classList.remove('is-active'))
+  Object.values(toolButtons).forEach(btn => {
+    if (btn) btn.classList.remove('is-active')
+  })
   if (toolButtons[activeTool]) {
     toolButtons[activeTool].classList.add('is-active')
   }
 }
 
-// Alternar entre Selección (Puntero) y Dibujo Libre (Lápiz)
-toolButtons.select.addEventListener('click', () => {
-  canvasManager.setTool('select')
-  updateActiveToolUI('select')
-})
+// Escuchar cambios de herramienta provocados internamente por CanvasManager
+canvasManager.onToolChange = (activeTool) => {
+  updateActiveToolUI(activeTool)
+}
 
-toolButtons.brush.addEventListener('click', () => {
-  canvasManager.setTool('brush')
-  updateActiveToolUI('brush')
-})
-
-// Inserción dinámica de formas (y auto-retorno al puntero de selección)
-document.getElementById('tool-rect').addEventListener('click', () => {
-  canvasManager.addRect()
-  canvasManager.setTool('select')
-  updateActiveToolUI('select')
-})
-
-document.getElementById('tool-circle').addEventListener('click', () => {
-  canvasManager.addCircle()
-  canvasManager.setTool('select')
-  updateActiveToolUI('select')
-})
-
-document.getElementById('tool-arrow').addEventListener('click', () => {
-  canvasManager.addArrow()
-  canvasManager.setTool('select')
-  updateActiveToolUI('select')
-})
-
-document.getElementById('tool-text').addEventListener('click', () => {
-  canvasManager.addText()
-  canvasManager.setTool('select')
-  updateActiveToolUI('select')
-})
-
-document.getElementById('tool-pin').addEventListener('click', () => {
-  canvasManager.addPin()
-  canvasManager.setTool('select')
-  updateActiveToolUI('select')
+// Registrar eventos para la selección de cada herramienta
+Object.entries(toolButtons).forEach(([toolName, btn]) => {
+  if (btn) {
+    btn.addEventListener('click', () => {
+      canvasManager.setTool(toolName)
+      updateActiveToolUI(toolName)
+    })
+  }
 })
 
 // Borrado de objetos y Limpieza
