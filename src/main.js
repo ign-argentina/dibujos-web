@@ -150,17 +150,37 @@ document.getElementById('tool-clear').addEventListener('click', () => {
   canvasManager.clearCanvas()
 })
 
-// --- INTERACTIVIDAD DEL PANEL DE ESTILOS ---
+// Acciones de Zoom
+document.getElementById('action-zoom-in')?.addEventListener('click', () => {
+  canvasManager.zoomIn()
+})
+
+document.getElementById('action-zoom-out')?.addEventListener('click', () => {
+  canvasManager.zoomOut()
+})
+
+document.getElementById('action-zoom-home')?.addEventListener('click', () => {
+  canvasManager.zoomHome()
+})
+
+// --- INTERACTIVIDAD DEL PANEL DE ESTILOS Y COLORES ---
 const colorChipsContainer = document.getElementById('color-chips-container')
+const recentColorsContainer = document.getElementById('recent-colors-container')
 const strokeSlider = document.getElementById('stroke-slider')
 const strokeValueDisplay = document.getElementById('stroke-value-display')
 const customColorPicker = document.getElementById('custom-color-picker')
+const propertiesPanel = document.getElementById('properties-panel')
+const togglePropertiesBtn = document.getElementById('toggle-properties-btn')
 
 let customColors = [] // Almacena hasta 5 colores personalizados en HEX
+let lastUsedColors = ['#faeb8b', '#82d3f8', '#7abe7d'] // 3 últimos colores utilizados
 
 function selectColor(color, activeChip) {
-  // Remover clase activa de todos los chips existentes
-  colorChipsContainer.querySelectorAll('.nbi-color-chip').forEach((c) => {
+  // Mantener histórico de los últimos 3 colores utilizados sin duplicados
+  lastUsedColors = [color, ...lastUsedColors.filter((c) => c.toLowerCase() !== color.toLowerCase())].slice(0, 3)
+
+  // Remover clase activa de todos los chips existentes en la UI
+  document.querySelectorAll('.nbi-color-chip').forEach((c) => {
     c.classList.remove('is-active')
   })
   
@@ -169,7 +189,54 @@ function selectColor(color, activeChip) {
   }
   
   canvasManager.setActiveColor(color)
+  renderRecentColors()
 }
+
+function renderRecentColors() {
+  if (!recentColorsContainer) return
+  recentColorsContainer.innerHTML = ''
+
+  lastUsedColors.forEach((color) => {
+    const chip = document.createElement('div')
+    chip.className = 'nbi-color-chip'
+    if (color.toLowerCase() === canvasManager.activeColor.toLowerCase()) {
+      chip.classList.add('is-active')
+    }
+    chip.style.backgroundColor = color
+    chip.setAttribute('data-color', color)
+    chip.setAttribute('title', `Color reciente: ${color}`)
+    chip.setAttribute('aria-label', `Color reciente ${color}`)
+
+    chip.addEventListener('click', () => {
+      selectColor(color, chip)
+    })
+
+    recentColorsContainer.appendChild(chip)
+  })
+}
+
+// Colapsar y expandir el panel de propiedades (colores)
+togglePropertiesBtn.addEventListener('click', () => {
+  const isCollapsed = propertiesPanel.classList.toggle('is-collapsed')
+  const icon = togglePropertiesBtn.querySelector('i')
+
+  if (isCollapsed) {
+    togglePropertiesBtn.setAttribute('title', 'Expandir Panel')
+    togglePropertiesBtn.setAttribute('aria-label', 'Expandir panel de color')
+    if (icon) icon.setAttribute('data-lucide', 'chevron-left')
+    recentColorsContainer.classList.remove('hidden')
+    renderRecentColors()
+  } else {
+    togglePropertiesBtn.setAttribute('title', 'Colapsar Panel')
+    togglePropertiesBtn.setAttribute('aria-label', 'Colapsar panel de color')
+    if (icon) icon.setAttribute('data-lucide', 'chevron-right')
+    recentColorsContainer.classList.add('hidden')
+  }
+
+  if (window.lucide) {
+    window.lucide.createIcons()
+  }
+})
 
 // Delegación de eventos en el contenedor de chips
 colorChipsContainer.addEventListener('click', (e) => {
@@ -235,27 +302,30 @@ strokeSlider.addEventListener('input', (e) => {
 const stickersContainer = document.getElementById('stickers-container')
 const stickersPanel = document.getElementById('stickers-panel')
 const toggleStickersBtn = document.getElementById('toggle-stickers-btn')
+const toolStickersBtn = document.getElementById('tool-stickers')
 
-// Colapsar / expandir el panel
-toggleStickersBtn.addEventListener('click', () => {
-  stickersPanel.classList.toggle('is-collapsed')
-  const icon = toggleStickersBtn.querySelector('i')
-  if (stickersPanel.classList.contains('is-collapsed')) {
-    toggleStickersBtn.setAttribute('title', 'Expandir Panel')
-    toggleStickersBtn.setAttribute('aria-label', 'Expandir panel de stickers')
-    if (icon) {
-      icon.setAttribute('data-lucide', 'chevron-up')
-    }
+function openStickersPanel() {
+  stickersPanel.classList.remove('hidden')
+  if (toolStickersBtn) toolStickersBtn.classList.add('is-active')
+}
+
+function closeStickersPanel() {
+  stickersPanel.classList.add('hidden')
+  if (toolStickersBtn) toolStickersBtn.classList.remove('is-active')
+}
+
+// Abrir/Cerrar panel de stickers desde la barra de herramientas
+toolStickersBtn?.addEventListener('click', () => {
+  if (stickersPanel.classList.contains('hidden')) {
+    openStickersPanel()
   } else {
-    toggleStickersBtn.setAttribute('title', 'Colapsar Panel')
-    toggleStickersBtn.setAttribute('aria-label', 'Colapsar panel de stickers')
-    if (icon) {
-      icon.setAttribute('data-lucide', 'chevron-down')
-    }
+    closeStickersPanel()
   }
-  if (window.lucide) {
-    window.lucide.createIcons()
-  }
+})
+
+// Cerrar panel de stickers desde su propio botón Chevron Down
+toggleStickersBtn?.addEventListener('click', () => {
+  closeStickersPanel()
 })
 
 // Generar stickers dinámicamente

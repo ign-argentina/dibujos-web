@@ -299,6 +299,38 @@ export class CanvasManager {
     return { left, top }
   }
 
+  zoomIn(factor = 1.25) {
+    if (!this.canvas) return
+    let zoom = this.canvas.getZoom() * factor
+    if (zoom > 8) zoom = 8
+    this.canvas.zoomToPoint(
+      { x: this.canvasWidth / 2, y: this.canvasHeight / 2 },
+      zoom
+    )
+    this.canvas.requestRenderAll()
+  }
+
+  zoomOut(factor = 1.25) {
+    if (!this.canvas) return
+    let zoom = this.canvas.getZoom() / factor
+    if (zoom < 0.5) zoom = 0.5
+    this.canvas.zoomToPoint(
+      { x: this.canvasWidth / 2, y: this.canvasHeight / 2 },
+      zoom
+    )
+    this.canvas.requestRenderAll()
+  }
+
+  zoomHome() {
+    if (!this.canvas) return
+    if (this.currentMapImage) {
+      this.fitMapToCanvas()
+    } else {
+      this.canvas.setViewportTransform([1, 0, 0, 1, 0, 0])
+      this.canvas.requestRenderAll()
+    }
+  }
+
   setTool(tool) {
     this.activeTool = tool
     if (!this.canvas) return
