@@ -3,6 +3,7 @@ import { mapsCatalog } from './config/mapsCatalog.js'
 import { appState } from './state/appState.js'
 import { CanvasManager } from './core/canvasManager.js'
 import { MapSelector } from './components/MapSelector.js'
+import { ContextMenu } from './components/ContextMenu.js'
 import { stickersCatalog } from './config/stickersCatalog.js'
 
 // Inicializar Lucide Icons
@@ -22,9 +23,10 @@ if (!editorContainer) {
   throw new Error('No se encontró el elemento #editor-container')
 }
 
-// Inicializar CanvasManager
+// Inicializar CanvasManager y el Menú Contextual
 const canvasManager = new CanvasManager(editorContainer)
 canvasManager.init()
+new ContextMenu(canvasManager)
 
 // --- INTERACTIVIDAD DEL PANEL LATERAL COLAPSABLE ---
 closeSidebarBtn.addEventListener('click', () => {
@@ -350,7 +352,22 @@ stickersCatalog.forEach((name) => {
   stickersContainer.appendChild(item)
 })
 
-// --- ACCIONES DEL SISTEMA (DESCARGA DE PNG) ---
+// --- ACCIONES DEL SISTEMA (IMPORTACIÓN DE IMAGEN Y DESCARGA DE PNG) ---
+const importImageBtn = document.getElementById('action-import-image')
+const imageFileInput = document.getElementById('image-file-input')
+
+importImageBtn?.addEventListener('click', () => {
+  imageFileInput?.click()
+})
+
+imageFileInput?.addEventListener('change', (e) => {
+  const file = e.target.files?.[0]
+  if (file) {
+    canvasManager.addLocalImage(file)
+    imageFileInput.value = ''
+  }
+})
+
 document.getElementById('action-export').addEventListener('click', () => {
   const currentMapId = appState.getActiveMapId()
   const mapData = mapsCatalog.find((m) => m.id === currentMapId)

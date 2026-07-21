@@ -97,7 +97,7 @@ body {
 .nbi-navbar {
   min-width: 320px;
   top: 14px;
-  left: 15px;
+  left: 20px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -520,6 +520,17 @@ body {
   border-top: none;
   padding-top: 0;
   margin-top: auto;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.nbi-properties-panel.is-collapsed .nbi-properties-actions .nbi-btn {
+  width: 42px;
+  height: 42px;
+  min-width: 42px;
+  min-height: 42px;
+  padding: 6px;
 }
 
 .nbi-properties-panel.is-collapsed .btn-text {
@@ -959,4 +970,111 @@ body {
 
 .nbi-sticker-item:hover .nbi-sticker-img {
   filter: grayscale(1) brightness(0.1);
+}
+
+/* --- BOTÓN Y MENÚ CONTEXTUAL FLOTANTE --- */
+.nbi-context-trigger {
+  position: absolute;
+  z-index: 15;
+  width: 42px;
+  height: 42px;
+  min-width: 42px;
+  min-height: 42px;
+  padding: 6px;
+  border-radius: 50%;
+  background-color: var(--nbi-pastel-yellow);
+  box-shadow: 3px 3px 0px 0px var(--nbi-black);
+  transition: transform 0.15s ease, opacity 0.2s ease;
+}
+
+.nbi-context-trigger:hover {
+  transform: scale(1.15) translateY(-2px);
+}
+
+.nbi-context-popover {
+  position: absolute;
+  z-index: 20;
+  width: 270px;
+  max-height: 460px;
+  background-color: var(--nbi-grey);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px;
+  transition: opacity 0.2s ease, transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.2);
+}
+
+.nbi-context-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 3px solid var(--nbi-black);
+  padding-bottom: 8px;
+}
+
+.nbi-btn-close-popover {
+  min-width: 28px !important;
+  min-height: 28px !important;
+  padding: 2px !important;
+  border-radius: 6px !important;
+}
+
+.nbi-btn-close-popover svg {
+  width: 16px;
+  height: 16px;
+}
+
+.nbi-context-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow-y: auto;
+  padding-right: 2px;
+}
+
+.nbi-context-section {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.nbi-context-label {
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+.nbi-context-textarea {
+  resize: vertical;
+  min-height: 50px;
+  font-size: 0.85rem;
+  padding: 8px;
+}
+
+.nbi-context-colors-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+
+.nbi-btn-sm {
+  min-width: 32px !important;
+  min-height: 32px !important;
+  padding: 4px 8px !important;
+  font-size: 0.8rem !important;
+  border-radius: 8px !important;
+  box-shadow: 2px 2px 0px 0px var(--nbi-black) !important;
+}
+
+.nbi-btn-sm svg {
+  width: 16px;
+  height: 16px;
+}
+
+.nbi-context-actions {
+  display: flex;
+  gap: 6px;
+  border-top: 3px solid var(--nbi-black);
+  padding-top: 10px;
+  margin-top: 4px;
 }

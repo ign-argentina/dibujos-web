@@ -1,4 +1,4 @@
-import { Canvas, FabricImage, Rect, Circle, Textbox, Path, PencilBrush, util, loadSVGFromURL } from 'fabric'
+import { Canvas, FabricImage, Rect, Circle, Textbox, Path, PencilBrush, util, loadSVGFromURL, filters } from 'fabric'
 
 export class CanvasManager {
   constructor(container, options = {}) {
@@ -801,9 +801,64 @@ export class CanvasManager {
   deleteSelected() {
     if (!this.canvas) return
     const activeObject = this.canvas.getActiveObject()
-    if (activeObject) {
+    if (activeObject && activeObject !== this.currentMapImage) {
       this.canvas.remove(activeObject)
       this.canvas.discardActiveObject()
+      this.canvas.requestRenderAll()
+      this.canvas.fire('object:modified')
+    }
+  }
+
+  async duplicateSelected() {
+    if (!this.canvas) return
+    const activeObject = this.canvas.getActiveObject()
+    if (!activeObject || activeObject === this.currentMapImage) return
+
+    try {
+      const cloned = await activeObject.clone()
+      cloned.set({
+        left: activeObject.left + 20,
+        top: activeObject.top + 20,
+        evented: true,
+        selectable: true,
+      })
+
+      if (cloned.type === 'activeSelection') {
+        cloned.canvas = this.canvas
+        cloned.forEachObject((obj) => {
+          this.canvas.add(obj)
+        })
+        cloned.setCoordinates()
+      } else {
+        this.canvas.add(cloned)
+      }
+
+      this.canvas.setActiveObject(cloned)
+      this.canvas.requestRenderAll()
+      this.canvas.fire('object:modified')
+    } catch (err) {
+      console.error('Error duplicando objeto:', err)
+    }
+  }
+
+  bringToFront() {
+    if (!this.canvas) return
+    const activeObject = this.canvas.getActiveObject()
+    if (activeObject && activeObject !== this.currentMapImage) {
+      this.canvas.bringObjectToFront(activeObject)
+      this.canvas.requestRenderAll()
+      this.canvas.fire('object:modified')
+    }
+  }
+
+  sendToBack() {
+    if (!this.canvas) return
+    const activeObject = this.canvas.getActiveObject()
+    if (activeObject && activeObject !== this.currentMapImage) {
+      this.canvas.sendObjectToBack(activeObject)
+      if (this.currentMapImage) {
+        this.canvas.sendObjectToBack(this.currentMapImage)
+      }
       this.canvas.requestRenderAll()
       this.canvas.fire('object:modified')
     }
@@ -946,5 +1001,57 @@ export class CanvasManager {
 
     setElementColor(group)
     this.canvas.requestRenderAll()
+  }
+
+  async addLocalImage(file) {
+    if (!this.canvas || !file) return
+
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader()
+
+      reader.onload = async (e) => {
+        const dataUrl = e.target.result
+        try {
+          const center = this.getViewportCenter()
+
+          const img = await FabricImage.fromURL(dataUrl, {
+            crossOrigin: 'anonymous',
+          }, {})
+
+          const maxDim = Math.min(this.canvasWidth * 0.5, this.canvasHeight * 0.5, 400)
+          let scale = 1
+          if (img.width > maxDim || img.height > maxDim) {
+            scale = Math.min(maxDim / img.width, maxDim / img.height)
+          }
+
+          img.set({
+            left: center.left,
+            top: center.top,
+            originX: 'center',
+            originY: 'center',
+            scaleX: scale,
+            scaleY: scale,
+            cornerColor: '#000000',
+            transparentCorners: false,
+            cornerSize: 10,
+            borderColor: '#000000',
+            borderScaleFactor: 2,
+            hasRotatingPoint: true,
+          })
+
+          this.canvas.add(img)
+          this.canvas.setActiveObject(img)
+          this.canvas.requestRenderAll()
+          this.canvas.fire('object:modified')
+          resolve(img)
+        } catch (err) {
+          console.error('Error insertando imagen local:', err)
+          reject(err)
+        }
+      }
+
+      reader.onerror = (err) => reject(err)
+      reader.readAsDataURL(file)
+    })
   }
 }
