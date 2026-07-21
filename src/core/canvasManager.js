@@ -55,6 +55,27 @@ export class CanvasManager {
   createCanvasElement() {
     this.canvasEl = document.createElement('canvas')
     this.canvasEl.className = 'fabric-canvas'
+    this.canvasEl.setAttribute('tabindex', '0')
+    this.canvasEl.setAttribute('role', 'img')
+    this.canvasEl.setAttribute('aria-label', 'Lienzo interactivo de dibujo sobre el mapa. Presioná Delete o Supr para borrar figuras seleccionadas o Escape para deseleccionar.')
+    
+    // Escuchador de eventos de teclado en el canvas para accesibilidad
+    this.canvasEl.addEventListener('keydown', (e) => {
+      if (e.key === 'Delete' || e.key === 'Backspace') {
+        const activeObj = this.canvas?.getActiveObject()
+        if (activeObj && !(activeObj instanceof Textbox && activeObj.isEditing)) {
+          e.preventDefault()
+          this.deleteSelected()
+        }
+      } else if (e.key === 'Escape') {
+        if (this.canvas) {
+          this.canvas.discardActiveObject()
+          this.canvas.requestRenderAll()
+          this.announceA11y('Selección cancelada')
+        }
+      }
+    })
+
     this.container.appendChild(this.canvasEl)
   }
 
@@ -333,6 +354,8 @@ export class CanvasManager {
 
   setTool(tool) {
     this.activeTool = tool
+    this.updateToolbarAriaPressed(tool)
+    this.announceA11y(`Herramienta ${tool} activada`)
     if (!this.canvas) return
 
     if (tool === 'brush') {
@@ -353,6 +376,36 @@ export class CanvasManager {
       this.canvas.defaultCursor = 'default'
       this.canvas.setCursor('default')
     }
+  }
+
+  announceA11y(msg) {
+    const statusEl = document.getElementById('canvas-a11y-status')
+    if (statusEl) {
+      statusEl.textContent = ''
+      setTimeout(() => {
+        statusEl.textContent = msg
+      }, 50)
+    }
+  }
+
+  updateToolbarAriaPressed(activeTool) {
+    const toolMap = {
+      select: 'tool-select',
+      brush: 'tool-brush',
+      rect: 'tool-rect',
+      circle: 'tool-circle',
+      arrow: 'tool-arrow',
+      text: 'tool-text',
+      pin: 'tool-pin',
+    }
+
+    Object.entries(toolMap).forEach(([toolName, btnId]) => {
+      const btn = document.getElementById(btnId)
+      if (btn) {
+        const isSelected = toolName === activeTool
+        btn.setAttribute('aria-pressed', isSelected ? 'true' : 'false')
+      }
+    })
   }
 
   setActiveColor(color) {
@@ -1052,6 +1105,20 @@ export class CanvasManager {
 
       reader.onerror = (err) => reject(err)
       reader.readAsDataURL(file)
+    })
+  }
+
+  getExportDataURL(options = {}) {
+    if (!this.canvas) return ''
+    const { format = 'png', quality = 1.0, multiplier = 2 } = options
+
+    this.canvas.discardActiveObject()
+    this.canvas.requestRenderAll()
+
+    return this.canvas.toDataURL({
+      format: format === 'jpg' ? 'jpeg' : format,
+      quality: Math.min(Math.max(quality, 0.1), 1.0),
+      multiplier: Math.max(multiplier, 1),
     })
   }
 }

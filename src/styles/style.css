@@ -41,6 +41,26 @@ body {
   user-select: none;
 }
 
+/* --- CLASE UTILITY PARA LECTORES DE PANTALLA --- */
+.sr-only {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+/* --- REGLA GLOBAL DE FOCO ACCESIBLE (WCAG 2.4.7 / 2.4.13) --- */
+:focus-visible {
+  outline: 3px solid var(--nbi-black) !important;
+  outline-offset: 3px !important;
+  box-shadow: 0 0 0 5px var(--nbi-pastel-blue) !important;
+}
+
 #app {
   width: 100vw;
   height: 100vh;
@@ -1077,4 +1097,153 @@ body {
   border-top: 3px solid var(--nbi-black);
   padding-top: 10px;
   margin-top: 4px;
+}
+
+/* --- MODAL DE EXPORTACIÓN E IMPRESIÓN --- */
+.nbi-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.nbi-export-modal {
+  width: 820px;
+  max-width: 95vw;
+  max-height: 90vh;
+  background-color: var(--nbi-grey);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  position: relative;
+}
+
+.nbi-export-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 3px solid var(--nbi-black);
+  padding-bottom: 10px;
+}
+
+.nbi-export-modal-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.nbi-export-modal-body {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 20px;
+  overflow-y: auto;
+  padding-right: 4px;
+  max-height: calc(90vh - 140px);
+}
+
+.nbi-export-config {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.nbi-export-preview-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background-color: var(--nbi-bg-main);
+  border: 3px solid var(--nbi-black);
+  border-radius: 12px;
+  padding: 16px;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 3px 3px 0px 0px var(--nbi-black);
+  min-height: 380px;
+}
+
+.nbi-paper-sheet-wrapper {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding: 10px;
+}
+
+.nbi-paper-sheet {
+  background-color: var(--nbi-white);
+  border: 2px solid var(--nbi-black);
+  box-shadow: 4px 4px 0px 0px rgba(0, 0, 0, 0.2);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+}
+
+.nbi-paper-margin-box {
+  width: 100%;
+  height: 100%;
+  border: 1px dashed var(--nbi-muted);
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+#exp-preview-img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  transition: transform 0.2s ease;
+}
+
+.nbi-export-modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  border-top: 3px solid var(--nbi-black);
+  padding-top: 12px;
+}
+
+@media (max-width: 768px) {
+  .nbi-export-modal-body {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ESTILOS PARA IMPRESIÓN NATIVA (@media print) */
+@media print {
+  body * {
+    visibility: hidden !important;
+  }
+  #nbi-print-section, #nbi-print-section * {
+    visibility: visible !important;
+  }
+  #nbi-print-section {
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
 }

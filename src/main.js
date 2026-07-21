@@ -4,6 +4,7 @@ import { appState } from './state/appState.js'
 import { CanvasManager } from './core/canvasManager.js'
 import { MapSelector } from './components/MapSelector.js'
 import { ContextMenu } from './components/ContextMenu.js'
+import { ExportModal } from './components/ExportModal.js'
 import { stickersCatalog } from './config/stickersCatalog.js'
 
 // Inicializar Lucide Icons
@@ -23,20 +24,25 @@ if (!editorContainer) {
   throw new Error('No se encontró el elemento #editor-container')
 }
 
-// Inicializar CanvasManager y el Menú Contextual
+// Inicializar CanvasManager, Menú Contextual y Modal de Exportación
 const canvasManager = new CanvasManager(editorContainer)
 canvasManager.init()
 new ContextMenu(canvasManager)
+const exportModal = new ExportModal(canvasManager)
 
 // --- INTERACTIVIDAD DEL PANEL LATERAL COLAPSABLE ---
 closeSidebarBtn.addEventListener('click', () => {
   sidebar.classList.add('is-collapsed')
   toggleSidebarBtn.classList.remove('hidden')
+  toggleSidebarBtn.setAttribute('aria-expanded', 'false')
+  toggleSidebarBtn.focus()
 })
 
 toggleSidebarBtn.addEventListener('click', () => {
   sidebar.classList.remove('is-collapsed')
   toggleSidebarBtn.classList.add('hidden')
+  toggleSidebarBtn.setAttribute('aria-expanded', 'true')
+  closeSidebarBtn.focus()
 })
 
 // --- INICIALIZACIÓN DEL SELECTOR DE MAPAS MODULARIZADO ---
@@ -181,13 +187,15 @@ function selectColor(color, activeChip) {
   // Mantener histórico de los últimos 3 colores utilizados sin duplicados
   lastUsedColors = [color, ...lastUsedColors.filter((c) => c.toLowerCase() !== color.toLowerCase())].slice(0, 3)
 
-  // Remover clase activa de todos los chips existentes en la UI
+  // Remover clase activa y actualizar aria-checked de todas las fichas
   document.querySelectorAll('.nbi-color-chip').forEach((c) => {
     c.classList.remove('is-active')
+    c.setAttribute('aria-checked', 'false')
   })
   
   if (activeChip) {
     activeChip.classList.add('is-active')
+    activeChip.setAttribute('aria-checked', 'true')
   }
   
   canvasManager.setActiveColor(color)
@@ -199,11 +207,15 @@ function renderRecentColors() {
   recentColorsContainer.innerHTML = ''
 
   lastUsedColors.forEach((color) => {
-    const chip = document.createElement('div')
+    const chip = document.createElement('button')
+    chip.type = 'button'
+    chip.role = 'radio'
     chip.className = 'nbi-color-chip'
-    if (color.toLowerCase() === canvasManager.activeColor.toLowerCase()) {
+    const isSelected = color.toLowerCase() === canvasManager.activeColor.toLowerCase()
+    if (isSelected) {
       chip.classList.add('is-active')
     }
+    chip.setAttribute('aria-checked', isSelected ? 'true' : 'false')
     chip.style.backgroundColor = color
     chip.setAttribute('data-color', color)
     chip.setAttribute('title', `Color reciente: ${color}`)
@@ -225,12 +237,14 @@ togglePropertiesBtn.addEventListener('click', () => {
   if (isCollapsed) {
     togglePropertiesBtn.setAttribute('title', 'Expandir Panel')
     togglePropertiesBtn.setAttribute('aria-label', 'Expandir panel de color')
+    togglePropertiesBtn.setAttribute('aria-expanded', 'false')
     if (icon) icon.setAttribute('data-lucide', 'chevron-left')
     recentColorsContainer.classList.remove('hidden')
     renderRecentColors()
   } else {
     togglePropertiesBtn.setAttribute('title', 'Colapsar Panel')
     togglePropertiesBtn.setAttribute('aria-label', 'Colapsar panel de color')
+    togglePropertiesBtn.setAttribute('aria-expanded', 'true')
     if (icon) icon.setAttribute('data-lucide', 'chevron-right')
     recentColorsContainer.classList.add('hidden')
   }
@@ -278,7 +292,10 @@ function renderCustomChips() {
   const blackChip = colorChipsContainer.querySelector('.nbi-color-chip[data-color="#000000"]')
   
   customColors.forEach((color) => {
-    const chip = document.createElement('div')
+    const chip = document.createElement('button')
+    chip.type = 'button'
+    chip.role = 'radio'
+    chip.setAttribute('aria-checked', 'false')
     chip.className = 'nbi-color-chip is-custom-chip'
     chip.style.backgroundColor = color
     chip.setAttribute('data-color', color)
@@ -308,12 +325,19 @@ const toolStickersBtn = document.getElementById('tool-stickers')
 
 function openStickersPanel() {
   stickersPanel.classList.remove('hidden')
-  if (toolStickersBtn) toolStickersBtn.classList.add('is-active')
+  if (toolStickersBtn) {
+    toolStickersBtn.classList.add('is-active')
+    toolStickersBtn.setAttribute('aria-expanded', 'true')
+  }
 }
 
 function closeStickersPanel() {
   stickersPanel.classList.add('hidden')
-  if (toolStickersBtn) toolStickersBtn.classList.remove('is-active')
+  if (toolStickersBtn) {
+    toolStickersBtn.classList.remove('is-active')
+    toolStickersBtn.setAttribute('aria-expanded', 'false')
+    toolStickersBtn.focus()
+  }
 }
 
 // Abrir/Cerrar panel de stickers desde la barra de herramientas
@@ -368,11 +392,8 @@ imageFileInput?.addEventListener('change', (e) => {
   }
 })
 
-document.getElementById('action-export').addEventListener('click', () => {
-  const currentMapId = appState.getActiveMapId()
-  const mapData = mapsCatalog.find((m) => m.id === currentMapId)
-  const name = mapData ? mapData.name.replace(/\s+/g, '_') : 'mapa'
-  canvasManager.exportToPNG(`mapa_${name}_anotado.png`)
+document.getElementById('action-export')?.addEventListener('click', () => {
+  exportModal.open()
 })
 
 // --- INICIALIZACIÓN DE LA APLICACIÓN ---

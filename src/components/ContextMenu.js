@@ -32,13 +32,16 @@ export class ContextMenu {
     this.triggerBtn = document.createElement('button')
     this.triggerBtn.className = 'nbi-btn nbi-context-trigger hidden'
     this.triggerBtn.setAttribute('title', 'Opciones de la figura')
-    this.triggerBtn.setAttribute('aria-label', 'Abrir opciones de la figura seleccionada')
+    this.triggerBtn.setAttribute('aria-label', 'Abrir menú contextual de la figura seleccionada')
+    this.triggerBtn.setAttribute('aria-expanded', 'false')
     this.triggerBtn.innerHTML = `<i data-lucide="sliders"></i>`
     this.container.appendChild(this.triggerBtn)
 
     // 2. Menu Popover emergente
     this.popoverMenu = document.createElement('div')
     this.popoverMenu.className = 'nbi-window-floating nbi-context-popover hidden'
+    this.popoverMenu.setAttribute('role', 'dialog')
+    this.popoverMenu.setAttribute('aria-label', 'Opciones y propiedades de la figura seleccionada')
     this.container.appendChild(this.popoverMenu)
 
     // Listener para abrir/cerrar el popover al presionar el disparador
@@ -47,7 +50,7 @@ export class ContextMenu {
       this.togglePopover()
     })
 
-    // Ocultar popover si se hace clic fuera del menú
+    // Ocultar popover si se hace clic fuera del menú o se presiona Escape
     document.addEventListener('click', (e) => {
       if (
         this.isOpen &&
@@ -55,6 +58,13 @@ export class ContextMenu {
         !this.triggerBtn.contains(e.target)
       ) {
         this.closePopover()
+      }
+    })
+
+    document.addEventListener('keydown', (e) => {
+      if (this.isOpen && e.key === 'Escape') {
+        this.closePopover()
+        this.triggerBtn.focus()
       }
     })
   }
@@ -171,6 +181,7 @@ export class ContextMenu {
     if (!activeObj || activeObj === this.canvasManager.currentMapImage) return
 
     this.isOpen = true
+    if (this.triggerBtn) this.triggerBtn.setAttribute('aria-expanded', 'true')
     this.renderInspectorControls(activeObj)
     this.updatePopoverPosition(activeObj)
     this.popoverMenu.classList.remove('hidden')
@@ -182,6 +193,7 @@ export class ContextMenu {
 
   closePopover() {
     this.isOpen = false
+    if (this.triggerBtn) this.triggerBtn.setAttribute('aria-expanded', 'false')
     if (this.popoverMenu) {
       this.popoverMenu.classList.add('hidden')
     }
@@ -189,7 +201,10 @@ export class ContextMenu {
 
   hideAll() {
     this.isOpen = false
-    if (this.triggerBtn) this.triggerBtn.classList.add('hidden')
+    if (this.triggerBtn) {
+      this.triggerBtn.classList.add('hidden')
+      this.triggerBtn.setAttribute('aria-expanded', 'false')
+    }
     if (this.popoverMenu) this.popoverMenu.classList.add('hidden')
   }
 

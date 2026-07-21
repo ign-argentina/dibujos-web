@@ -34,15 +34,15 @@ export class MapSelector {
         <span class="nbi-search-icon" id="search-icon-container" aria-hidden="true">
           <i data-lucide="search"></i>
         </span>
-        <input type="text" id="map-search-input" class="nbi-input" placeholder="Buscar mapa..." autocomplete="off" aria-label="Buscar mapas" title="Buscar mapas" />
+        <input type="text" id="map-search-input" class="nbi-input" placeholder="Buscar mapa..." autocomplete="off" aria-label="Buscar mapas" title="Buscar mapas" aria-controls="map-cards-container" />
         <button class="nbi-search-clear-btn hidden" id="map-search-clear" title="Reiniciar búsqueda" aria-label="Reiniciar búsqueda">
           <i data-lucide="x"></i>
         </button>
       </div>
       <div class="nbi-filter-group" role="group" aria-label="Filtros de mapas">
-        <button class="nbi-filter-btn is-active" data-filter="todos" aria-label="Mostrar todos los mapas" title="Mostrar todos los mapas">Todos</button>
-        <button class="nbi-filter-btn" data-filter="provincia" aria-label="Mostrar solo mapas de provincias" title="Mostrar solo mapas de provincias">Provincias</button>
-        <button class="nbi-filter-btn" data-filter="otros" aria-label="Mostrar otros tipos de mapas" title="Mostrar otros tipos de mapas">Otros</button>
+        <button class="nbi-filter-btn is-active" data-filter="todos" aria-label="Mostrar todos los mapas" title="Mostrar todos los mapas" aria-pressed="true">Todos</button>
+        <button class="nbi-filter-btn" data-filter="provincia" aria-label="Mostrar solo mapas de provincias" title="Mostrar solo mapas de provincias" aria-pressed="false">Provincias</button>
+        <button class="nbi-filter-btn" data-filter="otros" aria-label="Mostrar otros tipos de mapas" title="Mostrar otros tipos de mapas" aria-pressed="false">Otros</button>
       </div>
     `
     // Insertar los controles antes del contenedor de tarjetas en la barra lateral
@@ -62,8 +62,12 @@ export class MapSelector {
     // Eventos de los botones de filtro
     this.filterButtons.forEach((btn) => {
       btn.addEventListener('click', () => {
-        this.filterButtons.forEach((b) => b.classList.remove('is-active'))
+        this.filterButtons.forEach((b) => {
+          b.classList.remove('is-active')
+          b.setAttribute('aria-pressed', 'false')
+        })
         btn.classList.add('is-active')
+        btn.setAttribute('aria-pressed', 'true')
         this.currentFilter = btn.getAttribute('data-filter')
         this.filterAndRender()
       })
