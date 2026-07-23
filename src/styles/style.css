@@ -140,7 +140,7 @@ body {
 
 .nbi-navbar-title {
   font-size: 1.3rem;
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: -0.5px;
 }
 
@@ -177,7 +177,7 @@ body {
 
 .nbi-sidebar-title {
   font-size: 1.4rem;
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: -0.5px;
 }
 
@@ -200,7 +200,7 @@ body {
   background-color: var(--nbi-black);
   color: var(--nbi-white);
   font-size: 11px;
-  font-weight: 700;
+  font-weight: 600;
   padding: 4px 10px;
   border-radius: var(--nbi-radius-pill);
   text-transform: uppercase;
@@ -286,12 +286,13 @@ body {
   border-bottom: 3px solid var(--nbi-black);
   background-color: var(--nbi-bg-main);
   flex-shrink: 1;
+  filter: contrast(0.9);
 }
 
 .nbi-map-card-info {
   min-height: 35px;
   padding: 4px;
-  font-weight: 700;
+  font-weight: 600;
   text-align: center;
   font-size: 0.65rem;
   line-height: 1.1;
@@ -396,7 +397,7 @@ body {
   padding: 6px 4px;
   font-family: inherit;
   font-size: 0.8rem;
-  font-weight: 700;
+  font-weight: 600;
   border: 3px solid var(--nbi-black);
   border-radius: 8px;
   background-color: var(--nbi-white);
@@ -487,7 +488,7 @@ body {
 
 .nbi-properties-title {
   font-size: 1.1rem;
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .nbi-properties-body {
@@ -831,7 +832,7 @@ body {
 }
 
 .nbi-loader-text {
-  font-weight: 700;
+  font-weight: 600;
   font-size: 1.2rem;
   letter-spacing: -0.5px;
 }
@@ -850,7 +851,7 @@ body {
   z-index: 10;
   background-color: var(--nbi-pastel-yellow);
   text-decoration: none;
-  font-weight: 700;
+  font-weight: 600;
   font-size: 0.9rem;
   display: inline-flex;
   align-items: center;
@@ -920,7 +921,7 @@ body {
 
 .nbi-stickers-title {
   font-size: 1rem;
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .nbi-stickers-content {
@@ -1059,7 +1060,7 @@ body {
 }
 
 .nbi-context-label {
-  font-weight: 700;
+  font-weight: 600;
   font-size: 0.85rem;
 }
 
@@ -1136,7 +1137,7 @@ body {
 
 .nbi-export-modal-title {
   font-size: 1.25rem;
-  font-weight: 700;
+  font-weight: 600;
   display: flex;
   align-items: center;
   gap: 8px;

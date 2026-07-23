@@ -285,7 +285,7 @@ export class ContextMenu {
         <div class="nbi-context-section">
           <div style="display: flex; justify-content: space-between;">
             <span class="nbi-context-label">Brillo:</span>
-            <span style="font-weight: 700; font-size: 0.85rem;" id="ctx-brightness-val">${brightnessVal}%</span>
+            <span style="font-weight: 600; font-size: 0.85rem;" id="ctx-brightness-val">${brightnessVal}%</span>
           </div>
           <input class="nbi-slider" id="ctx-img-brightness" type="range" min="-100" max="100" value="${brightnessVal}" />
         </div>
@@ -293,7 +293,7 @@ export class ContextMenu {
         <div class="nbi-context-section">
           <div style="display: flex; justify-content: space-between;">
             <span class="nbi-context-label">Contraste:</span>
-            <span style="font-weight: 700; font-size: 0.85rem;" id="ctx-contrast-val">${contrastVal}%</span>
+            <span style="font-weight: 600; font-size: 0.85rem;" id="ctx-contrast-val">${contrastVal}%</span>
           </div>
           <input class="nbi-slider" id="ctx-img-contrast" type="range" min="-100" max="100" value="${contrastVal}" />
         </div>
@@ -301,7 +301,7 @@ export class ContextMenu {
         <div class="nbi-context-section">
           <div style="display: flex; justify-content: space-between;">
             <span class="nbi-context-label">Desenfoque:</span>
-            <span style="font-weight: 700; font-size: 0.85rem;" id="ctx-blur-val">${blurVal}%</span>
+            <span style="font-weight: 600; font-size: 0.85rem;" id="ctx-blur-val">${blurVal}%</span>
           </div>
           <input class="nbi-slider" id="ctx-img-blur" type="range" min="0" max="100" value="${blurVal}" />
         </div>
@@ -335,7 +335,7 @@ export class ContextMenu {
               <option value="Georgia" ${currentFont === 'Georgia' ? 'selected' : ''}>Georgia</option>
               <option value="Comic Sans MS" ${currentFont === 'Comic Sans MS' ? 'selected' : ''}>Comic Sans</option>
             </select>
-            <span style="font-weight: 700; font-size: 0.9rem; align-self: center;" id="ctx-size-val">${currentSize}px</span>
+            <span style="font-weight: 600; font-size: 0.9rem; align-self: center;" id="ctx-size-val">${currentSize}px</span>
           </div>
           <input class="nbi-slider" id="ctx-font-size" type="range" min="12" max="72" value="${currentSize}" style="margin-top: 6px;" />
         </div>
@@ -417,7 +417,7 @@ export class ContextMenu {
         <div class="nbi-context-section">
           <div style="display: flex; justify-content: space-between;">
             <span class="nbi-context-label">Grosor de Trazo:</span>
-            <span style="font-weight: 700; font-size: 0.85rem;" id="ctx-stroke-val">${currentWidth}px</span>
+            <span style="font-weight: 600; font-size: 0.85rem;" id="ctx-stroke-val">${currentWidth}px</span>
           </div>
           <input class="nbi-slider" id="ctx-stroke-width" type="range" min="1" max="30" value="${currentWidth}" />
         </div>
@@ -440,7 +440,7 @@ export class ContextMenu {
         <div class="nbi-context-section">
           <div style="display: flex; justify-content: space-between;">
             <span class="nbi-context-label">Esquinas Redondeadas:</span>
-            <span style="font-weight: 700; font-size: 0.85rem;" id="ctx-rx-val">${currentRx}px</span>
+            <span style="font-weight: 600; font-size: 0.85rem;" id="ctx-rx-val">${currentRx}px</span>
           </div>
           <input class="nbi-slider" id="ctx-corner-rx" type="range" min="0" max="40" value="${currentRx}" />
         </div>
@@ -453,7 +453,7 @@ export class ContextMenu {
       <div class="nbi-context-section">
         <div style="display: flex; justify-content: space-between;">
           <span class="nbi-context-label">Opacidad:</span>
-          <span style="font-weight: 700; font-size: 0.85rem;" id="ctx-opacity-val">${currentOpacity}%</span>
+          <span style="font-weight: 600; font-size: 0.85rem;" id="ctx-opacity-val">${currentOpacity}%</span>
         </div>
         <input class="nbi-slider" id="ctx-opacity-slider" type="range" min="10" max="100" value="${currentOpacity}" />
       </div>
