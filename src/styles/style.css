@@ -883,7 +883,7 @@ body {
 /* --- CONTROLES DE ZOOM FLOTANTES INDEPENDIENTES --- */
 .nbi-zoom-controls-floating {
   position: absolute;
-  top: 480px;
+  top: 530px;
   right: 20px;
   z-index: 10;
   display: flex;
