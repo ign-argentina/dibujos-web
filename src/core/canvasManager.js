@@ -70,7 +70,7 @@ export class CanvasManager {
     this.canvasEl.addEventListener('keydown', (e) => {
       if (e.key === 'Delete' || e.key === 'Backspace') {
         const activeObj = this.canvas?.getActiveObject()
-        if (activeObj && !(activeObj instanceof Textbox && activeObj.isEditing)) {
+        if (activeObj && !(activeObj.type === 'textbox' && activeObj.isEditing)) {
           e.preventDefault()
           this.deleteSelected()
         }
@@ -391,9 +391,9 @@ export class CanvasManager {
     if (this.canvas) {
       const activeObject = this.adapter.getActiveObject()
       if (activeObject) {
-        if (activeObject instanceof Textbox) {
+        if (activeObject.type === 'textbox') {
           activeObject.set({ fill: color })
-        } else if (activeObject instanceof Path && activeObject.fill === 'transparent') {
+        } else if (activeObject.type === 'path' && activeObject.fill === 'transparent') {
           activeObject.set({ stroke: color })
         } else if (activeObject.type === 'group' || activeObject.getObjects) {
           this.colorSVGGroup(activeObject, color)
@@ -412,7 +412,7 @@ export class CanvasManager {
 
     if (this.canvas) {
       const activeObject = this.adapter.getActiveObject()
-      if (activeObject && !(activeObject instanceof Textbox)) {
+      if (activeObject && activeObject.type !== 'textbox') {
         activeObject.set({ strokeWidth: this.activeStrokeWidth })
         this.adapter.requestRenderAll()
         this.adapter.fire('object:modified')
@@ -857,7 +857,9 @@ export class CanvasManager {
   serialize() {
     if (!this.canvas) return null
 
-    const objects = this.adapter.getObjects().filter((obj) => obj !== this.currentMapImage && obj.isMapBase !== true)
+    const objects = this.adapter
+      .getObjects()
+      .filter((obj) => obj !== this.currentMapImage && obj.isMapBase !== true)
     const serializedObjects = objects.map((obj) => obj.toObject())
     return JSON.stringify(serializedObjects)
   }
