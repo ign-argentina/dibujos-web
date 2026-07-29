@@ -38,7 +38,7 @@ export class FabricAdapter {
    */
   insertAt(index, obj) {
     if (!this.canvas) return
-    this.canvas.insertAt(obj, index)
+    this.canvas.insertAt(index, obj)
   }
 
   /**
@@ -261,7 +261,7 @@ export class FabricAdapter {
         originX: 'left',
         originY: 'top',
       })
-      this.canvas.insertAt(img, 0)
+      this.canvas.insertAt(0, img)
       return img
     } catch (err) {
       console.error('FabricAdapter: Error cargando imagen de fondo:', err)
