@@ -1,5 +1,5 @@
 import './styles/style.css'
-import { appState } from './state/appState.js'
+import { appStore } from './state/AppStore.js'
 import { CanvasManager } from './core/canvasManager.js'
 import { MapSelector } from './components/MapSelector.js'
 import { ContextMenu } from './components/ContextMenu.js'
@@ -52,7 +52,7 @@ toggleSidebarBtn.addEventListener('click', () => {
 let previousMapId = null
 
 function saveDrawingState() {
-  const currentMapId = appState.getActiveMapId()
+  const currentMapId = appStore.getState().activeMapId
   if (currentMapId && canvasManager.canvas) {
     const jsonString = canvasManager.serialize()
     if (jsonString) {
@@ -63,7 +63,7 @@ function saveDrawingState() {
   }
 }
 
-appState.subscribe(async (state) => {
+appStore.subscribe(async (state) => {
   if (!state.activeMapId) return
 
   // 1. Guardar el estado del dibujo de la provincia anterior
@@ -424,7 +424,7 @@ async function initApp() {
     // 5. Activar por defecto la primera provincia del catálogo
     const maps = await mapRepository.getAll()
     if (maps.length > 0) {
-      appState.setActiveMapId(maps[0].id)
+      appStore.dispatch({ type: 'SET_ACTIVE_MAP_ID', payload: maps[0].id })
     }
   } catch (err) {
     console.error('Error al inicializar la aplicación:', err)

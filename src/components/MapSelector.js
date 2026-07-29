@@ -1,4 +1,4 @@
-import { appState } from '../state/appState.js'
+import { appStore } from '../state/AppStore.js'
 
 export class MapSelector {
   constructor(sidebarContainer, cardsContainer, mapRepository) {
@@ -98,7 +98,7 @@ export class MapSelector {
     })
 
     // Suscribirse a cambios en el estado global para sincronizar la clase activa
-    appState.subscribe((state) => {
+    appStore.subscribe((state) => {
       this.updateActiveCardUI(state.activeMapId)
     })
   }
@@ -144,7 +144,7 @@ export class MapSelector {
       card.setAttribute('tabindex', '0')
       card.setAttribute('aria-label', `Seleccionar mapa de ${map.name}`)
 
-      if (appState.getActiveMapId() === map.id) {
+      if (appStore.getState().activeMapId === map.id) {
         card.classList.add('is-active')
         card.setAttribute('aria-pressed', 'true')
       } else {
@@ -158,14 +158,14 @@ export class MapSelector {
       `
 
       card.addEventListener('click', () => {
-        appState.setActiveMapId(map.id)
+        appStore.dispatch({ type: 'SET_ACTIVE_MAP_ID', payload: map.id })
       })
 
       // Evento de teclado para accesibilidad (Enter y Espacio)
       card.addEventListener('keydown', (e) => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault()
-          appState.setActiveMapId(map.id)
+          appStore.dispatch({ type: 'SET_ACTIVE_MAP_ID', payload: map.id })
         }
       })
 
@@ -176,7 +176,7 @@ export class MapSelector {
   selectFirstMatched() {
     if (this.filteredMaps.length > 0) {
       const targetMap = this.filteredMaps[0]
-      appState.setActiveMapId(targetMap.id)
+      appStore.dispatch({ type: 'SET_ACTIVE_MAP_ID', payload: targetMap.id })
       this.searchInput.blur()
     }
   }
