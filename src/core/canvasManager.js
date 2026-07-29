@@ -1,5 +1,6 @@
-import { FabricImage, Rect, Circle, Textbox, Path } from 'fabric'
+import { FabricImage } from 'fabric'
 import { FabricAdapter } from './canvas/FabricAdapter.js'
+import { ShapeFactory } from './canvas/ShapeFactory.js'
 
 export class CanvasManager {
   constructor(container, options = {}) {
@@ -453,58 +454,43 @@ export class CanvasManager {
 
     switch (this.activeTool) {
       case 'rect':
-        this.previewShape = new Rect({
+        this.previewShape = ShapeFactory.createRect({
           left: x,
           top: y,
           width: 1,
           height: 1,
-          fill: this.activeColor,
-          stroke: this.activeColor,
-          strokeWidth: 2,
-          rx: 4,
-          ry: 4,
+          color: this.activeColor,
           originX: 'left',
           originY: 'top',
-          opacity: 0.7,
           selectable: false,
           evented: false,
         })
         break
       case 'circle':
-        this.previewShape = new Circle({
+        this.previewShape = ShapeFactory.createCircle({
           left: x,
           top: y,
           radius: 1,
-          fill: this.activeColor,
-          stroke: this.activeColor,
-          strokeWidth: 2,
+          color: this.activeColor,
           originX: 'left',
           originY: 'top',
-          opacity: 0.7,
           selectable: false,
           evented: false,
         })
         break
       case 'arrow':
-        this.previewShape = new Path(this.createArrowPath(x, y, x + 1, y + 1), {
-          stroke: this.activeColor,
+        this.previewShape = ShapeFactory.createArrow(this.createArrowPath(x, y, x + 1, y + 1), {
+          color: this.activeColor,
           strokeWidth: this.activeStrokeWidth,
-          fill: 'transparent',
-          strokeLineCap: 'round',
-          strokeLineJoin: 'round',
           selectable: false,
           evented: false,
         })
         break
       case 'text':
-        this.previewShape = new Textbox('Escribí acá', {
+        this.previewShape = ShapeFactory.createText('Escribí acá', {
           left: x,
           top: y,
-          fontFamily: 'Fredoka',
-          fontSize: 24,
-          fontWeight: '500',
-          fill: this.activeColor,
-          stroke: 'transparent',
+          color: this.activeColor,
           originX: 'left',
           originY: 'top',
           textAlign: 'left',
@@ -514,23 +500,15 @@ export class CanvasManager {
         })
         break
       case 'pin':
-        this.previewShape = new Path(
-          'M 0 0 C -12 -13 -18 -24 -18 -34 A 18 18 0 1 1 18 -34 C 18 -24 12 -13 0 0 Z M 0 -40 A 6 6 0 1 0 0 -28 A 6 6 0 1 0 0 -40 Z',
-          {
-            left: x,
-            top: y,
-            fill: this.activeColor,
-            stroke: '#000000',
-            strokeWidth: 3,
-            originX: 'center',
-            originY: 'bottom',
-            opacity: 0.9,
-            scaleX: 0.1,
-            scaleY: 0.1,
-            selectable: false,
-            evented: false,
-          }
-        )
+        this.previewShape = ShapeFactory.createPin({
+          left: x,
+          top: y,
+          color: this.activeColor,
+          scaleX: 0.1,
+          scaleY: 0.1,
+          selectable: false,
+          evented: false,
+        })
         break
     }
 
@@ -570,17 +548,17 @@ export class CanvasManager {
         break
       }
       case 'arrow': {
-        this.canvas.remove(this.previewShape)
-        this.previewShape = new Path(this.createArrowPath(startX, startY, currentX, currentY), {
-          stroke: this.activeColor,
-          strokeWidth: this.activeStrokeWidth,
-          fill: 'transparent',
-          strokeLineCap: 'round',
-          strokeLineJoin: 'round',
-          selectable: false,
-          evented: false,
-        })
-        this.canvas.add(this.previewShape)
+        this.adapter.removeObject(this.previewShape)
+        this.previewShape = ShapeFactory.createArrow(
+          this.createArrowPath(startX, startY, currentX, currentY),
+          {
+            color: this.activeColor,
+            strokeWidth: this.activeStrokeWidth,
+            selectable: false,
+            evented: false,
+          }
+        )
+        this.adapter.addObject(this.previewShape)
         break
       }
       case 'text': {
@@ -642,18 +620,15 @@ export class CanvasManager {
           })
           break
         case 'arrow':
-          this.canvas.remove(finalShape)
-          const defaultArrow = new Path(
+          this.adapter.removeObject(finalShape)
+          const defaultArrow = ShapeFactory.createArrow(
             this.createArrowPath(startX - 50, startY, startX + 50, startY),
             {
-              stroke: this.activeColor,
+              color: this.activeColor,
               strokeWidth: this.activeStrokeWidth,
-              fill: 'transparent',
-              strokeLineCap: 'round',
-              strokeLineJoin: 'round',
             }
           )
-          this.canvas.add(defaultArrow)
+          this.adapter.addObject(defaultArrow)
           this.finishCreatedObject(defaultArrow, toolWas)
           return
         case 'text':
@@ -721,118 +696,81 @@ export class CanvasManager {
     if (!this.canvas) return
     const center = this.getViewportCenter()
 
-    const rect = new Rect({
+    const rect = ShapeFactory.createRect({
       left: center.left,
       top: center.top,
-      width: 140,
-      height: 100,
-      fill: this.activeColor,
-      stroke: this.activeColor,
-      strokeWidth: 2,
-      rx: 4,
-      ry: 4,
-      originX: 'center',
-      originY: 'center',
-      opacity: 0.7,
+      color: this.activeColor,
     })
 
-    this.canvas.add(rect)
-    this.canvas.setActiveObject(rect)
-    this.canvas.requestRenderAll()
-    this.canvas.fire('object:modified')
+    this.adapter.addObject(rect)
+    this.adapter.setActiveObject(rect)
+    this.adapter.requestRenderAll()
+    this.adapter.fire('object:modified')
   }
 
   addCircle() {
     if (!this.canvas) return
     const center = this.getViewportCenter()
 
-    const circle = new Circle({
+    const circle = ShapeFactory.createCircle({
       left: center.left,
       top: center.top,
-      radius: 60,
-      fill: this.activeColor,
-      stroke: this.activeColor,
-      strokeWidth: 2,
-      originX: 'center',
-      originY: 'center',
-      opacity: 0.7,
+      color: this.activeColor,
     })
 
-    this.canvas.add(circle)
-    this.canvas.setActiveObject(circle)
-    this.canvas.requestRenderAll()
-    this.canvas.fire('object:modified')
+    this.adapter.addObject(circle)
+    this.adapter.setActiveObject(circle)
+    this.adapter.requestRenderAll()
+    this.adapter.fire('object:modified')
   }
 
   addArrow() {
     if (!this.canvas) return
     const center = this.getViewportCenter()
 
-    const arrow = new Path('M -50 0 L 50 0 M 20 -15 L 50 0 L 20 15', {
+    const arrow = ShapeFactory.createArrow('M -50 0 L 50 0 M 20 -15 L 50 0 L 20 15', {
       left: center.left,
       top: center.top,
-      stroke: this.activeColor,
+      color: this.activeColor,
       strokeWidth: this.activeStrokeWidth,
-      fill: 'transparent',
-      strokeLineCap: 'round',
-      strokeLineJoin: 'round',
-      originX: 'center',
-      originY: 'center',
     })
 
-    this.canvas.add(arrow)
-    this.canvas.setActiveObject(arrow)
-    this.canvas.requestRenderAll()
-    this.canvas.fire('object:modified')
+    this.adapter.addObject(arrow)
+    this.adapter.setActiveObject(arrow)
+    this.adapter.requestRenderAll()
+    this.adapter.fire('object:modified')
   }
 
   addText() {
     if (!this.canvas) return
     const center = this.getViewportCenter()
 
-    const text = new Textbox('Escribí acá', {
+    const text = ShapeFactory.createText('Escribí acá', {
       left: center.left,
       top: center.top,
-      fontFamily: 'Fredoka',
-      fontSize: 24,
-      fontWeight: '500',
-      fill: this.activeColor,
-      stroke: 'transparent',
-      originX: 'center',
-      originY: 'center',
-      textAlign: 'center',
-      width: 180,
+      color: this.activeColor,
     })
 
-    this.canvas.add(text)
-    this.canvas.setActiveObject(text)
-    this.canvas.requestRenderAll()
-    this.canvas.fire('object:modified')
+    this.adapter.addObject(text)
+    this.adapter.setActiveObject(text)
+    this.adapter.requestRenderAll()
+    this.adapter.fire('object:modified')
   }
 
   addPin() {
     if (!this.canvas) return
     const center = this.getViewportCenter()
 
-    // Crear un pin/marcador neo-brutalista (gota invertida con un círculo central calado)
-    const pin = new Path(
-      'M 0 0 C -12 -13 -18 -24 -18 -34 A 18 18 0 1 1 18 -34 C 18 -24 12 -13 0 0 Z M 0 -40 A 6 6 0 1 0 0 -28 A 6 6 0 1 0 0 -40 Z',
-      {
-        left: center.left,
-        top: center.top,
-        fill: this.activeColor,
-        stroke: '#000000',
-        strokeWidth: 3,
-        originX: 'center',
-        originY: 'bottom', // El extremo inferior del marcador coincide con el punto del mapa
-        opacity: 0.9,
-      }
-    )
+    const pin = ShapeFactory.createPin({
+      left: center.left,
+      top: center.top,
+      color: this.activeColor,
+    })
 
-    this.canvas.add(pin)
-    this.canvas.setActiveObject(pin)
-    this.canvas.requestRenderAll()
-    this.canvas.fire('object:modified')
+    this.adapter.addObject(pin)
+    this.adapter.setActiveObject(pin)
+    this.adapter.requestRenderAll()
+    this.adapter.fire('object:modified')
   }
 
   deleteSelected() {
