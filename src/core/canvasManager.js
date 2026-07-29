@@ -1109,16 +1109,47 @@ export class CanvasManager {
   }
 
   getExportDataURL(options = {}) {
-    if (!this.canvas) return ''
-    const { format = 'png', quality = 1.0, multiplier = 2 } = options
+    if (!this.canvas || !this.currentMapImage) return ''
+    const { format = 'png', quality = 1.0, targetWidth, targetHeight } = options
 
+    // Deseleccionar objetos activos para que no salgan controles en la exportación
     this.canvas.discardActiveObject()
     this.canvas.requestRenderAll()
 
-    return this.canvas.toDataURL({
+    // Guardar el viewport transform actual
+    const vpt = [...this.canvas.viewportTransform]
+
+    // Resetear temporalmente el zoom y paneo
+    this.canvas.setViewportTransform([1, 0, 0, 1, 0, 0])
+
+    // Límites reales del mapa base
+    const left = this.currentMapImage.left
+    const top = this.currentMapImage.top
+    const width = this.currentMapImage.width * this.currentMapImage.scaleX
+    const height = this.currentMapImage.height * this.currentMapImage.scaleY
+
+    // Calcular multiplicador según resolución objetivo
+    let multiplier = 1
+    if (targetWidth && width > 0) {
+      multiplier = targetWidth / width
+    } else if (options.multiplier) {
+      multiplier = options.multiplier
+    }
+
+    const dataUrl = this.canvas.toDataURL({
       format: format === 'jpg' ? 'jpeg' : format,
       quality: Math.min(Math.max(quality, 0.1), 1.0),
-      multiplier: Math.max(multiplier, 1),
+      multiplier: multiplier,
+      left,
+      top,
+      width,
+      height
     })
+
+    // Restaurar zoom y paneo del usuario
+    this.canvas.setViewportTransform(vpt)
+    this.canvas.requestRenderAll()
+
+    return dataUrl
   }
 }

@@ -1229,6 +1229,15 @@ body {
 
 /* ESTILOS PARA IMPRESIÓN NATIVA (@media print) */
 @media print {
+  html, body {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    background: #ffffff !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
   body * {
     visibility: hidden !important;
   }
@@ -1246,5 +1255,6 @@ body {
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
+    background: #ffffff !important;
   }
 }

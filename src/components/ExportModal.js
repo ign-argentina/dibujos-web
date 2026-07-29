@@ -25,7 +25,7 @@ export class ExportModal {
     this.format = 'png' // 'png' | 'jpg' | 'pdf'
     this.paperSizeKey = 'A4'
     this.orientation = 'portrait' // 'portrait' | 'landscape'
-    this.scale = 200 // 200% equivale a las dimensiones escolares 19x24 cm en A4
+    this.scale = 100 // Escala inicial 100%
     this.margin = 0 // Sin margen (0 mm permanente)
     this.quality = 2 // 1, 2, 3 (multiplicador DPI)
 
@@ -99,15 +99,10 @@ export class ExportModal {
       this.updatePreview()
     })
 
-    // Botones de Preajuste Escolar (Vertical / Horizontal)
-    const presetVertBtn = document.getElementById('exp-btn-preset-vert')
-    presetVertBtn?.addEventListener('click', () => {
-      this.applySchoolPreset('portrait')
-    })
-
-    const presetHorizBtn = document.getElementById('exp-btn-preset-horiz')
-    presetHorizBtn?.addEventListener('click', () => {
-      this.applySchoolPreset('landscape')
+    // Botón de Restablecer a Escala 100% (Formato Escolar)
+    const preset100Btn = document.getElementById('exp-btn-preset-100')
+    preset100Btn?.addEventListener('click', () => {
+      this.resetTo100Percent()
     })
 
     // Selector de Calidad
@@ -218,11 +213,27 @@ export class ExportModal {
     return { width: base.width, height: base.height }
   }
 
-  applySchoolPreset(orientation = 'portrait') {
+  resetTo100Percent() {
+    this.scale = 100
+    const scaleSlider = document.getElementById('exp-scale-slider')
+    const scaleValText = document.getElementById('exp-scale-val')
+    if (scaleSlider) scaleSlider.value = 100
+    if (scaleValText) scaleValText.textContent = '100%'
+    this.updatePreview()
+  }
+
+  open() {
+    if (!this.modalEl) return
+    this.modalEl.classList.remove('hidden')
+
+    // Detectar si el mapa activo es vertical o apaisado
+    const currentMapId = appState.getActiveMapId()
+    const mapData = mapsCatalog.find((m) => m.id === currentMapId)
+    const isPortrait = mapData ? mapData.isPortrait : true
+
     this.paperSizeKey = 'A4'
-    this.orientation = orientation
-    const targetScale = orientation === 'portrait' ? 200 : 120
-    this.scale = targetScale
+    this.orientation = isPortrait ? 'portrait' : 'landscape'
+    this.scale = 100
     this.margin = 0
 
     const paperSelect = document.getElementById('exp-paper-size')
@@ -230,17 +241,18 @@ export class ExportModal {
 
     const scaleSlider = document.getElementById('exp-scale-slider')
     const scaleValText = document.getElementById('exp-scale-val')
-    if (scaleSlider) scaleSlider.value = targetScale
-    if (scaleValText) scaleValText.textContent = `${targetScale}%`
+    if (scaleSlider) scaleSlider.value = 100
+    if (scaleValText) scaleValText.textContent = '100%'
 
-    this.setOrientation(orientation)
+    // Ocultar sección de orientación
+    const orientBtn = document.getElementById('exp-orient-portrait')
+    const orientSection = orientBtn?.closest('.nbi-context-section')
+    if (orientSection) {
+      orientSection.classList.add('hidden')
+    }
+
     this.updatePreview()
-  }
-
-  open() {
-    if (!this.modalEl) return
-    this.modalEl.classList.remove('hidden')
-    this.applySchoolPreset('portrait')
+    this.updateSubmitButtonUI()
 
     if (window.lucide) {
       window.lucide.createIcons()
@@ -260,7 +272,7 @@ export class ExportModal {
 
     if (!sheetEl || !imgEl) return
 
-    // Calcular proporción para encajar la vista previa en el contenedor (max 300px alto / 280px ancho)
+    // Calcular proporción para encajar la vista previa en el contenedor (max 280px alto / 260px ancho)
     const maxH = 280
     const maxW = 260
     const paperAR = paper.width / paper.height
@@ -280,10 +292,39 @@ export class ExportModal {
     const marginPct = (this.margin / paper.width) * 100
     marginBoxEl.style.padding = `${marginPct}%`
 
-    // Obtener imagen actual del lienzo para vista previa rápida
-    const dataUrl = this.canvasManager.getExportDataURL({ format: 'png', quality: 0.8, multiplier: 1 })
+    // Obtener isPortrait del mapa activo
+    const currentMapId = appState.getActiveMapId()
+    const mapData = mapsCatalog.find((m) => m.id === currentMapId)
+    const isPortrait = mapData ? mapData.isPortrait : true
+
+    const mapWidthMm = isPortrait ? 190 : 240
+    const mapHeightMm = isPortrait ? 240 : 190
+
+    // Obtener imagen del lienzo con tamaño proporcional
+    const DPI = 150
+    const mmToInches = 1 / 25.4
+    const targetWidthPx = Math.round(mapWidthMm * mmToInches * DPI)
+    const targetHeightPx = Math.round(mapHeightMm * mmToInches * DPI)
+
+    const dataUrl = this.canvasManager.getExportDataURL({
+      format: 'png',
+      quality: 0.8,
+      targetWidth: targetWidthPx,
+      targetHeight: targetHeightPx,
+    })
+
     imgEl.src = dataUrl
-    imgEl.style.transform = `scale(${this.scale / 100})`
+
+    // Escalar el mapa de manera proporcional al tamaño de la hoja en la vista previa
+    const scaleFactor = this.scale / 100
+    const finalMapW = (mapWidthMm / paper.width) * sheetW * scaleFactor
+    const finalMapH = (mapHeightMm / paper.height) * sheetH * scaleFactor
+
+    imgEl.style.width = `${Math.round(finalMapW)}px`
+    imgEl.style.height = `${Math.round(finalMapH)}px`
+    imgEl.style.maxWidth = 'none'
+    imgEl.style.maxHeight = 'none'
+    imgEl.style.transform = 'none'
   }
 
   getMapName() {
@@ -304,10 +345,23 @@ export class ExportModal {
   }
 
   executeImageExport() {
+    const currentMapId = appState.getActiveMapId()
+    const mapData = mapsCatalog.find((m) => m.id === currentMapId)
+    const isPortrait = mapData ? mapData.isPortrait : true
+
+    const mapWidthMm = isPortrait ? 190 : 240
+    const mapHeightMm = isPortrait ? 240 : 190
+
+    const DPI = this.quality === 1 ? 72 : (this.quality === 3 ? 300 : 150)
+    const mmToInches = 1 / 25.4
+    const targetWidthPx = Math.round((mapWidthMm * mmToInches * DPI) * (this.scale / 100))
+    const targetHeightPx = Math.round((mapHeightMm * mmToInches * DPI) * (this.scale / 100))
+
     const dataUrl = this.canvasManager.getExportDataURL({
       format: this.format,
       quality: 0.95,
-      multiplier: this.quality,
+      targetWidth: targetWidthPx,
+      targetHeight: targetHeightPx,
     })
 
     const fileName = `mapa_${this.getMapName()}_anotado.${this.format}`
@@ -327,35 +381,31 @@ export class ExportModal {
       format: [paper.width, paper.height],
     })
 
+    const currentMapId = appState.getActiveMapId()
+    const mapData = mapsCatalog.find((m) => m.id === currentMapId)
+    const isPortrait = mapData ? mapData.isPortrait : true
+
+    const mapWidthMm = isPortrait ? 190 : 240
+    const mapHeightMm = isPortrait ? 240 : 190
+
+    const DPI = this.quality === 1 ? 72 : (this.quality === 3 ? 300 : 150)
+    const mmToInches = 1 / 25.4
+    const targetWidthPx = Math.round(mapWidthMm * mmToInches * DPI)
+    const targetHeightPx = Math.round(mapHeightMm * mmToInches * DPI)
+
     const dataUrl = this.canvasManager.getExportDataURL({
       format: 'png',
       quality: 1.0,
-      multiplier: Math.max(this.quality, 2),
+      targetWidth: targetWidthPx,
+      targetHeight: targetHeightPx,
     })
 
-    const margin = this.margin
-    const printableW = paper.width - 2 * margin
-    const printableH = paper.height - 2 * margin
-
-    const canvasW = this.canvasManager.canvasWidth || 800
-    const canvasH = this.canvasManager.canvasHeight || 600
-    const canvasAR = canvasW / canvasH
-    const printableAR = printableW / printableH
-
-    let fitW = printableW
-    let fitH = printableW / canvasAR
-
-    if (canvasAR < printableAR) {
-      fitH = printableH
-      fitW = printableH * canvasAR
-    }
-
     const scaleFactor = this.scale / 100
-    const finalW = fitW * scaleFactor
-    const finalH = fitH * scaleFactor
+    const finalW = mapWidthMm * scaleFactor
+    const finalH = mapHeightMm * scaleFactor
 
-    const offsetX = margin + (printableW - finalW) / 2
-    const offsetY = margin + (printableH - finalH) / 2
+    const offsetX = (paper.width - finalW) / 2
+    const offsetY = (paper.height - finalH) / 2
 
     doc.addImage(dataUrl, 'PNG', offsetX, offsetY, finalW, finalH)
     doc.save(`mapa_${this.getMapName()}_anotado.pdf`)
@@ -363,38 +413,46 @@ export class ExportModal {
 
   executePrint() {
     const paper = this.getPaperDimensions()
+
+    const currentMapId = appState.getActiveMapId()
+    const mapData = mapsCatalog.find((m) => m.id === currentMapId)
+    const isPortrait = mapData ? mapData.isPortrait : true
+
+    const mapWidthMm = isPortrait ? 190 : 240
+    const mapHeightMm = isPortrait ? 240 : 190
+
+    const DPI = 150
+    const mmToInches = 1 / 25.4
+    const targetWidthPx = Math.round(mapWidthMm * mmToInches * DPI)
+    const targetHeightPx = Math.round(mapHeightMm * mmToInches * DPI)
+
     const dataUrl = this.canvasManager.getExportDataURL({
       format: 'png',
       quality: 1.0,
-      multiplier: 2,
+      targetWidth: targetWidthPx,
+      targetHeight: targetHeightPx,
     })
+
+    const scaleFactor = this.scale / 100
+    const finalW = mapWidthMm * scaleFactor
+    const finalH = mapHeightMm * scaleFactor
+
+    const offsetX = (paper.width - finalW) / 2
+    const offsetY = (paper.height - finalH) / 2
+
+    // Inyectar regla @page dinámica con tamaño y orientación de hoja exactos y margen 0
+    const printStyle = document.createElement('style')
+    printStyle.id = 'nbi-print-page-style'
+    printStyle.innerHTML = `
+      @page {
+        size: ${paper.width}mm ${paper.height}mm;
+        margin: 0;
+      }
+    `
+    document.head.appendChild(printStyle)
 
     const printSection = document.createElement('div')
     printSection.id = 'nbi-print-section'
-
-    const margin = this.margin
-    const printableW = paper.width - 2 * margin
-    const printableH = paper.height - 2 * margin
-
-    const canvasW = this.canvasManager.canvasWidth || 800
-    const canvasH = this.canvasManager.canvasHeight || 600
-    const canvasAR = canvasW / canvasH
-    const printableAR = printableW / printableH
-
-    let fitW = printableW
-    let fitH = printableW / canvasAR
-
-    if (canvasAR < printableAR) {
-      fitH = printableH
-      fitW = printableH * canvasAR
-    }
-
-    const scaleFactor = this.scale / 100
-    const finalW = fitW * scaleFactor
-    const finalH = fitH * scaleFactor
-
-    const offsetX = margin + (printableW - finalW) / 2
-    const offsetY = margin + (printableH - finalH) / 2
 
     printSection.innerHTML = `
       <div style="width: ${paper.width}mm; height: ${paper.height}mm; position: relative; background: #fff; overflow: hidden;">
@@ -408,6 +466,7 @@ export class ExportModal {
       window.print()
       setTimeout(() => {
         document.body.removeChild(printSection)
+        document.head.removeChild(printStyle) // Limpieza del estilo dinámico
       }, 500)
     }, 200)
   }
