@@ -1,15 +1,5 @@
-import {
-  Canvas,
-  FabricImage,
-  Rect,
-  Circle,
-  Textbox,
-  Path,
-  PencilBrush,
-  util,
-  loadSVGFromURL,
-  filters,
-} from 'fabric'
+import { FabricImage, Rect, Circle, Textbox, Path } from 'fabric'
+import { FabricAdapter } from './canvas/FabricAdapter.js'
 
 export class CanvasManager {
   constructor(container, options = {}) {
@@ -19,6 +9,7 @@ export class CanvasManager {
 
     this.container = container
     this.options = options
+    this.adapter = new FabricAdapter()
     this.canvas = null
     this.canvasEl = null
     this.resizeObserver = null
@@ -51,11 +42,12 @@ export class CanvasManager {
   init() {
     this.createCanvasElement()
 
-    this.canvas = new Canvas(this.canvasEl, {
+    this.adapter.init(this.canvasEl, {
       selection: true,
       preserveObjectStacking: true,
       ...this.options,
     })
+    this.canvas = this.adapter.canvas
 
     this.configureDrawingBrush()
     this.observeZoomAndPan()
@@ -94,14 +86,7 @@ export class CanvasManager {
   }
 
   configureDrawingBrush() {
-    if (!this.canvas) return
-
-    // Instancia el pincel de dibujo
-    if (!this.canvas.freeDrawingBrush) {
-      this.canvas.freeDrawingBrush = new PencilBrush(this.canvas)
-    }
-    this.canvas.freeDrawingBrush.color = this.activeColor
-    this.canvas.freeDrawingBrush.width = this.activeStrokeWidth
+    this.adapter.setBrushOptions(this.activeColor, this.activeStrokeWidth)
   }
 
   resizeCanvas() {
@@ -117,9 +102,9 @@ export class CanvasManager {
       this.canvasWidth = width
       this.canvasHeight = height
 
-      this.canvas.setDimensions({ width, height })
-      this.canvas.calcOffset()
-      this.canvas.requestRenderAll()
+      this.adapter.setDimensions({ width, height })
+      this.adapter.calcOffset()
+      this.adapter.requestRenderAll()
 
       if (this.currentMapImage) {
         this.fitMapToCanvas()
@@ -140,37 +125,15 @@ export class CanvasManager {
     if (!this.canvas) return
 
     if (this.currentMapImage) {
-      this.canvas.remove(this.currentMapImage)
+      this.adapter.removeObject(this.currentMapImage)
       this.currentMapImage = null
     }
 
     try {
       this.currentMapUrl = url
 
-      // FabricImage.fromURL en v7: (url, loadOptions, imageOptions)
-      const img = await FabricImage.fromURL(
-        url,
-        {
-          crossOrigin: 'anonymous',
-        },
-        {}
-      )
-
-      img.set({
-        selectable: false,
-        evented: false,
-        hasControls: false,
-        hasBorders: false,
-        lockMovementX: true,
-        lockMovementY: true,
-        hoverCursor: 'default',
-        originX: 'left',
-        originY: 'top',
-      })
-
+      const img = await this.adapter.loadBackgroundImage(url)
       this.currentMapImage = img
-
-      this.canvas.insertAt(0, img)
       this.fitMapToCanvas()
 
       return img
@@ -214,8 +177,8 @@ export class CanvasManager {
     const xOffset = (canvasWidth - canvasWidth * zoom) / 2
     const yOffset = (canvasHeight - canvasHeight * zoom) / 2
 
-    this.canvas.setViewportTransform([zoom, 0, 0, zoom, xOffset, yOffset])
-    this.canvas.requestRenderAll()
+    this.adapter.setViewportTransform([zoom, 0, 0, zoom, xOffset, yOffset])
+    this.adapter.requestRenderAll()
   }
 
   observeZoomAndPan() {
@@ -343,18 +306,18 @@ export class CanvasManager {
 
   zoomIn(factor = 1.25) {
     if (!this.canvas) return
-    let zoom = this.canvas.getZoom() * factor
+    let zoom = this.adapter.getZoom() * factor
     if (zoom > 8) zoom = 8
-    this.canvas.zoomToPoint({ x: this.canvasWidth / 2, y: this.canvasHeight / 2 }, zoom)
-    this.canvas.requestRenderAll()
+    this.adapter.zoomToPoint({ x: this.canvasWidth / 2, y: this.canvasHeight / 2 }, zoom)
+    this.adapter.requestRenderAll()
   }
 
   zoomOut(factor = 1.25) {
     if (!this.canvas) return
-    let zoom = this.canvas.getZoom() / factor
+    let zoom = this.adapter.getZoom() / factor
     if (zoom < 0.5) zoom = 0.5
-    this.canvas.zoomToPoint({ x: this.canvasWidth / 2, y: this.canvasHeight / 2 }, zoom)
-    this.canvas.requestRenderAll()
+    this.adapter.zoomToPoint({ x: this.canvasWidth / 2, y: this.canvasHeight / 2 }, zoom)
+    this.adapter.requestRenderAll()
   }
 
   zoomHome() {
@@ -362,8 +325,8 @@ export class CanvasManager {
     if (this.currentMapImage) {
       this.fitMapToCanvas()
     } else {
-      this.canvas.setViewportTransform([1, 0, 0, 1, 0, 0])
-      this.canvas.requestRenderAll()
+      this.adapter.setViewportTransform([1, 0, 0, 1, 0, 0])
+      this.adapter.requestRenderAll()
     }
   }
 
@@ -374,22 +337,19 @@ export class CanvasManager {
     if (!this.canvas) return
 
     if (tool === 'brush') {
-      this.canvas.isDrawingMode = true
+      this.adapter.setDrawingMode(true)
       this.configureDrawingBrush()
-      this.canvas.defaultCursor = 'default'
-      this.canvas.setCursor('default')
-      this.canvas.selection = false
+      this.adapter.setDefaultCursor('default')
+      this.adapter.setSelectionEnabled(false)
     } else if (['rect', 'circle', 'arrow', 'text', 'pin'].includes(tool)) {
-      this.canvas.isDrawingMode = false
-      this.canvas.selection = false
-      this.canvas.defaultCursor = 'crosshair'
-      this.canvas.setCursor('crosshair')
+      this.adapter.setDrawingMode(false)
+      this.adapter.setSelectionEnabled(false)
+      this.adapter.setDefaultCursor('crosshair')
     } else {
       this.activeTool = 'select'
-      this.canvas.isDrawingMode = false
-      this.canvas.selection = true
-      this.canvas.defaultCursor = 'default'
-      this.canvas.setCursor('default')
+      this.adapter.setDrawingMode(false)
+      this.adapter.setSelectionEnabled(true)
+      this.adapter.setDefaultCursor('default')
     }
   }
 
@@ -428,7 +388,7 @@ export class CanvasManager {
     this.configureDrawingBrush()
 
     if (this.canvas) {
-      const activeObject = this.canvas.getActiveObject()
+      const activeObject = this.adapter.getActiveObject()
       if (activeObject) {
         if (activeObject instanceof Textbox) {
           activeObject.set({ fill: color })
@@ -439,8 +399,8 @@ export class CanvasManager {
         } else {
           activeObject.set({ fill: color, stroke: color })
         }
-        this.canvas.requestRenderAll()
-        this.canvas.fire('object:modified')
+        this.adapter.requestRenderAll()
+        this.adapter.fire('object:modified')
       }
     }
   }
@@ -450,11 +410,11 @@ export class CanvasManager {
     this.configureDrawingBrush()
 
     if (this.canvas) {
-      const activeObject = this.canvas.getActiveObject()
+      const activeObject = this.adapter.getActiveObject()
       if (activeObject && !(activeObject instanceof Textbox)) {
         activeObject.set({ strokeWidth: this.activeStrokeWidth })
-        this.canvas.requestRenderAll()
-        this.canvas.fire('object:modified')
+        this.adapter.requestRenderAll()
+        this.adapter.fire('object:modified')
       }
     }
   }
@@ -877,18 +837,18 @@ export class CanvasManager {
 
   deleteSelected() {
     if (!this.canvas) return
-    const activeObject = this.canvas.getActiveObject()
+    const activeObject = this.adapter.getActiveObject()
     if (activeObject && activeObject !== this.currentMapImage) {
-      this.canvas.remove(activeObject)
-      this.canvas.discardActiveObject()
-      this.canvas.requestRenderAll()
-      this.canvas.fire('object:modified')
+      this.adapter.removeObject(activeObject)
+      this.adapter.discardActiveObject()
+      this.adapter.requestRenderAll()
+      this.adapter.fire('object:modified')
     }
   }
 
   async duplicateSelected() {
     if (!this.canvas) return
-    const activeObject = this.canvas.getActiveObject()
+    const activeObject = this.adapter.getActiveObject()
     if (!activeObject || activeObject === this.currentMapImage) return
 
     try {
@@ -903,16 +863,16 @@ export class CanvasManager {
       if (cloned.type === 'activeSelection') {
         cloned.canvas = this.canvas
         cloned.forEachObject((obj) => {
-          this.canvas.add(obj)
+          this.adapter.addObject(obj)
         })
         cloned.setCoordinates()
       } else {
-        this.canvas.add(cloned)
+        this.adapter.addObject(cloned)
       }
 
-      this.canvas.setActiveObject(cloned)
-      this.canvas.requestRenderAll()
-      this.canvas.fire('object:modified')
+      this.adapter.setActiveObject(cloned)
+      this.adapter.requestRenderAll()
+      this.adapter.fire('object:modified')
     } catch (err) {
       console.error('Error duplicando objeto:', err)
     }
@@ -920,46 +880,46 @@ export class CanvasManager {
 
   bringToFront() {
     if (!this.canvas) return
-    const activeObject = this.canvas.getActiveObject()
+    const activeObject = this.adapter.getActiveObject()
     if (activeObject && activeObject !== this.currentMapImage) {
-      this.canvas.bringObjectToFront(activeObject)
-      this.canvas.requestRenderAll()
-      this.canvas.fire('object:modified')
+      this.adapter.bringObjectToFront(activeObject)
+      this.adapter.requestRenderAll()
+      this.adapter.fire('object:modified')
     }
   }
 
   sendToBack() {
     if (!this.canvas) return
-    const activeObject = this.canvas.getActiveObject()
+    const activeObject = this.adapter.getActiveObject()
     if (activeObject && activeObject !== this.currentMapImage) {
-      this.canvas.sendObjectToBack(activeObject)
+      this.adapter.sendObjectToBack(activeObject)
       if (this.currentMapImage) {
-        this.canvas.sendObjectToBack(this.currentMapImage)
+        this.adapter.sendObjectToBack(this.currentMapImage)
       }
-      this.canvas.requestRenderAll()
-      this.canvas.fire('object:modified')
+      this.adapter.requestRenderAll()
+      this.adapter.fire('object:modified')
     }
   }
 
   clearCanvas() {
     if (!this.canvas) return
 
-    const objects = this.canvas.getObjects()
+    const objects = this.adapter.getObjects()
     for (let i = objects.length - 1; i >= 0; i--) {
       const obj = objects[i]
       if (obj !== this.currentMapImage) {
-        this.canvas.remove(obj)
+        this.adapter.removeObject(obj)
       }
     }
-    this.canvas.discardActiveObject()
-    this.canvas.requestRenderAll()
-    this.canvas.fire('object:modified')
+    this.adapter.discardActiveObject()
+    this.adapter.requestRenderAll()
+    this.adapter.fire('object:modified')
   }
 
   serialize() {
     if (!this.canvas) return null
 
-    const objects = this.canvas.getObjects().filter((obj) => obj !== this.currentMapImage)
+    const objects = this.adapter.getObjects().filter((obj) => obj !== this.currentMapImage)
     const serializedObjects = objects.map((obj) => obj.toObject())
     return JSON.stringify(serializedObjects)
   }
@@ -971,14 +931,14 @@ export class CanvasManager {
       const jsonObjects = JSON.parse(jsonString)
       if (!Array.isArray(jsonObjects) || jsonObjects.length === 0) return
 
-      const objects = await util.enlivenObjects(jsonObjects)
+      const objects = await this.adapter.enlivenObjects(jsonObjects)
 
       this.canvas.renderOnAddRemove = false
       objects.forEach((obj) => {
-        this.canvas.add(obj)
+        this.adapter.addObject(obj)
       })
       this.canvas.renderOnAddRemove = true
-      this.canvas.requestRenderAll()
+      this.adapter.requestRenderAll()
     } catch (error) {
       console.error('Error deserializando trazos de dibujo:', error)
     }
@@ -987,12 +947,12 @@ export class CanvasManager {
   exportToPNG(fileName = 'mapa_anotado.png') {
     if (!this.canvas) return
 
-    this.canvas.discardActiveObject()
-    this.canvas.requestRenderAll()
+    this.adapter.discardActiveObject()
+    this.adapter.requestRenderAll()
 
     setTimeout(() => {
       try {
-        const dataUrl = this.canvas.toDataURL({
+        const dataUrl = this.adapter.toDataURL({
           format: 'png',
           quality: 1.0,
           multiplier: 2,
@@ -1014,11 +974,8 @@ export class CanvasManager {
     if (this.resizeObserver) {
       this.resizeObserver.disconnect()
     }
-
-    if (this.canvas) {
-      this.canvas.dispose()
-      this.canvas = null
-    }
+    this.adapter.dispose()
+    this.canvas = null
   }
 
   async addSticker(url) {
@@ -1026,8 +983,8 @@ export class CanvasManager {
     const center = this.getViewportCenter()
 
     try {
-      const { objects, options } = await loadSVGFromURL(url)
-      const stickerGroup = util.groupSVGElements(objects, options)
+      const { objects, options } = await this.adapter.loadSVG(url)
+      const stickerGroup = this.adapter.groupSVGElements(objects, options)
 
       stickerGroup.set({
         left: center.left,
@@ -1049,10 +1006,10 @@ export class CanvasManager {
       // Colorear el sticker con el color activo
       this.colorSVGGroup(stickerGroup, this.activeColor)
 
-      this.canvas.add(stickerGroup)
-      this.canvas.setActiveObject(stickerGroup)
-      this.canvas.requestRenderAll()
-      this.canvas.fire('object:modified')
+      this.adapter.addObject(stickerGroup)
+      this.adapter.setActiveObject(stickerGroup)
+      this.adapter.requestRenderAll()
+      this.adapter.fire('object:modified')
       return stickerGroup
     } catch (err) {
       console.error('Error cargando sticker en el canvas:', err)
@@ -1077,7 +1034,7 @@ export class CanvasManager {
     }
 
     setElementColor(group)
-    this.canvas.requestRenderAll()
+    this.adapter.requestRenderAll()
   }
 
   async addLocalImage(file) {
@@ -1120,10 +1077,10 @@ export class CanvasManager {
             hasRotatingPoint: true,
           })
 
-          this.canvas.add(img)
-          this.canvas.setActiveObject(img)
-          this.canvas.requestRenderAll()
-          this.canvas.fire('object:modified')
+          this.adapter.addObject(img)
+          this.adapter.setActiveObject(img)
+          this.adapter.requestRenderAll()
+          this.adapter.fire('object:modified')
           resolve(img)
         } catch (err) {
           console.error('Error insertando imagen local:', err)
@@ -1138,17 +1095,17 @@ export class CanvasManager {
 
   getExportDataURL(options = {}) {
     if (!this.canvas || !this.currentMapImage) return ''
-    const { format = 'png', quality = 1.0, targetWidth, targetHeight } = options
+    const { format = 'png', quality = 1.0, targetWidth } = options
 
     // Deseleccionar objetos activos para que no salgan controles en la exportación
-    this.canvas.discardActiveObject()
-    this.canvas.requestRenderAll()
+    this.adapter.discardActiveObject()
+    this.adapter.requestRenderAll()
 
     // Guardar el viewport transform actual
-    const vpt = [...this.canvas.viewportTransform]
+    const vpt = this.adapter.getViewportTransform()
 
     // Resetear temporalmente el zoom y paneo
-    this.canvas.setViewportTransform([1, 0, 0, 1, 0, 0])
+    this.adapter.setViewportTransform([1, 0, 0, 1, 0, 0])
 
     // Límites reales del mapa base
     const left = this.currentMapImage.left
@@ -1164,7 +1121,7 @@ export class CanvasManager {
       multiplier = options.multiplier
     }
 
-    const dataUrl = this.canvas.toDataURL({
+    const dataUrl = this.adapter.toDataURL({
       format: format === 'jpg' ? 'jpeg' : format,
       quality: Math.min(Math.max(quality, 0.1), 1.0),
       multiplier: multiplier,
@@ -1175,8 +1132,8 @@ export class CanvasManager {
     })
 
     // Restaurar zoom y paneo del usuario
-    this.canvas.setViewportTransform(vpt)
-    this.canvas.requestRenderAll()
+    this.adapter.setViewportTransform(vpt)
+    this.adapter.requestRenderAll()
 
     return dataUrl
   }
