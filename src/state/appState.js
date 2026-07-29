@@ -1,37 +1,24 @@
-export class AppState {
-  constructor() {
-    this.activeMapId = null
-    this.listeners = []
-  }
+import { appStore } from './AppStore.js'
 
+export class AppState {
   subscribe(callback) {
     if (typeof callback !== 'function') {
       throw new TypeError('El callback debe ser una función')
     }
-    this.listeners.push(callback)
-
-    return () => {
-      this.listeners = this.listeners.filter((cb) => cb !== callback)
-    }
+    // Mapear al callback con la firma compatible { activeMapId }
+    return appStore.subscribe((state) => {
+      callback({
+        activeMapId: state.activeMapId,
+      })
+    })
   }
 
   setActiveMapId(mapId) {
-    if (this.activeMapId === mapId) return
-
-    this.activeMapId = mapId
-    this.emit()
+    appStore.dispatch({ type: 'SET_ACTIVE_MAP_ID', payload: mapId })
   }
 
   getActiveMapId() {
-    return this.activeMapId
-  }
-
-  emit() {
-    this.listeners.forEach((callback) => {
-      callback({
-        activeMapId: this.activeMapId,
-      })
-    })
+    return appStore.getState().activeMapId
   }
 }
 

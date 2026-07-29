@@ -1,5 +1,5 @@
 import { jsPDF } from 'jspdf'
-import { appState } from '../state/appState.js'
+import { appStore } from '../state/AppStore.js'
 
 export class ExportModal {
   constructor(canvasManager, mapRepository) {
@@ -230,7 +230,7 @@ export class ExportModal {
     this.modalEl.classList.remove('hidden')
 
     // Detectar si el mapa activo es vertical o apaisado
-    const currentMapId = appState.getActiveMapId()
+    const currentMapId = appStore.getState().activeMapId
     const mapData = await this.mapRepository.getById(currentMapId)
     const isPortrait = mapData ? mapData.isPortrait : true
 
@@ -296,7 +296,7 @@ export class ExportModal {
     marginBoxEl.style.padding = `${marginPct}%`
 
     // Obtener isPortrait del mapa activo
-    const currentMapId = appState.getActiveMapId()
+    const currentMapId = appStore.getState().activeMapId
     const mapData = await this.mapRepository.getById(currentMapId)
     const isPortrait = mapData ? mapData.isPortrait : true
 
@@ -331,7 +331,7 @@ export class ExportModal {
   }
 
   async getMapName() {
-    const currentMapId = appState.getActiveMapId()
+    const currentMapId = appStore.getState().activeMapId
     const mapData = await this.mapRepository.getById(currentMapId)
     return mapData ? mapData.name.replace(/\s+/g, '_') : 'mapa'
   }
@@ -348,7 +348,7 @@ export class ExportModal {
   }
 
   async executeImageExport() {
-    const currentMapId = appState.getActiveMapId()
+    const currentMapId = appStore.getState().activeMapId
     const mapData = await this.mapRepository.getById(currentMapId)
     const isPortrait = mapData ? mapData.isPortrait : true
 
@@ -385,7 +385,7 @@ export class ExportModal {
       format: [paper.width, paper.height],
     })
 
-    const currentMapId = appState.getActiveMapId()
+    const currentMapId = appStore.getState().activeMapId
     const mapData = await this.mapRepository.getById(currentMapId)
     const isPortrait = mapData ? mapData.isPortrait : true
 
@@ -419,7 +419,7 @@ export class ExportModal {
   async executePrint() {
     const paper = this.getPaperDimensions()
 
-    const currentMapId = appState.getActiveMapId()
+    const currentMapId = appStore.getState().activeMapId
     const mapData = await this.mapRepository.getById(currentMapId)
     const isPortrait = mapData ? mapData.isPortrait : true
 
