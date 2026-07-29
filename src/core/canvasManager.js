@@ -1,4 +1,15 @@
-import { Canvas, FabricImage, Rect, Circle, Textbox, Path, PencilBrush, util, loadSVGFromURL, filters } from 'fabric'
+import {
+  Canvas,
+  FabricImage,
+  Rect,
+  Circle,
+  Textbox,
+  Path,
+  PencilBrush,
+  util,
+  loadSVGFromURL,
+  filters,
+} from 'fabric'
 
 export class CanvasManager {
   constructor(container, options = {}) {
@@ -57,8 +68,11 @@ export class CanvasManager {
     this.canvasEl.className = 'fabric-canvas'
     this.canvasEl.setAttribute('tabindex', '0')
     this.canvasEl.setAttribute('role', 'img')
-    this.canvasEl.setAttribute('aria-label', 'Lienzo interactivo de dibujo sobre el mapa. Presioná Delete o Supr para borrar figuras seleccionadas o Escape para deseleccionar.')
-    
+    this.canvasEl.setAttribute(
+      'aria-label',
+      'Lienzo interactivo de dibujo sobre el mapa. Presioná Delete o Supr para borrar figuras seleccionadas o Escape para deseleccionar.'
+    )
+
     // Escuchador de eventos de teclado en el canvas para accesibilidad
     this.canvasEl.addEventListener('keydown', (e) => {
       if (e.key === 'Delete' || e.key === 'Backspace') {
@@ -134,9 +148,13 @@ export class CanvasManager {
       this.currentMapUrl = url
 
       // FabricImage.fromURL en v7: (url, loadOptions, imageOptions)
-      const img = await FabricImage.fromURL(url, {
-        crossOrigin: 'anonymous',
-      }, {})
+      const img = await FabricImage.fromURL(
+        url,
+        {
+          crossOrigin: 'anonymous',
+        },
+        {}
+      )
 
       img.set({
         selectable: false,
@@ -262,7 +280,10 @@ export class CanvasManager {
         return
       }
 
-      if (['rect', 'circle', 'arrow', 'text', 'pin'].includes(this.activeTool) && (e.button === 0 || !e.button)) {
+      if (
+        ['rect', 'circle', 'arrow', 'text', 'pin'].includes(this.activeTool) &&
+        (e.button === 0 || !e.button)
+      ) {
         this.startShapeDrawing(opt)
       }
     })
@@ -324,10 +345,7 @@ export class CanvasManager {
     if (!this.canvas) return
     let zoom = this.canvas.getZoom() * factor
     if (zoom > 8) zoom = 8
-    this.canvas.zoomToPoint(
-      { x: this.canvasWidth / 2, y: this.canvasHeight / 2 },
-      zoom
-    )
+    this.canvas.zoomToPoint({ x: this.canvasWidth / 2, y: this.canvasHeight / 2 }, zoom)
     this.canvas.requestRenderAll()
   }
 
@@ -335,10 +353,7 @@ export class CanvasManager {
     if (!this.canvas) return
     let zoom = this.canvas.getZoom() / factor
     if (zoom < 0.5) zoom = 0.5
-    this.canvas.zoomToPoint(
-      { x: this.canvasWidth / 2, y: this.canvasHeight / 2 },
-      zoom
-    )
+    this.canvas.zoomToPoint({ x: this.canvasWidth / 2, y: this.canvasHeight / 2 }, zoom)
     this.canvas.requestRenderAll()
   }
 
@@ -539,20 +554,23 @@ export class CanvasManager {
         })
         break
       case 'pin':
-        this.previewShape = new Path('M 0 0 C -12 -13 -18 -24 -18 -34 A 18 18 0 1 1 18 -34 C 18 -24 12 -13 0 0 Z M 0 -40 A 6 6 0 1 0 0 -28 A 6 6 0 1 0 0 -40 Z', {
-          left: x,
-          top: y,
-          fill: this.activeColor,
-          stroke: '#000000',
-          strokeWidth: 3,
-          originX: 'center',
-          originY: 'bottom',
-          opacity: 0.9,
-          scaleX: 0.1,
-          scaleY: 0.1,
-          selectable: false,
-          evented: false,
-        })
+        this.previewShape = new Path(
+          'M 0 0 C -12 -13 -18 -24 -18 -34 A 18 18 0 1 1 18 -34 C 18 -24 12 -13 0 0 Z M 0 -40 A 6 6 0 1 0 0 -28 A 6 6 0 1 0 0 -40 Z',
+          {
+            left: x,
+            top: y,
+            fill: this.activeColor,
+            stroke: '#000000',
+            strokeWidth: 3,
+            originX: 'center',
+            originY: 'bottom',
+            opacity: 0.9,
+            scaleX: 0.1,
+            scaleY: 0.1,
+            selectable: false,
+            evented: false,
+          }
+        )
         break
     }
 
@@ -665,13 +683,16 @@ export class CanvasManager {
           break
         case 'arrow':
           this.canvas.remove(finalShape)
-          const defaultArrow = new Path(this.createArrowPath(startX - 50, startY, startX + 50, startY), {
-            stroke: this.activeColor,
-            strokeWidth: this.activeStrokeWidth,
-            fill: 'transparent',
-            strokeLineCap: 'round',
-            strokeLineJoin: 'round',
-          })
+          const defaultArrow = new Path(
+            this.createArrowPath(startX - 50, startY, startX + 50, startY),
+            {
+              stroke: this.activeColor,
+              strokeWidth: this.activeStrokeWidth,
+              fill: 'transparent',
+              strokeLineCap: 'round',
+              strokeLineJoin: 'round',
+            }
+          )
           this.canvas.add(defaultArrow)
           this.finishCreatedObject(defaultArrow, toolWas)
           return
@@ -834,16 +855,19 @@ export class CanvasManager {
     const center = this.getViewportCenter()
 
     // Crear un pin/marcador neo-brutalista (gota invertida con un círculo central calado)
-    const pin = new Path('M 0 0 C -12 -13 -18 -24 -18 -34 A 18 18 0 1 1 18 -34 C 18 -24 12 -13 0 0 Z M 0 -40 A 6 6 0 1 0 0 -28 A 6 6 0 1 0 0 -40 Z', {
-      left: center.left,
-      top: center.top,
-      fill: this.activeColor,
-      stroke: '#000000',
-      strokeWidth: 3,
-      originX: 'center',
-      originY: 'bottom', // El extremo inferior del marcador coincide con el punto del mapa
-      opacity: 0.9,
-    })
+    const pin = new Path(
+      'M 0 0 C -12 -13 -18 -24 -18 -34 A 18 18 0 1 1 18 -34 C 18 -24 12 -13 0 0 Z M 0 -40 A 6 6 0 1 0 0 -28 A 6 6 0 1 0 0 -40 Z',
+      {
+        left: center.left,
+        top: center.top,
+        fill: this.activeColor,
+        stroke: '#000000',
+        strokeWidth: 3,
+        originX: 'center',
+        originY: 'bottom', // El extremo inferior del marcador coincide con el punto del mapa
+        opacity: 0.9,
+      }
+    )
 
     this.canvas.add(pin)
     this.canvas.setActiveObject(pin)
@@ -935,8 +959,8 @@ export class CanvasManager {
   serialize() {
     if (!this.canvas) return null
 
-    const objects = this.canvas.getObjects().filter(obj => obj !== this.currentMapImage)
-    const serializedObjects = objects.map(obj => obj.toObject())
+    const objects = this.canvas.getObjects().filter((obj) => obj !== this.currentMapImage)
+    const serializedObjects = objects.map((obj) => obj.toObject())
     return JSON.stringify(serializedObjects)
   }
 
@@ -1067,9 +1091,13 @@ export class CanvasManager {
         try {
           const center = this.getViewportCenter()
 
-          const img = await FabricImage.fromURL(dataUrl, {
-            crossOrigin: 'anonymous',
-          }, {})
+          const img = await FabricImage.fromURL(
+            dataUrl,
+            {
+              crossOrigin: 'anonymous',
+            },
+            {}
+          )
 
           const maxDim = Math.min(this.canvasWidth * 0.5, this.canvasHeight * 0.5, 400)
           let scale = 1
@@ -1143,7 +1171,7 @@ export class CanvasManager {
       left,
       top,
       width,
-      height
+      height,
     })
 
     // Restaurar zoom y paneo del usuario

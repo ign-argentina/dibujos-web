@@ -1,14 +1,17 @@
 import { jsPDF } from 'jspdf'
 import { appState } from '../state/appState.js'
-import { mapsCatalog } from '../config/mapsCatalog.js'
 
 export class ExportModal {
-  constructor(canvasManager) {
+  constructor(canvasManager, mapRepository) {
     if (!canvasManager) {
       throw new TypeError('ExportModal requiere una instancia de CanvasManager')
     }
+    if (!mapRepository) {
+      throw new TypeError('ExportModal requiere una instancia de MapRepository')
+    }
 
     this.canvasManager = canvasManager
+    this.mapRepository = mapRepository
     this.modalEl = document.getElementById('export-modal')
     this.closeBtn = document.getElementById('export-modal-close')
     this.cancelBtn = document.getElementById('exp-btn-cancel')
@@ -74,47 +77,47 @@ export class ExportModal {
 
     // Selector de Tamaño de Papel
     const paperSelect = document.getElementById('exp-paper-size')
-    paperSelect?.addEventListener('change', (e) => {
+    paperSelect?.addEventListener('change', async (e) => {
       this.paperSizeKey = e.target.value
-      this.updatePreview()
+      await this.updatePreview()
     })
 
     // Controles de Orientación (Vertical / Horizontal)
     const orientPortraitBtn = document.getElementById('exp-orient-portrait')
     const orientLandscapeBtn = document.getElementById('exp-orient-landscape')
 
-    orientPortraitBtn?.addEventListener('click', () => {
-      this.setOrientation('portrait')
+    orientPortraitBtn?.addEventListener('click', async () => {
+      await this.setOrientation('portrait')
     })
-    orientLandscapeBtn?.addEventListener('click', () => {
-      this.setOrientation('landscape')
+    orientLandscapeBtn?.addEventListener('click', async () => {
+      await this.setOrientation('landscape')
     })
 
     // Slider de Escala
     const scaleSlider = document.getElementById('exp-scale-slider')
     const scaleValText = document.getElementById('exp-scale-val')
-    scaleSlider?.addEventListener('input', (e) => {
+    scaleSlider?.addEventListener('input', async (e) => {
       this.scale = parseInt(e.target.value, 10)
       if (scaleValText) scaleValText.textContent = `${this.scale}%`
-      this.updatePreview()
+      await this.updatePreview()
     })
 
     // Botón de Restablecer a Escala 100% (Formato Escolar)
     const preset100Btn = document.getElementById('exp-btn-preset-100')
-    preset100Btn?.addEventListener('click', () => {
-      this.resetTo100Percent()
+    preset100Btn?.addEventListener('click', async () => {
+      await this.resetTo100Percent()
     })
 
     // Selector de Calidad
     const qualitySelect = document.getElementById('exp-quality-select')
-    qualitySelect?.addEventListener('change', (e) => {
+    qualitySelect?.addEventListener('change', async (e) => {
       this.quality = parseInt(e.target.value, 10)
-      this.updatePreview()
+      await this.updatePreview()
     })
 
     // Botón Submit Final
-    this.submitBtn?.addEventListener('click', () => {
-      this.executeAction()
+    this.submitBtn?.addEventListener('click', async () => {
+      await this.executeAction()
     })
   }
 
@@ -168,7 +171,7 @@ export class ExportModal {
     this.updateSubmitButtonUI()
   }
 
-  setOrientation(orient) {
+  async setOrientation(orient) {
     this.orientation = orient
     const portraitBtn = document.getElementById('exp-orient-portrait')
     const landscapeBtn = document.getElementById('exp-orient-landscape')
@@ -185,7 +188,7 @@ export class ExportModal {
       portraitBtn?.setAttribute('aria-pressed', 'false')
     }
 
-    this.updatePreview()
+    await this.updatePreview()
   }
 
   updateSubmitButtonUI() {
@@ -213,22 +216,22 @@ export class ExportModal {
     return { width: base.width, height: base.height }
   }
 
-  resetTo100Percent() {
+  async resetTo100Percent() {
     this.scale = 100
     const scaleSlider = document.getElementById('exp-scale-slider')
     const scaleValText = document.getElementById('exp-scale-val')
     if (scaleSlider) scaleSlider.value = 100
     if (scaleValText) scaleValText.textContent = '100%'
-    this.updatePreview()
+    await this.updatePreview()
   }
 
-  open() {
+  async open() {
     if (!this.modalEl) return
     this.modalEl.classList.remove('hidden')
 
     // Detectar si el mapa activo es vertical o apaisado
     const currentMapId = appState.getActiveMapId()
-    const mapData = mapsCatalog.find((m) => m.id === currentMapId)
+    const mapData = await this.mapRepository.getById(currentMapId)
     const isPortrait = mapData ? mapData.isPortrait : true
 
     this.paperSizeKey = 'A4'
@@ -251,7 +254,7 @@ export class ExportModal {
       orientSection.classList.add('hidden')
     }
 
-    this.updatePreview()
+    await this.updatePreview()
     this.updateSubmitButtonUI()
 
     if (window.lucide) {
@@ -264,7 +267,7 @@ export class ExportModal {
     this.modalEl.classList.add('hidden')
   }
 
-  updatePreview() {
+  async updatePreview() {
     const paper = this.getPaperDimensions()
     const sheetEl = document.getElementById('exp-paper-sheet')
     const marginBoxEl = document.getElementById('exp-margin-box')
@@ -294,7 +297,7 @@ export class ExportModal {
 
     // Obtener isPortrait del mapa activo
     const currentMapId = appState.getActiveMapId()
-    const mapData = mapsCatalog.find((m) => m.id === currentMapId)
+    const mapData = await this.mapRepository.getById(currentMapId)
     const isPortrait = mapData ? mapData.isPortrait : true
 
     const mapWidthMm = isPortrait ? 190 : 240
@@ -327,35 +330,35 @@ export class ExportModal {
     imgEl.style.transform = 'none'
   }
 
-  getMapName() {
+  async getMapName() {
     const currentMapId = appState.getActiveMapId()
-    const mapData = mapsCatalog.find((m) => m.id === currentMapId)
+    const mapData = await this.mapRepository.getById(currentMapId)
     return mapData ? mapData.name.replace(/\s+/g, '_') : 'mapa'
   }
 
   async executeAction() {
     if (this.destination === 'print') {
-      this.executePrint()
+      await this.executePrint()
     } else if (this.format === 'pdf') {
-      this.executePDFExport()
+      await this.executePDFExport()
     } else {
-      this.executeImageExport()
+      await this.executeImageExport()
     }
     this.close()
   }
 
-  executeImageExport() {
+  async executeImageExport() {
     const currentMapId = appState.getActiveMapId()
-    const mapData = mapsCatalog.find((m) => m.id === currentMapId)
+    const mapData = await this.mapRepository.getById(currentMapId)
     const isPortrait = mapData ? mapData.isPortrait : true
 
     const mapWidthMm = isPortrait ? 190 : 240
     const mapHeightMm = isPortrait ? 240 : 190
 
-    const DPI = this.quality === 1 ? 72 : (this.quality === 3 ? 300 : 150)
+    const DPI = this.quality === 1 ? 72 : this.quality === 3 ? 300 : 150
     const mmToInches = 1 / 25.4
-    const targetWidthPx = Math.round((mapWidthMm * mmToInches * DPI) * (this.scale / 100))
-    const targetHeightPx = Math.round((mapHeightMm * mmToInches * DPI) * (this.scale / 100))
+    const targetWidthPx = Math.round(mapWidthMm * mmToInches * DPI * (this.scale / 100))
+    const targetHeightPx = Math.round(mapHeightMm * mmToInches * DPI * (this.scale / 100))
 
     const dataUrl = this.canvasManager.getExportDataURL({
       format: this.format,
@@ -364,7 +367,8 @@ export class ExportModal {
       targetHeight: targetHeightPx,
     })
 
-    const fileName = `mapa_${this.getMapName()}_anotado.${this.format}`
+    const mapName = await this.getMapName()
+    const fileName = `mapa_${mapName}_anotado.${this.format}`
     const link = document.createElement('a')
     link.download = fileName
     link.href = dataUrl
@@ -373,7 +377,7 @@ export class ExportModal {
     document.body.removeChild(link)
   }
 
-  executePDFExport() {
+  async executePDFExport() {
     const paper = this.getPaperDimensions()
     const doc = new jsPDF({
       orientation: this.orientation,
@@ -382,13 +386,13 @@ export class ExportModal {
     })
 
     const currentMapId = appState.getActiveMapId()
-    const mapData = mapsCatalog.find((m) => m.id === currentMapId)
+    const mapData = await this.mapRepository.getById(currentMapId)
     const isPortrait = mapData ? mapData.isPortrait : true
 
     const mapWidthMm = isPortrait ? 190 : 240
     const mapHeightMm = isPortrait ? 240 : 190
 
-    const DPI = this.quality === 1 ? 72 : (this.quality === 3 ? 300 : 150)
+    const DPI = this.quality === 1 ? 72 : this.quality === 3 ? 300 : 150
     const mmToInches = 1 / 25.4
     const targetWidthPx = Math.round(mapWidthMm * mmToInches * DPI)
     const targetHeightPx = Math.round(mapHeightMm * mmToInches * DPI)
@@ -408,14 +412,15 @@ export class ExportModal {
     const offsetY = (paper.height - finalH) / 2
 
     doc.addImage(dataUrl, 'PNG', offsetX, offsetY, finalW, finalH)
-    doc.save(`mapa_${this.getMapName()}_anotado.pdf`)
+    const mapName = await this.getMapName()
+    doc.save(`mapa_${mapName}_anotado.pdf`)
   }
 
-  executePrint() {
+  async executePrint() {
     const paper = this.getPaperDimensions()
 
     const currentMapId = appState.getActiveMapId()
-    const mapData = mapsCatalog.find((m) => m.id === currentMapId)
+    const mapData = await this.mapRepository.getById(currentMapId)
     const isPortrait = mapData ? mapData.isPortrait : true
 
     const mapWidthMm = isPortrait ? 190 : 240

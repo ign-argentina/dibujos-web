@@ -1,27 +1,28 @@
-import { mapsCatalog } from '../config/mapsCatalog.js'
 import { appState } from '../state/appState.js'
 
 export class MapSelector {
-  constructor(sidebarContainer, cardsContainer) {
+  constructor(sidebarContainer, cardsContainer, mapRepository) {
     if (!(sidebarContainer instanceof HTMLElement)) {
       throw new TypeError('MapSelector espera un contenedor lateral HTML válido')
     }
     if (!(cardsContainer instanceof HTMLElement)) {
       throw new TypeError('MapSelector espera un contenedor de tarjetas HTML válido')
     }
+    if (!mapRepository) {
+      throw new TypeError('MapSelector requiere una instancia de MapRepository')
+    }
 
     this.sidebarContainer = sidebarContainer
     this.cardsContainer = cardsContainer
+    this.mapRepository = mapRepository
     this.currentFilter = 'todos' // 'todos', 'provincia', 'otros'
     this.searchQuery = ''
-    this.filteredMaps = [...mapsCatalog]
-
-    this.init()
+    this.filteredMaps = []
   }
 
-  init() {
+  async init() {
     this.createControls()
-    this.render()
+    await this.filterAndRender()
     this.setupListeners()
   }
 
@@ -61,7 +62,7 @@ export class MapSelector {
   setupListeners() {
     // Eventos de los botones de filtro
     this.filterButtons.forEach((btn) => {
-      btn.addEventListener('click', () => {
+      btn.addEventListener('click', async () => {
         this.filterButtons.forEach((b) => {
           b.classList.remove('is-active')
           b.setAttribute('aria-pressed', 'false')
@@ -69,23 +70,23 @@ export class MapSelector {
         btn.classList.add('is-active')
         btn.setAttribute('aria-pressed', 'true')
         this.currentFilter = btn.getAttribute('data-filter')
-        this.filterAndRender()
+        await this.filterAndRender()
       })
     })
 
     // Evento de escritura en la barra de búsqueda
-    this.searchInput.addEventListener('input', (e) => {
+    this.searchInput.addEventListener('input', async (e) => {
       this.searchQuery = e.target.value.toLowerCase().trim()
       this.toggleClearButton()
-      this.filterAndRender()
+      await this.filterAndRender()
     })
 
     // Evento de clic en el botón de reiniciar búsqueda
-    this.clearBtn.addEventListener('click', () => {
+    this.clearBtn.addEventListener('click', async () => {
       this.searchInput.value = ''
       this.searchQuery = ''
       this.toggleClearButton()
-      this.filterAndRender()
+      await this.filterAndRender()
       this.searchInput.focus()
     })
 
@@ -110,8 +111,9 @@ export class MapSelector {
     }
   }
 
-  filterAndRender() {
-    this.filteredMaps = mapsCatalog.filter((map) => {
+  async filterAndRender() {
+    const maps = await this.mapRepository.getAll()
+    this.filteredMaps = maps.filter((map) => {
       // Filtrado por categoría
       const matchesCategory = this.currentFilter === 'todos' || map.category === this.currentFilter
       // Filtrado por texto (búsqueda)

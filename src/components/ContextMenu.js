@@ -14,9 +14,21 @@ export class ContextMenu {
     this.popoverMenu = null
     this.isOpen = false
     this.presetColors = [
-      '#FAEB8B', '#82D3F8', '#7ABE7D', '#E5828C', '#CC94D6',
-      '#FFA07A', '#FFD700', '#98FB98', '#AFEEEE', '#FFB6C1',
-      '#B0C4DE', '#E6E6FA', '#FFA500', '#FFFFFF', '#000000',
+      '#FAEB8B',
+      '#82D3F8',
+      '#7ABE7D',
+      '#E5828C',
+      '#CC94D6',
+      '#FFA07A',
+      '#FFD700',
+      '#98FB98',
+      '#AFEEEE',
+      '#FFB6C1',
+      '#B0C4DE',
+      '#E6E6FA',
+      '#FFA500',
+      '#FFFFFF',
+      '#000000',
     ]
 
     this.init()
@@ -225,12 +237,12 @@ export class ContextMenu {
 
   hasFilter(obj, filterClass) {
     if (!obj.filters || !Array.isArray(obj.filters)) return false
-    return obj.filters.some(f => f instanceof filterClass)
+    return obj.filters.some((f) => f instanceof filterClass)
   }
 
   getFilterVal(obj, filterClass, propName, defaultVal = 0) {
     if (!obj.filters || !Array.isArray(obj.filters)) return defaultVal
-    const f = obj.filters.find(f => f instanceof filterClass)
+    const f = obj.filters.find((f) => f instanceof filterClass)
     return f && f[propName] !== undefined ? f[propName] : defaultVal
   }
 
@@ -239,7 +251,11 @@ export class ContextMenu {
     const isText = obj instanceof Textbox
     const isRect = obj instanceof Rect
     const isImage = obj instanceof FabricImage && obj !== this.canvasManager.currentMapImage
-    const hasFill = obj.fill !== undefined && obj.fill !== null && !(obj instanceof Path && obj.fill === 'transparent') && !isImage
+    const hasFill =
+      obj.fill !== undefined &&
+      obj.fill !== null &&
+      !(obj instanceof Path && obj.fill === 'transparent') &&
+      !isImage
 
     let html = `
       <div class="nbi-context-header">
@@ -257,7 +273,9 @@ export class ContextMenu {
       const hasInvert = this.hasFilter(obj, filters.Invert)
       const hasSepia = this.hasFilter(obj, filters.Sepia)
 
-      const brightnessVal = Math.round(this.getFilterVal(obj, filters.Brightness, 'brightness', 0) * 100)
+      const brightnessVal = Math.round(
+        this.getFilterVal(obj, filters.Brightness, 'brightness', 0) * 100
+      )
       const contrastVal = Math.round(this.getFilterVal(obj, filters.Contrast, 'contrast', 0) * 100)
       const blurVal = Math.round(this.getFilterVal(obj, filters.Blur, 'blur', 0) * 100)
 
@@ -360,25 +378,33 @@ export class ContextMenu {
 
     // --- SECCIÓN DE COLOR DE RELLENO ---
     if (hasFill) {
-      const currentFill = (obj.fill && obj.fill !== 'transparent') ? obj.fill : '#FAEB8B'
+      const currentFill = obj.fill && obj.fill !== 'transparent' ? obj.fill : '#FAEB8B'
       const isTransparent = obj.fill === 'transparent' || obj.fill === ''
 
       html += `
         <div class="nbi-context-section">
           <div style="display: flex; justify-content: space-between; align-items: center;">
             <span class="nbi-context-label">Relleno:</span>
-            ${isRect || obj instanceof Circle ? `
+            ${
+              isRect || obj instanceof Circle
+                ? `
               <label style="font-size: 0.8rem; font-weight: 600; display: flex; align-items: center; gap: 4px; cursor: pointer;">
                 <input type="checkbox" id="ctx-fill-transparent" ${isTransparent ? 'checked' : ''} />
                 Sin relleno
               </label>
-            ` : ''}
+            `
+                : ''
+            }
           </div>
           <div class="nbi-context-colors-grid" id="ctx-fill-chips">
-            ${this.presetColors.map(c => `
+            ${this.presetColors
+              .map(
+                (c) => `
               <div class="nbi-color-chip ${c.toLowerCase() === (currentFill || '').toLowerCase() && !isTransparent ? 'is-active' : ''}" 
                    style="background-color: ${c}; width: 26px; height: 26px;" data-color="${c}"></div>
-            `).join('')}
+            `
+              )
+              .join('')}
             <input type="color" id="ctx-fill-picker" class="nbi-color-picker-input" value="${currentFill}" style="width: 32px; height: 26px;" title="Color personalizado" />
           </div>
         </div>
@@ -393,10 +419,14 @@ export class ContextMenu {
         <div class="nbi-context-section">
           <span class="nbi-context-label">Borde / Trazo:</span>
           <div class="nbi-context-colors-grid" id="ctx-stroke-chips">
-            ${this.presetColors.map(c => `
+            ${this.presetColors
+              .map(
+                (c) => `
               <div class="nbi-color-chip ${c.toLowerCase() === currentStroke.toLowerCase() ? 'is-active' : ''}" 
                    style="background-color: ${c}; width: 26px; height: 26px;" data-color="${c}"></div>
-            `).join('')}
+            `
+              )
+              .join('')}
             <input type="color" id="ctx-stroke-picker" class="nbi-color-picker-input" value="${currentStroke}" style="width: 32px; height: 26px;" title="Color de borde" />
           </div>
         </div>
@@ -665,7 +695,7 @@ export class ContextMenu {
     ;['left', 'center', 'right'].forEach((align) => {
       const alignBtn = this.popoverMenu.querySelector(`#ctx-align-${align}`)
       alignBtn?.addEventListener('click', () => {
-        ;['left', 'center', 'right'].forEach(a => {
+        ;['left', 'center', 'right'].forEach((a) => {
           const b = this.popoverMenu.querySelector(`#ctx-align-${a}`)
           if (b) b.classList.remove('is-active')
         })
@@ -683,7 +713,9 @@ export class ContextMenu {
     fillChipsContainer?.querySelectorAll('.nbi-color-chip').forEach((chip) => {
       chip.addEventListener('click', () => {
         const color = chip.getAttribute('data-color')
-        fillChipsContainer.querySelectorAll('.nbi-color-chip').forEach(c => c.classList.remove('is-active'))
+        fillChipsContainer
+          .querySelectorAll('.nbi-color-chip')
+          .forEach((c) => c.classList.remove('is-active'))
         chip.classList.add('is-active')
         if (fillTransparentCb) fillTransparentCb.checked = false
 
@@ -700,7 +732,9 @@ export class ContextMenu {
     const fillPicker = this.popoverMenu.querySelector('#ctx-fill-picker')
     fillPicker?.addEventListener('change', (e) => {
       const color = e.target.value
-      fillChipsContainer.querySelectorAll('.nbi-color-chip').forEach(c => c.classList.remove('is-active'))
+      fillChipsContainer
+        .querySelectorAll('.nbi-color-chip')
+        .forEach((c) => c.classList.remove('is-active'))
       if (fillTransparentCb) fillTransparentCb.checked = false
 
       if (obj instanceof Group || obj.getObjects) {
@@ -714,7 +748,9 @@ export class ContextMenu {
 
     fillTransparentCb?.addEventListener('change', (e) => {
       if (e.target.checked) {
-        fillChipsContainer.querySelectorAll('.nbi-color-chip').forEach(c => c.classList.remove('is-active'))
+        fillChipsContainer
+          .querySelectorAll('.nbi-color-chip')
+          .forEach((c) => c.classList.remove('is-active'))
         obj.set('fill', 'transparent')
       } else {
         const defaultColor = this.canvasManager.activeColor || '#FAEB8B'
@@ -729,7 +765,9 @@ export class ContextMenu {
     strokeChipsContainer?.querySelectorAll('.nbi-color-chip').forEach((chip) => {
       chip.addEventListener('click', () => {
         const color = chip.getAttribute('data-color')
-        strokeChipsContainer.querySelectorAll('.nbi-color-chip').forEach(c => c.classList.remove('is-active'))
+        strokeChipsContainer
+          .querySelectorAll('.nbi-color-chip')
+          .forEach((c) => c.classList.remove('is-active'))
         chip.classList.add('is-active')
 
         obj.set('stroke', color)
@@ -741,7 +779,9 @@ export class ContextMenu {
     const strokePicker = this.popoverMenu.querySelector('#ctx-stroke-picker')
     strokePicker?.addEventListener('change', (e) => {
       const color = e.target.value
-      strokeChipsContainer.querySelectorAll('.nbi-color-chip').forEach(c => c.classList.remove('is-active'))
+      strokeChipsContainer
+        .querySelectorAll('.nbi-color-chip')
+        .forEach((c) => c.classList.remove('is-active'))
 
       obj.set('stroke', color)
       this.canvas.requestRenderAll()
@@ -765,7 +805,7 @@ export class ContextMenu {
     const dashDotted = this.popoverMenu.querySelector('#ctx-dash-dotted')
 
     const updateDashButtons = (activeBtn) => {
-      ;[dashSolid, dashDashed, dashDotted].forEach(b => b?.classList.remove('is-active'))
+      ;[dashSolid, dashDashed, dashDotted].forEach((b) => b?.classList.remove('is-active'))
       activeBtn?.classList.add('is-active')
     }
 

@@ -1,11 +1,12 @@
 import './styles/style.css'
-import { mapsCatalog } from './config/mapsCatalog.js'
 import { appState } from './state/appState.js'
 import { CanvasManager } from './core/canvasManager.js'
 import { MapSelector } from './components/MapSelector.js'
 import { ContextMenu } from './components/ContextMenu.js'
 import { ExportModal } from './components/ExportModal.js'
-import { stickersCatalog } from './config/stickersCatalog.js'
+import { configRepository } from './core/repositories/ConfigRepository.js'
+import { mapRepository } from './core/repositories/MapRepository.js'
+import { stickerRepository } from './core/repositories/StickerRepository.js'
 
 // Inicializar Lucide Icons
 if (window.lucide) {
@@ -24,11 +25,11 @@ if (!editorContainer) {
   throw new Error('No se encontró el elemento #editor-container')
 }
 
-// Inicializar CanvasManager, Menú Contextual y Modal de Exportación
+// Inicializar CanvasManager y Menú Contextual
 const canvasManager = new CanvasManager(editorContainer)
 canvasManager.init()
 new ContextMenu(canvasManager)
-const exportModal = new ExportModal(canvasManager)
+let exportModal = null
 
 // --- INTERACTIVIDAD DEL PANEL LATERAL COLAPSABLE ---
 closeSidebarBtn.addEventListener('click', () => {
@@ -45,8 +46,7 @@ toggleSidebarBtn.addEventListener('click', () => {
   closeSidebarBtn.focus()
 })
 
-// --- INICIALIZACIÓN DEL SELECTOR DE MAPAS MODULARIZADO ---
-new MapSelector(sidebar, cardsContainer)
+// MapSelector se inicializa dentro del initApp asíncrono
 
 // --- ESCUCHAR CAMBIOS EN EL ESTADO GLOBAL (REACTIVIDAD Y PERSISTENCIA) ---
 let previousMapId = null
@@ -75,22 +75,22 @@ appState.subscribe(async (state) => {
       localStorage.removeItem(`drawing_${previousMapId}`)
     }
   }
-  
+
   // Actualizar el ID previo para la próxima iteración
   previousMapId = state.activeMapId
 
   // 2. La clase activa se actualiza automáticamente a través de la suscripción dentro de MapSelector
-  
+
   // 3. Limpiar dibujos transitorios antes de cargar el nuevo mapa
   canvasManager.clearCanvas()
-  
+
   // 4. Cargar el mapa en el Canvas con pantalla de carga juguetona
-  const mapData = mapsCatalog.find((m) => m.id === state.activeMapId)
+  const mapData = await mapRepository.getById(state.activeMapId)
   if (mapData) {
     loaderOverlay.classList.remove('hidden')
     try {
       await canvasManager.loadMap(mapData.imageUrl)
-      
+
       // 5. Cargar dibujos guardados de la provincia activa (si existen)
       const savedJson = localStorage.getItem(`drawing_${state.activeMapId}`)
       if (savedJson) {
@@ -126,7 +126,7 @@ const toolButtons = {
 }
 
 function updateActiveToolUI(activeTool) {
-  Object.values(toolButtons).forEach(btn => {
+  Object.values(toolButtons).forEach((btn) => {
     if (btn) btn.classList.remove('is-active')
   })
   if (toolButtons[activeTool]) {
@@ -185,19 +185,22 @@ let lastUsedColors = ['#faeb8b', '#82d3f8', '#7abe7d'] // 3 últimos colores uti
 
 function selectColor(color, activeChip) {
   // Mantener histórico de los últimos 3 colores utilizados sin duplicados
-  lastUsedColors = [color, ...lastUsedColors.filter((c) => c.toLowerCase() !== color.toLowerCase())].slice(0, 3)
+  lastUsedColors = [
+    color,
+    ...lastUsedColors.filter((c) => c.toLowerCase() !== color.toLowerCase()),
+  ].slice(0, 3)
 
   // Remover clase activa y actualizar aria-checked de todas las fichas
   document.querySelectorAll('.nbi-color-chip').forEach((c) => {
     c.classList.remove('is-active')
     c.setAttribute('aria-checked', 'false')
   })
-  
+
   if (activeChip) {
     activeChip.classList.add('is-active')
     activeChip.setAttribute('aria-checked', 'true')
   }
-  
+
   canvasManager.setActiveColor(color)
   renderRecentColors()
 }
@@ -290,7 +293,7 @@ function renderCustomChips() {
 
   // Insertar antes de la ficha negra (#000000)
   const blackChip = colorChipsContainer.querySelector('.nbi-color-chip[data-color="#000000"]')
-  
+
   customColors.forEach((color) => {
     const chip = document.createElement('button')
     chip.type = 'button'
@@ -301,7 +304,7 @@ function renderCustomChips() {
     chip.setAttribute('data-color', color)
     chip.setAttribute('title', `Personalizado: ${color}`)
     chip.setAttribute('aria-label', `Color personalizado ${color}`)
-    
+
     if (blackChip) {
       colorChipsContainer.insertBefore(chip, blackChip)
     } else {
@@ -354,27 +357,7 @@ toggleStickersBtn?.addEventListener('click', () => {
   closeStickersPanel()
 })
 
-// Generar stickers dinámicamente
-stickersCatalog.forEach((name) => {
-  const item = document.createElement('button')
-  item.className = 'nbi-sticker-item'
-  item.setAttribute('title', `Agregar sticker de ${name.replace(/-/g, ' ')}`)
-  item.setAttribute('aria-label', `Agregar sticker de ${name.replace(/-/g, ' ')}`)
-  
-  const img = document.createElement('img')
-  img.src = `${import.meta.env.BASE_URL}stickers/${name}.svg`
-  img.alt = name
-  img.className = 'nbi-sticker-img'
-  img.setAttribute('loading', 'lazy')
-  
-  item.appendChild(img)
-  
-  item.addEventListener('click', () => {
-    canvasManager.addSticker(`${import.meta.env.BASE_URL}stickers/${name}.svg`)
-  })
-  
-  stickersContainer.appendChild(item)
-})
+// Los stickers se generan dinámicamente dentro de initApp
 
 // --- ACCIONES DEL SISTEMA (IMPORTACIÓN DE IMAGEN Y DESCARGA DE PNG) ---
 const importImageBtn = document.getElementById('action-import-image')
@@ -396,13 +379,59 @@ document.getElementById('action-export')?.addEventListener('click', () => {
   exportModal.open()
 })
 
-// --- INICIALIZACIÓN DE LA APLICACIÓN ---
-// Refrescar iconos cargados dinámicamente por si acaso
-if (window.lucide) {
-  window.lucide.createIcons()
+// --- INICIALIZACIÓN ASÍNCRONA DE LA APLICACIÓN ---
+async function initApp() {
+  loaderOverlay.classList.remove('hidden')
+  try {
+    // 1. Cargar la configuración remota JSON
+    await configRepository.load()
+
+    // 2. Inicializar ExportModal con el repositorio
+    exportModal = new ExportModal(canvasManager, mapRepository)
+
+    // 3. Inicializar selector de mapas modularizado
+    const mapSelector = new MapSelector(sidebar, cardsContainer, mapRepository)
+    await mapSelector.init()
+
+    // 4. Generar stickers dinámicamente desde el repositorio
+    const stickers = await stickerRepository.getAll()
+    stickers.forEach((name) => {
+      const item = document.createElement('button')
+      item.className = 'nbi-sticker-item'
+      item.setAttribute('title', `Agregar sticker de ${name.replace(/-/g, ' ')}`)
+      item.setAttribute('aria-label', `Agregar sticker de ${name.replace(/-/g, ' ')}`)
+
+      const img = document.createElement('img')
+      img.src = `${import.meta.env.BASE_URL}stickers/${name}.svg`
+      img.alt = name
+      img.className = 'nbi-sticker-img'
+      img.setAttribute('loading', 'lazy')
+
+      item.appendChild(img)
+
+      item.addEventListener('click', () => {
+        canvasManager.addSticker(`${import.meta.env.BASE_URL}stickers/${name}.svg`)
+      })
+
+      stickersContainer.appendChild(item)
+    })
+
+    // Refrescar iconos cargados dinámicamente por si acaso
+    if (window.lucide) {
+      window.lucide.createIcons()
+    }
+
+    // 5. Activar por defecto la primera provincia del catálogo
+    const maps = await mapRepository.getAll()
+    if (maps.length > 0) {
+      appState.setActiveMapId(maps[0].id)
+    }
+  } catch (err) {
+    console.error('Error al inicializar la aplicación:', err)
+  } finally {
+    loaderOverlay.classList.add('hidden')
+  }
 }
 
-// Activar por defecto la primera provincia (Buenos Aires)
-if (mapsCatalog.length > 0) {
-  appState.setActiveMapId(mapsCatalog[0].id)
-}
+// Arrancar aplicación
+initApp()
