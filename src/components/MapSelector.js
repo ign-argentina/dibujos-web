@@ -149,8 +149,9 @@ export class MapSelector {
         card.setAttribute('aria-pressed', 'false')
       }
 
+      const cleanThumbnailUrl = map.thumbnailUrl.replace(/^\//, '')
       card.innerHTML = `
-        <img class="nbi-map-card-image" src="${map.thumbnailUrl}" alt="${map.name}" loading="lazy" />
+        <img class="nbi-map-card-image" src="${import.meta.env.BASE_URL}${cleanThumbnailUrl}" alt="${map.name}" loading="lazy" />
         <div class="nbi-map-card-info">${map.name}</div>
       `
 

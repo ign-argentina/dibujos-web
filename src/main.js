@@ -362,7 +362,7 @@ stickersCatalog.forEach((name) => {
   item.setAttribute('aria-label', `Agregar sticker de ${name.replace(/-/g, ' ')}`)
   
   const img = document.createElement('img')
-  img.src = `/stickers/${name}.svg`
+  img.src = `${import.meta.env.BASE_URL}stickers/${name}.svg`
   img.alt = name
   img.className = 'nbi-sticker-img'
   img.setAttribute('loading', 'lazy')
@@ -370,7 +370,7 @@ stickersCatalog.forEach((name) => {
   item.appendChild(img)
   
   item.addEventListener('click', () => {
-    canvasManager.addSticker(`/stickers/${name}.svg`)
+    canvasManager.addSticker(`${import.meta.env.BASE_URL}stickers/${name}.svg`)
   })
   
   stickersContainer.appendChild(item)
