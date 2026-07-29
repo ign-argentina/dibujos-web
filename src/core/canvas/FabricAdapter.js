@@ -261,6 +261,7 @@ export class FabricAdapter {
         originX: 'left',
         originY: 'top',
       })
+      this.canvas.insertAt(img, 0)
       return img
     } catch (err) {
       console.error('FabricAdapter: Error cargando imagen de fondo:', err)
