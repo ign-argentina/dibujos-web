@@ -260,6 +260,7 @@ export class FabricAdapter {
         hoverCursor: 'default',
         originX: 'left',
         originY: 'top',
+        isMapBase: true,
       })
       this.canvas.insertAt(0, img)
       return img

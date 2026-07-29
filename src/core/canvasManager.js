@@ -845,7 +845,7 @@ export class CanvasManager {
     const objects = this.adapter.getObjects()
     for (let i = objects.length - 1; i >= 0; i--) {
       const obj = objects[i]
-      if (obj !== this.currentMapImage) {
+      if (obj !== this.currentMapImage && obj.isMapBase !== true) {
         this.adapter.removeObject(obj)
       }
     }
@@ -857,7 +857,7 @@ export class CanvasManager {
   serialize() {
     if (!this.canvas) return null
 
-    const objects = this.adapter.getObjects().filter((obj) => obj !== this.currentMapImage)
+    const objects = this.adapter.getObjects().filter((obj) => obj !== this.currentMapImage && obj.isMapBase !== true)
     const serializedObjects = objects.map((obj) => obj.toObject())
     return JSON.stringify(serializedObjects)
   }
