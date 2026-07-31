@@ -18,10 +18,10 @@
   <div id="app">
     <!-- NAVBAR SUPERIOR FLOTANTE (IDENTIDAD) -->
     <nav class="nbi-window-floating nbi-navbar" id="navbar" aria-label="Navegación principal">
-      <div class="nbi-navbar-brand">
+      <a href="https://www.ign.gob.ar" target="_blank" rel="noopener noreferrer" class="nbi-navbar-brand" id="logo-link">
         <img src="/logo-ign-blanco.svg" alt="Instituto Geográfico Nacional" class="nbi-navbar-logo" />
         <h1 class="nbi-navbar-title">Mapas escolares</h1>
-      </div>
+      </a>
       <span class="nbi-navbar-subtitle"></span>
     </nav>
 
@@ -230,9 +230,9 @@
             <div class="nbi-context-section" id="exp-section-format">
               <span class="nbi-context-label">Formato de Salida:</span>
               <div class="nbi-filter-group" role="radiogroup" aria-label="Formato del archivo">
-                <button type="button" class="nbi-filter-btn is-active" id="exp-fmt-png" data-fmt="png" aria-pressed="true">PNG</button>
+                <button type="button" class="nbi-filter-btn is-active" id="exp-fmt-pdf" data-fmt="pdf" aria-pressed="true">PDF</button>
+                <button type="button" class="nbi-filter-btn" id="exp-fmt-png" data-fmt="png" aria-pressed="false">PNG</button>
                 <button type="button" class="nbi-filter-btn" id="exp-fmt-jpg" data-fmt="jpg" aria-pressed="false">JPG</button>
-                <button type="button" class="nbi-filter-btn" id="exp-fmt-pdf" data-fmt="pdf" aria-pressed="false">PDF</button>
               </div>
             </div>
 

@@ -93,7 +93,9 @@ export async function bootstrap() {
     if (mapData) {
       loaderOverlay.classList.remove('hidden')
       try {
-        await canvasManager.loadMap(mapData.imageUrl)
+        const mapUrl =
+          mapData.imageUrl || `${import.meta.env.BASE_URL.replace(/\/$/, '')}${mapData.imagePath}`
+        await canvasManager.loadMap(mapUrl)
 
         // 4. Cargar dibujos guardados de la provincia activa (si existen)
         const savedJson = persistenceService.load(`drawing_${state.activeMapId}`)
@@ -140,25 +142,71 @@ export async function bootstrap() {
     await configRepository.load()
     const uiConfig = configRepository.getUiConfig()
 
+    // Cargar dinámicamente custom.css o el fallback default/custom.css
+    const cssLink = document.createElement('link')
+    cssLink.rel = 'stylesheet'
+    const customCssUrl = `${import.meta.env.BASE_URL}config/custom.css`
+    const defaultCssUrl = `${import.meta.env.BASE_URL}config/default/custom.css`
+    try {
+      const resp = await fetch(customCssUrl, { method: 'HEAD' })
+      if (resp.ok) {
+        cssLink.href = customCssUrl
+      } else {
+        cssLink.href = defaultCssUrl
+      }
+    } catch {
+      cssLink.href = defaultCssUrl
+    }
+    document.head.appendChild(cssLink)
+
+    // Inyectar paleta de colores del tema en variables CSS del :root
+    if (uiConfig.theme) {
+      const themeStyle = document.createElement('style')
+      themeStyle.id = 'nbi-dynamic-theme-style'
+      themeStyle.innerHTML = `
+        :root {
+          --nbi-bg-main: ${uiConfig.theme.background || '#FAFAFA'};
+          --nbi-pastel-blue: ${uiConfig.theme.primary || '#63ccfd'};
+          --nbi-pastel-purple: ${uiConfig.theme.secondary || '#B391f0'};
+          --nbi-pastel-yellow: ${uiConfig.theme.accent || '#d0fe46'};
+          --nbi-black: ${uiConfig.theme.text || '#000000'};
+          --nbi-muted: ${uiConfig.theme.icons || '#757575'};
+          --nbi-pastel-green: ${uiConfig.theme.confirm || '#FBE158'};
+          --nbi-pastel-pink: ${uiConfig.theme.danger || '#c25b56'};
+        }
+      `
+      document.head.appendChild(themeStyle)
+    }
+
     // 2. Personalización dinámica de la interfaz desde config.json
-    const headerTitle = document.querySelector('h1')
+    const headerTitle = document.querySelector('.nbi-navbar-title')
     if (headerTitle && uiConfig.title) {
       headerTitle.textContent = uiConfig.title
     }
 
-    const headerLogo = document.querySelector('.nbi-header-logo-img')
+    const headerLogo = document.querySelector('.nbi-navbar-logo')
     if (headerLogo && uiConfig.logoUrl) {
       headerLogo.src = `${import.meta.env.BASE_URL.replace(/\/$/, '')}${uiConfig.logoUrl}`
     }
 
-    const externalLink = document.getElementById('external-link')
+    const logoLink = document.getElementById('logo-link')
+    if (logoLink && uiConfig.logoLink) {
+      logoLink.href = uiConfig.logoLink
+    }
+
+    const externalLink = document.getElementById('ign-link-btn')
     if (externalLink && uiConfig.externalLink) {
       if (uiConfig.externalLink.visible === false) {
         externalLink.classList.add('hidden')
       } else {
         externalLink.classList.remove('hidden')
-        externalLink.href = uiConfig.externalLink.href || 'https://www.ign.gob.ar'
-        externalLink.textContent = uiConfig.externalLink.text || 'IGN Argentina'
+        externalLink.href =
+          uiConfig.externalLink.href ||
+          'https://www.ign.gob.ar/AreaServicios/Descargas/MapasEscolares'
+        const spanText = externalLink.querySelector('.btn-text')
+        if (spanText) {
+          spanText.textContent = uiConfig.externalLink.text || 'Descargar Mapas Oficiales'
+        }
       }
     }
 

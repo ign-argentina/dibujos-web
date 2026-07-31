@@ -433,10 +433,21 @@
   "ui": {
     "title": "Dibujos sobre Mapas Escolares",
     "logoUrl": "/logo-ign-blanco.svg",
+    "logoLink": "https://www.ign.gob.ar",
     "externalLink": {
       "visible": true,
-      "text": "IGN Argentina",
-      "href": "https://www.ign.gob.ar"
+      "text": "Descargar Mapas Oficiales IGN Argentina",
+      "href": "https://www.ign.gob.ar/AreaServicios/Descargas/MapasEscolares"
+    },
+    "theme": {
+      "primary": "#63ccfd",
+      "secondary": "#B391f0",
+      "accent": "#d0fe46",
+      "background": "#FAFAFA",
+      "text": "#000000",
+      "icons": "#757575",
+      "confirm": "#FBE158",
+      "danger": "#c25b56"
     },
     "colorPalette": [
       "#FFF4B0",

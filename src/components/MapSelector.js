@@ -113,11 +113,20 @@ export class MapSelector {
 
   async filterAndRender() {
     const maps = await this.mapRepository.getAll()
+    const cleanString = (str) =>
+      str
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+
+    const query = cleanString(this.searchQuery)
+
     this.filteredMaps = maps.filter((map) => {
       // Filtrado por categoría
       const matchesCategory = this.currentFilter === 'todos' || map.category === this.currentFilter
-      // Filtrado por texto (búsqueda)
-      const matchesSearch = !this.searchQuery || map.name.toLowerCase().includes(this.searchQuery)
+      // Filtrado por texto (búsqueda) sin tener en cuenta tildes
+      const mapName = cleanString(map.name)
+      const matchesSearch = !query || mapName.includes(query)
       return matchesCategory && matchesSearch
     })
 

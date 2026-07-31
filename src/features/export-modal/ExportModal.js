@@ -27,7 +27,7 @@ export class ExportModal extends Component {
 
     // Opciones iniciales de exportación
     this.destination = 'save' // 'save' | 'print'
-    this.format = 'png' // 'png' | 'jpg' | 'pdf'
+    this.format = 'pdf' // 'png' | 'jpg' | 'pdf'
     this.paperSizeKey = 'A4'
     this.orientation = 'portrait' // 'portrait' | 'landscape'
     this.scale = 100
@@ -147,7 +147,7 @@ export class ExportModal extends Component {
     const isPortrait = mapData ? mapData.isPortrait : true
 
     this.orientation = isPortrait ? 'portrait' : 'landscape'
-    this.format = 'png'
+    this.format = 'pdf'
     this.destination = 'save'
 
     this.syncFormControls()
@@ -232,6 +232,20 @@ export class ExportModal extends Component {
     if (orientPortrait && orientLandscape) {
       orientPortrait.classList.toggle('is-active', this.orientation === 'portrait')
       orientLandscape.classList.toggle('is-active', this.orientation === 'landscape')
+    }
+
+    // 4. Actualizar texto de botón de descarga/impresión
+    if (this.submitBtn) {
+      if (this.destination === 'print') {
+        this.submitBtn.textContent = 'Imprimir'
+      } else {
+        const textMap = {
+          png: 'Guardar como PNG',
+          jpg: 'Guardar como JPG',
+          pdf: 'Guardar como PDF',
+        }
+        this.submitBtn.textContent = textMap[this.format] || 'Guardar'
+      }
     }
   }
 
