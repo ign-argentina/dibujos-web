@@ -1,5 +1,6 @@
 import { jsPDF } from 'jspdf'
 import { appStore } from '../state/AppStore.js'
+import { ExportService } from '../core/export/ExportService.js'
 
 export class ExportModal {
   constructor(canvasManager, mapRepository) {
@@ -360,7 +361,7 @@ export class ExportModal {
     const targetWidthPx = Math.round(mapWidthMm * mmToInches * DPI * (this.scale / 100))
     const targetHeightPx = Math.round(mapHeightMm * mmToInches * DPI * (this.scale / 100))
 
-    const dataUrl = this.canvasManager.getExportDataURL({
+    const dataUrl = await ExportService.getExportDataURL(this.canvasManager, {
       format: this.format,
       quality: 0.95,
       targetWidth: targetWidthPx,
@@ -397,7 +398,7 @@ export class ExportModal {
     const targetWidthPx = Math.round(mapWidthMm * mmToInches * DPI)
     const targetHeightPx = Math.round(mapHeightMm * mmToInches * DPI)
 
-    const dataUrl = this.canvasManager.getExportDataURL({
+    const dataUrl = await ExportService.getExportDataURL(this.canvasManager, {
       format: 'png',
       quality: 1.0,
       targetWidth: targetWidthPx,
@@ -431,7 +432,7 @@ export class ExportModal {
     const targetWidthPx = Math.round(mapWidthMm * mmToInches * DPI)
     const targetHeightPx = Math.round(mapHeightMm * mmToInches * DPI)
 
-    const dataUrl = this.canvasManager.getExportDataURL({
+    const dataUrl = await ExportService.getExportDataURL(this.canvasManager, {
       format: 'png',
       quality: 1.0,
       targetWidth: targetWidthPx,

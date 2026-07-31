@@ -1,6 +1,7 @@
 import { FabricImage } from 'fabric'
 import { FabricAdapter } from './canvas/FabricAdapter.js'
 import { ShapeFactory } from './canvas/ShapeFactory.js'
+import { ExportService } from './export/ExportService.js'
 
 export class CanvasManager {
   constructor(container, options = {}) {
@@ -885,29 +886,7 @@ export class CanvasManager {
   }
 
   exportToPNG(fileName = 'mapa_anotado.png') {
-    if (!this.canvas) return
-
-    this.adapter.discardActiveObject()
-    this.adapter.requestRenderAll()
-
-    setTimeout(() => {
-      try {
-        const dataUrl = this.adapter.toDataURL({
-          format: 'png',
-          quality: 1.0,
-          multiplier: 2,
-        })
-
-        const link = document.createElement('a')
-        link.download = fileName
-        link.href = dataUrl
-        document.body.appendChild(link)
-        link.click()
-        document.body.removeChild(link)
-      } catch (error) {
-        console.error('Error exportando lienzo a PNG:', error)
-      }
-    }, 50)
+    ExportService.exportToPNG(this, fileName)
   }
 
   dispose() {
