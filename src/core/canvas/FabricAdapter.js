@@ -1,4 +1,4 @@
-import { Canvas, FabricImage, PencilBrush, util, loadSVGFromURL } from 'fabric'
+import { Canvas, FabricImage, PencilBrush, util, loadSVGFromURL, filters } from 'fabric'
 
 /**
  * Adaptador de Fabric.js para encapsular su API de bajo nivel.
@@ -322,5 +322,70 @@ export class FabricAdapter {
       this.canvas.dispose()
       this.canvas = null
     }
+  }
+
+  /**
+   * Verifica si un objeto de imagen posee un tipo de filtro específico.
+   * @param {Object} obj
+   * @param {string} filterType
+   * @returns {boolean}
+   */
+  hasFilter(obj, filterType) {
+    if (!obj || !obj.filters) return false
+    const typeMap = {
+      grayscale: 'Grayscale',
+      invert: 'Invert',
+      sepia: 'Sepia',
+      brightness: 'Brightness',
+      contrast: 'Contrast',
+      blur: 'Blur',
+    }
+    const targetType = typeMap[filterType.toLowerCase()] || filterType
+    return obj.filters.some((f) => f.type === targetType)
+  }
+
+  /**
+   * Aplica o remueve un filtro de imagen a un objeto.
+   * @param {Object} obj
+   * @param {string} filterType
+   * @param {boolean|number} enabledOrVal
+   */
+  applyFilter(obj, filterType, enabledOrVal) {
+    if (!obj) return
+    obj.filters = obj.filters || []
+
+    const typeMap = {
+      grayscale: 'Grayscale',
+      invert: 'Invert',
+      sepia: 'Sepia',
+      brightness: 'Brightness',
+      contrast: 'Contrast',
+      blur: 'Blur',
+    }
+    const targetType = typeMap[filterType.toLowerCase()]
+
+    // Remover filtro existente del mismo tipo
+    obj.filters = obj.filters.filter((f) => f.type !== targetType)
+
+    // Instanciar y agregar si está activado
+    if (enabledOrVal !== false && enabledOrVal !== 0 && enabledOrVal !== undefined) {
+      if (filterType === 'grayscale') {
+        obj.filters.push(new filters.Grayscale())
+      } else if (filterType === 'invert') {
+        obj.filters.push(new filters.Invert())
+      } else if (filterType === 'sepia') {
+        obj.filters.push(new filters.Sepia())
+      } else if (filterType === 'brightness') {
+        obj.filters.push(new filters.Brightness({ brightness: enabledOrVal }))
+      } else if (filterType === 'contrast') {
+        obj.filters.push(new filters.Contrast({ contrast: enabledOrVal }))
+      } else if (filterType === 'blur') {
+        obj.filters.push(new filters.Blur({ blur: enabledOrVal }))
+      }
+    }
+
+    obj.applyFilters()
+    this.canvas.requestRenderAll()
+    this.canvas.fire('object:modified')
   }
 }
