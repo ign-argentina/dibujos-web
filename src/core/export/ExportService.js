@@ -20,8 +20,11 @@ export class ExportService {
     canvasManager.adapter.discardActiveObject()
     canvasManager.adapter.requestRenderAll()
 
-    // Clonar el canvas lógicamente para procesarlo de forma aislada
-    const clonedCanvas = await canvasManager.canvas.clone()
+    // Clonar el canvas lógicamente para procesarlo de forma aislada, asegurando incluir propiedades personalizadas
+    const clonedCanvas = await canvasManager.canvas.clone(['isMapBase'])
+
+    // Configurar fondo blanco sólido para el canvas clonado para evitar costados negros en conversiones JPG
+    clonedCanvas.backgroundColor = '#ffffff'
 
     // Resetear transformaciones de zoom y paneo en el canvas clonado
     clonedCanvas.setViewportTransform([1, 0, 0, 1, 0, 0])
