@@ -1,6 +1,7 @@
 import './styles/style.css'
 import { appStore } from './state/AppStore.js'
 import { CanvasManager } from './core/canvasManager.js'
+import { persistenceService } from './core/persistence/PersistenceService.js'
 import { MapSelector } from './components/MapSelector.js'
 import { ContextMenu } from './components/ContextMenu.js'
 import { ExportModal } from './components/ExportModal.js'
@@ -51,14 +52,18 @@ toggleSidebarBtn.addEventListener('click', () => {
 // --- ESCUCHAR CAMBIOS EN EL ESTADO GLOBAL (REACTIVIDAD Y PERSISTENCIA) ---
 let previousMapId = null
 
-function saveDrawingState() {
+function saveDrawingState(immediate = false) {
   const currentMapId = appStore.getState().activeMapId
   if (currentMapId && canvasManager.canvas) {
     const jsonString = canvasManager.serialize()
     if (jsonString) {
-      localStorage.setItem(`drawing_${currentMapId}`, jsonString)
+      if (immediate) {
+        persistenceService.save(`drawing_${currentMapId}`, jsonString)
+      } else {
+        persistenceService.saveDebounced(`drawing_${currentMapId}`, jsonString)
+      }
     } else {
-      localStorage.removeItem(`drawing_${currentMapId}`)
+      persistenceService.remove(`drawing_${currentMapId}`)
     }
   }
 }
@@ -70,9 +75,9 @@ appStore.subscribe(async (state) => {
   if (previousMapId && previousMapId !== state.activeMapId) {
     const prevJson = canvasManager.serialize()
     if (prevJson) {
-      localStorage.setItem(`drawing_${previousMapId}`, prevJson)
+      persistenceService.save(`drawing_${previousMapId}`, prevJson)
     } else {
-      localStorage.removeItem(`drawing_${previousMapId}`)
+      persistenceService.remove(`drawing_${previousMapId}`)
     }
   }
 
@@ -92,7 +97,7 @@ appStore.subscribe(async (state) => {
       await canvasManager.loadMap(mapData.imageUrl)
 
       // 5. Cargar dibujos guardados de la provincia activa (si existen)
-      const savedJson = localStorage.getItem(`drawing_${state.activeMapId}`)
+      const savedJson = persistenceService.load(`drawing_${state.activeMapId}`)
       if (savedJson) {
         await canvasManager.deserialize(savedJson)
       }
@@ -109,9 +114,9 @@ appStore.subscribe(async (state) => {
 
 // Suscribirse a eventos del canvas para autoguardado en tiempo real
 if (canvasManager.canvas) {
-  canvasManager.canvas.on('object:added', saveDrawingState)
-  canvasManager.canvas.on('object:modified', saveDrawingState)
-  canvasManager.canvas.on('object:removed', saveDrawingState)
+  canvasManager.canvas.on('object:added', () => saveDrawingState(false))
+  canvasManager.canvas.on('object:modified', () => saveDrawingState(false))
+  canvasManager.canvas.on('object:removed', () => saveDrawingState(false))
 }
 
 // --- INTERACTIVIDAD DE LA BARRA DE HERRAMIENTAS DE DIBUJO ---
