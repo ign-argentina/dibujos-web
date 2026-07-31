@@ -260,7 +260,7 @@ export class ExportModal extends Component {
   }
 
   async updatePreview() {
-    const previewContainer = document.getElementById('exp-preview-sheet')
+    const previewContainer = document.getElementById('exp-paper-sheet')
     const imgEl = document.getElementById('exp-preview-img')
     if (!previewContainer || !imgEl || !this.canvasManager.canvas) return
 
