@@ -27,9 +27,9 @@ export class ExportService {
     clonedCanvas.setViewportTransform([1, 0, 0, 1, 0, 0])
 
     // Localizar el mapa base clonado
-    const clonedMapImage = clonedCanvas.getObjects().find(
-      (obj) => obj.isMapBase === true || (obj.type === 'image' && obj.selectable === false)
-    )
+    const clonedMapImage = clonedCanvas
+      .getObjects()
+      .find((obj) => obj.isMapBase === true || (obj.type === 'image' && obj.selectable === false))
 
     let left = 0
     let top = 0
