@@ -2,6 +2,7 @@ import { FabricImage } from 'fabric'
 import { FabricAdapter } from './canvas/FabricAdapter.js'
 import { ShapeFactory } from './canvas/ShapeFactory.js'
 import { ExportService } from './export/ExportService.js'
+import { ToolService } from './canvas/tools/ToolService.js'
 
 export class CanvasManager {
   constructor(container, options = {}) {
@@ -50,6 +51,9 @@ export class CanvasManager {
       ...this.options,
     })
     this.canvas = this.adapter.canvas
+
+    this.toolService = new ToolService(this)
+    this.toolService.setTool(this.activeTool)
 
     this.configureDrawingBrush()
     this.observeZoomAndPan()
@@ -245,11 +249,8 @@ export class CanvasManager {
         return
       }
 
-      if (
-        ['rect', 'circle', 'arrow', 'text', 'pin'].includes(this.activeTool) &&
-        (e.button === 0 || !e.button)
-      ) {
-        this.startShapeDrawing(opt)
+      if (e.button === 0 || !e.button) {
+        this.toolService.handleMouseDown(opt)
       }
     })
 
@@ -268,9 +269,7 @@ export class CanvasManager {
         return
       }
 
-      if (this.isDrawingShape) {
-        this.updateShapeDrawing(opt)
-      }
+      this.toolService.handleMouseMove(opt)
     })
 
     canvas.on('mouse:up', (opt) => {
@@ -290,9 +289,7 @@ export class CanvasManager {
         return
       }
 
-      if (this.isDrawingShape) {
-        this.finishShapeDrawing(opt)
-      }
+      this.toolService.handleMouseUp(opt)
     })
   }
 
@@ -338,20 +335,8 @@ export class CanvasManager {
     this.announceA11y(`Herramienta ${tool} activada`)
     if (!this.canvas) return
 
-    if (tool === 'brush') {
-      this.adapter.setDrawingMode(true)
-      this.configureDrawingBrush()
-      this.adapter.setDefaultCursor('default')
-      this.adapter.setSelectionEnabled(false)
-    } else if (['rect', 'circle', 'arrow', 'text', 'pin'].includes(tool)) {
-      this.adapter.setDrawingMode(false)
-      this.adapter.setSelectionEnabled(false)
-      this.adapter.setDefaultCursor('crosshair')
-    } else {
-      this.activeTool = 'select'
-      this.adapter.setDrawingMode(false)
-      this.adapter.setSelectionEnabled(true)
-      this.adapter.setDefaultCursor('default')
+    if (this.toolService) {
+      this.toolService.setTool(tool)
     }
   }
 
@@ -442,234 +427,6 @@ export class CanvasManager {
     const y4 = y2 - headLen * Math.sin(angle + arrowAngle)
 
     return `M ${x1} ${y1} L ${x2} ${y2} M ${x3} ${y3} L ${x2} ${y2} L ${x4} ${y4}`
-  }
-
-  startShapeDrawing(opt) {
-    if (!this.canvas) return
-    const pointer = this.canvas.getScenePoint(opt.e)
-    this.isDrawingShape = true
-    this.drawStartPoint = pointer
-
-    const x = pointer.x
-    const y = pointer.y
-
-    switch (this.activeTool) {
-      case 'rect':
-        this.previewShape = ShapeFactory.createRect({
-          left: x,
-          top: y,
-          width: 1,
-          height: 1,
-          color: this.activeColor,
-          originX: 'left',
-          originY: 'top',
-          selectable: false,
-          evented: false,
-        })
-        break
-      case 'circle':
-        this.previewShape = ShapeFactory.createCircle({
-          left: x,
-          top: y,
-          radius: 1,
-          color: this.activeColor,
-          originX: 'left',
-          originY: 'top',
-          selectable: false,
-          evented: false,
-        })
-        break
-      case 'arrow':
-        this.previewShape = ShapeFactory.createArrow(this.createArrowPath(x, y, x + 1, y + 1), {
-          color: this.activeColor,
-          strokeWidth: this.activeStrokeWidth,
-          selectable: false,
-          evented: false,
-        })
-        break
-      case 'text':
-        this.previewShape = ShapeFactory.createText('Escribí acá', {
-          left: x,
-          top: y,
-          color: this.activeColor,
-          originX: 'left',
-          originY: 'top',
-          textAlign: 'left',
-          width: 1,
-          selectable: false,
-          evented: false,
-        })
-        break
-      case 'pin':
-        this.previewShape = ShapeFactory.createPin({
-          left: x,
-          top: y,
-          color: this.activeColor,
-          scaleX: 0.1,
-          scaleY: 0.1,
-          selectable: false,
-          evented: false,
-        })
-        break
-    }
-
-    if (this.previewShape) {
-      this.canvas.add(this.previewShape)
-      this.canvas.requestRenderAll()
-    }
-  }
-
-  updateShapeDrawing(opt) {
-    if (!this.isDrawingShape || !this.drawStartPoint || !this.previewShape) return
-
-    const pointer = this.canvas.getScenePoint(opt.e)
-    const startX = this.drawStartPoint.x
-    const startY = this.drawStartPoint.y
-    const currentX = pointer.x
-    const currentY = pointer.y
-
-    const deltaX = currentX - startX
-    const deltaY = currentY - startY
-
-    switch (this.activeTool) {
-      case 'rect': {
-        const left = Math.min(startX, currentX)
-        const top = Math.min(startY, currentY)
-        const width = Math.max(Math.abs(deltaX), 1)
-        const height = Math.max(Math.abs(deltaY), 1)
-        this.previewShape.set({ left, top, width, height })
-        break
-      }
-      case 'circle': {
-        const diameter = Math.max(Math.abs(deltaX), Math.abs(deltaY))
-        const radius = Math.max(diameter / 2, 1)
-        const left = Math.min(startX, currentX)
-        const top = Math.min(startY, currentY)
-        this.previewShape.set({ left, top, radius })
-        break
-      }
-      case 'arrow': {
-        this.adapter.removeObject(this.previewShape)
-        this.previewShape = ShapeFactory.createArrow(
-          this.createArrowPath(startX, startY, currentX, currentY),
-          {
-            color: this.activeColor,
-            strokeWidth: this.activeStrokeWidth,
-            selectable: false,
-            evented: false,
-          }
-        )
-        this.adapter.addObject(this.previewShape)
-        break
-      }
-      case 'text': {
-        const left = Math.min(startX, currentX)
-        const top = Math.min(startY, currentY)
-        const width = Math.max(Math.abs(deltaX), 120)
-        this.previewShape.set({ left, top, width })
-        break
-      }
-      case 'pin': {
-        const dist = Math.hypot(deltaX, deltaY)
-        const scale = Math.max(0.2, Math.min(3, dist / 50))
-        this.previewShape.set({ left: startX, top: startY, scaleX: scale, scaleY: scale })
-        break
-      }
-    }
-
-    this.canvas.requestRenderAll()
-  }
-
-  finishShapeDrawing(opt) {
-    if (!this.isDrawingShape || !this.drawStartPoint || !this.previewShape) return
-
-    const pointer = this.canvas.getScenePoint(opt.e)
-    const startX = this.drawStartPoint.x
-    const startY = this.drawStartPoint.y
-    const currentX = pointer.x
-    const currentY = pointer.y
-
-    const dist = Math.hypot(currentX - startX, currentY - startY)
-    const isClick = dist < 5
-
-    const toolWas = this.activeTool
-    const finalShape = this.previewShape
-
-    this.isDrawingShape = false
-    this.drawStartPoint = null
-    this.previewShape = null
-
-    if (isClick) {
-      switch (toolWas) {
-        case 'rect':
-          finalShape.set({
-            left: startX,
-            top: startY,
-            width: 140,
-            height: 100,
-            originX: 'center',
-            originY: 'center',
-          })
-          break
-        case 'circle':
-          finalShape.set({
-            left: startX,
-            top: startY,
-            radius: 60,
-            originX: 'center',
-            originY: 'center',
-          })
-          break
-        case 'arrow':
-          this.adapter.removeObject(finalShape)
-          const defaultArrow = ShapeFactory.createArrow(
-            this.createArrowPath(startX - 50, startY, startX + 50, startY),
-            {
-              color: this.activeColor,
-              strokeWidth: this.activeStrokeWidth,
-            }
-          )
-          this.adapter.addObject(defaultArrow)
-          this.finishCreatedObject(defaultArrow, toolWas)
-          return
-        case 'text':
-          finalShape.set({
-            left: startX,
-            top: startY,
-            width: 180,
-            originX: 'center',
-            originY: 'center',
-            textAlign: 'center',
-          })
-          break
-        case 'pin':
-          finalShape.set({
-            left: startX,
-            top: startY,
-            scaleX: 1,
-            scaleY: 1,
-            originX: 'center',
-            originY: 'bottom',
-          })
-          break
-      }
-    } else {
-      if (toolWas === 'rect' || toolWas === 'circle' || toolWas === 'text') {
-        finalShape.set({
-          originX: 'left',
-          originY: 'top',
-        })
-      } else if (toolWas === 'pin') {
-        finalShape.set({
-          left: startX,
-          top: startY,
-          originX: 'center',
-          originY: 'bottom',
-        })
-      }
-    }
-
-    this.finishCreatedObject(finalShape, toolWas)
   }
 
   finishCreatedObject(shape, toolWas) {
