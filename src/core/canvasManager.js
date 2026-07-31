@@ -813,4 +813,12 @@ export class CanvasManager {
 
     return dataUrl
   }
+
+  hasFilter(obj, filterType) {
+    return this.adapter.hasFilter(obj, filterType)
+  }
+
+  applyFilter(obj, filterType, enabledOrVal) {
+    this.adapter.applyFilter(obj, filterType, enabledOrVal)
+  }
 }
