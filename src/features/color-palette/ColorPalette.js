@@ -34,10 +34,7 @@ export class ColorPalette extends Component {
     this.propertiesPanel = document.getElementById('properties-panel')
     this.togglePropertiesBtn = document.getElementById('toggle-properties-btn')
 
-    // Personalización dinámica de colores desde config.json
-    if (uiConfig.asideBackgroundColor && this.propertiesPanel) {
-      this.propertiesPanel.style.backgroundColor = uiConfig.asideBackgroundColor
-    }
+
 
     // Inyectar chips de colores dinámicamente según la paleta configurada
     if (this.colorChipsContainer) {

@@ -173,6 +173,16 @@ export async function bootstrap() {
           --nbi-muted: ${uiConfig.theme.icons || '#757575'};
           --nbi-pastel-green: ${uiConfig.theme.confirm || '#FBE158'};
           --nbi-pastel-pink: ${uiConfig.theme.danger || '#c25b56'};
+          --nbi-panel-bg: ${uiConfig.theme.panelBackground || '#ebebeb'};
+        }
+
+        .nbi-export-modal,
+        .nbi-sidebar-catalog,
+        .nbi-toolbar-drawing,
+        .nbi-properties-panel,
+        .nbi-stickers-panel,
+        .nbi-context-popover {
+          background-color: var(--nbi-panel-bg) !important;
         }
       `
       document.head.appendChild(themeStyle)
@@ -210,9 +220,7 @@ export async function bootstrap() {
       }
     }
 
-    if (uiConfig.asideBackgroundColor && sidebar) {
-      sidebar.style.backgroundColor = uiConfig.asideBackgroundColor
-    }
+
 
     // 3. Inicializar y montar componentes UI modulares
     const toolbar = new Toolbar(document.getElementById('toolbar-container') || editorContainer, {

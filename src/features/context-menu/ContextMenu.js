@@ -1,5 +1,4 @@
 import { Component } from '../Component.js'
-import { configRepository } from '../../core/repositories/ConfigRepository.js'
 
 /**
  * Componente que gestiona el menú contextual flotante para la edición de las figuras sobre el canvas.
@@ -35,7 +34,6 @@ export class ContextMenu extends Component {
   }
 
   render() {
-    const uiConfig = configRepository.getUiConfig()
 
     // 1. Botón disparador flotante
     this.triggerBtn = document.createElement('button')
@@ -52,10 +50,7 @@ export class ContextMenu extends Component {
     this.popoverMenu.setAttribute('role', 'dialog')
     this.popoverMenu.setAttribute('aria-label', 'Opciones y propiedades de la figura seleccionada')
 
-    // Personalización dinámica del menú contextual desde config.json
-    if (uiConfig.contextMenuBackgroundColor) {
-      this.popoverMenu.style.backgroundColor = uiConfig.contextMenuBackgroundColor
-    }
+
 
     this.container.appendChild(this.popoverMenu)
   }

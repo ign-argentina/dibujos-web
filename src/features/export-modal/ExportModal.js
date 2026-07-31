@@ -307,6 +307,20 @@ export class ExportModal extends Component {
       imgEl.style.position = 'static'
       imgEl.style.transform = 'none'
     }
+
+    try {
+      this.showSpinner()
+      const dataUrl = await ExportService.getExportDataURL(this.canvasManager, {
+        format: 'png',
+        quality: 0.7,
+        targetWidth: 400, // resolución de preview baja
+      })
+      imgEl.src = dataUrl
+    } catch (err) {
+      console.error('Error generando previsualización:', err)
+    } finally {
+      this.hideSpinner()
+    }
   }
 
   async getMapName() {
