@@ -28,6 +28,10 @@ export class ConfigRepository {
   getStickers() {
     return this.config?.stickers || []
   }
+
+  getUiConfig() {
+    return this.config?.ui || {}
+  }
 }
 
 export const configRepository = new ConfigRepository()
