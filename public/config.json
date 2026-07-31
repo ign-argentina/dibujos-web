@@ -429,5 +429,26 @@
     "vacuna",
     "zanahorias",
     "zapallo"
-  ]
+  ],
+  "ui": {
+    "title": "Dibujos sobre Mapas Escolares",
+    "logoUrl": "/logo-ign-blanco.svg",
+    "externalLink": {
+      "visible": true,
+      "text": "IGN Argentina",
+      "href": "https://www.ign.gob.ar"
+    },
+    "colorPalette": [
+      "#FFF4B0",
+      "#FAEB8B",
+      "#FFA2A2",
+      "#82D3F8",
+      "#7ABE7D",
+      "#E289F2",
+      "#A5A5A5",
+      "#000000"
+    ],
+    "asideBackgroundColor": "#1e293b",
+    "contextMenuBackgroundColor": "#ffffff"
+  }
 }
