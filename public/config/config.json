@@ -440,14 +440,14 @@
       "href": "https://www.ign.gob.ar/AreaServicios/Descargas/MapasEscolares"
     },
     "theme": {
-      "primary": "#63ccfd",
-      "secondary": "#B391f0",
-      "accent": "#d0fe46",
+      "primary": "#9BD2FF",
+      "secondary": "#E289F2",
+      "accent": "#FAEB8B",
       "background": "#FAFAFA",
       "panelBackground": "#ebebeb",
       "text": "#000000",
       "icons": "#757575",
-      "confirm": "#FBE158",
+      "confirm": "#7ABE7D",
       "danger": "#c25b56"
     },
     "colorPalette": [
