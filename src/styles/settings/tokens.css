@@ -1,0 +1,80 @@
+:root {
+  /* --- PALETA DE COLORES SEMÁNTICOS (Neo-Brutalismo) --- */
+  --nbi-success-color: #7ABE7D;
+  --nbi-primary-color: #63ccfd;
+  --nbi-accent-color: #FBE158;
+  --nbi-danger-color: #c25b56;
+  --nbi-secondary-color: #B391f0;
+
+  --nbi-black: #000000;
+  --nbi-white: #FFFFFF;
+  --nbi-grey: #ebebeb;
+  --nbi-muted: #757575;
+  --nbi-bg-main: #FAFAFA;
+
+  /* Alias semánticos */
+  --nbi-color-primary: var(--nbi-primary-color);
+  --nbi-color-secondary: var(--nbi-secondary-color);
+  --nbi-color-accent: var(--nbi-accent-color);
+  --nbi-color-bg-main: var(--nbi-bg-main);
+  --nbi-color-panel-bg: var(--nbi-grey);
+  --nbi-color-white: var(--nbi-white);
+  --nbi-color-black: var(--nbi-black);
+  --nbi-color-muted: var(--nbi-muted);
+  --nbi-color-success: var(--nbi-success-color);
+  --nbi-color-danger: var(--nbi-danger-color);
+
+  /* --- RADIOS DE BORDES --- */
+  --nbi-radius-infant: 16px;
+  --nbi-radius-teen: 4px;
+  --nbi-radius-pill: 9999px;
+
+  /* Alias semánticos */
+  --nbi-radius-button: 12px;
+  --nbi-radius-panel: var(--nbi-radius-infant);
+
+  /* --- ESCALA DE ESPACIADO (Múltiplos de 4px) --- */
+  --nbi-space-xs: 4px;
+  --nbi-space-sm: 8px;
+  --nbi-space-md: 12px;
+  --nbi-space-lg: 16px;
+  --nbi-space-xl: 20px;
+  --nbi-space-xxl: 24px;
+  --nbi-space-3xl: 32px;
+
+  /* --- BORDES Y SOMBRAS --- */
+  --nbi-border-width-sm: 2px;
+  --nbi-border-width-md: 3px;
+  --nbi-border-width-lg: 4px;
+
+  --nbi-shadow-sm: 2px 2px 0px 0px var(--nbi-black);
+  --nbi-shadow-md: 4px 4px 0px 0px var(--nbi-black);
+  --nbi-shadow-lg: 6px 6px 0px 0px var(--nbi-black);
+
+  /* --- ESCALA TIPOGRÁFICA --- */
+  --nbi-font-family: 'Fredoka', 'Quicksand', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --nbi-font-size-xs: 0.75rem;
+  --nbi-font-size-sm: 0.82rem;
+  --nbi-font-size-base: 0.9rem;
+  --nbi-font-size-md: 1.0rem;
+  --nbi-font-size-lg: 1.1rem;
+  --nbi-font-size-xl: 1.25rem;
+  --nbi-font-size-xxl: 1.4rem;
+  --nbi-font-weight-regular: 400;
+  --nbi-font-weight-semibold: 500;
+  --nbi-font-weight-bold: 600;
+
+  /* --- NIVELES DE SUPERPOSICIÓN (Z-INDEX) --- */
+  --nbi-z-canvas: 1;
+  --nbi-z-canvas-container: 2;
+  --nbi-z-sidebar-btn: 9;
+  --nbi-z-floating: 10;
+  --nbi-z-context-menu: 15;
+  --nbi-z-loader: 100;
+  --nbi-z-modal: 200;
+
+  /* --- TRANSICIONES --- */
+  --nbi-transition-fast: 0.15s ease;
+  --nbi-transition-normal: 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  --nbi-transition-slow: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.1);
+}

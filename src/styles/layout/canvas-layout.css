@@ -1,0 +1,74 @@
+/* --- CANVAS LAYOUT & ISOLATION --- */
+.canvas-root {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: var(--nbi-z-canvas);
+  background-size: 20px 20px;
+  background-image:
+    linear-gradient(to right, var(--nbi-color-panel-bg) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--nbi-color-panel-bg) 1px, transparent 1px);
+}
+
+.fabric-canvas-wrapper {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  overflow: hidden;
+}
+
+/* Sobrescribir contenedor de Fabric para evitar bucles */
+.canvas-container {
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  max-width: 100% !important;
+  max-height: 100% !important;
+  z-index: var(--nbi-z-canvas-container);
+}
+
+/* --- ESTILOS PARA IMPRESIÓN NATIVA (@media print) --- */
+@page {
+  size: var(--nbi-print-width, auto) var(--nbi-print-height, auto);
+  margin: 0;
+}
+
+@media print {
+  html,
+  body {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    background: #ffffff !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  body * {
+    visibility: hidden !important;
+  }
+
+  #nbi-print-section,
+  #nbi-print-section * {
+    visibility: visible !important;
+  }
+
+  #nbi-print-section {
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background: #ffffff !important;
+  }
+}

@@ -22,14 +22,14 @@ export class StickersPanel extends Component {
       const stickers = await stickerRepository.getAll()
       stickers.forEach((name) => {
         const item = document.createElement('button')
-        item.className = 'nbi-sticker-item'
+        item.className = 'nbi-stickers__item'
         item.setAttribute('title', `Agregar sticker de ${name.replace(/-/g, ' ')}`)
         item.setAttribute('aria-label', `Agregar sticker de ${name.replace(/-/g, ' ')}`)
 
         const img = document.createElement('img')
         img.src = `${import.meta.env.BASE_URL}stickers/${name}.svg`
         img.alt = name
-        img.className = 'nbi-sticker-img'
+        img.className = 'nbi-stickers__img'
         img.setAttribute('loading', 'lazy')
 
         item.appendChild(img)

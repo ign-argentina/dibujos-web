@@ -1,0 +1,37 @@
+/* --- NAVBAR SUPERIOR FLOTANTE --- */
+.nbi-navbar {
+  min-width: 320px;
+  height: 50px;
+  top: 14px;
+  left: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--nbi-space-lg);
+  padding: 10px var(--nbi-space-xxl);
+  background-color: var(--nbi-color-primary);
+  white-space: nowrap;
+}
+
+.nbi-navbar__brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.nbi-navbar__logo {
+  height: 30px;
+  width: auto;
+}
+
+.nbi-navbar__title {
+  font-size: var(--nbi-font-size-xl);
+  font-weight: var(--nbi-font-weight-bold);
+  letter-spacing: -0.5px;
+}
+
+.nbi-navbar__subtitle {
+  font-size: 0.85rem;
+  font-weight: var(--nbi-font-weight-semibold);
+  opacity: 0.7;
+}

@@ -438,15 +438,8 @@ export class ExportModal extends Component {
     const offsetX = (paper.width - finalW) / 2
     const offsetY = (paper.height - finalH) / 2
 
-    const printStyle = document.createElement('style')
-    printStyle.id = 'nbi-print-page-style'
-    printStyle.innerHTML = `
-      @page {
-        size: ${paper.width}mm ${paper.height}mm;
-        margin: 0;
-      }
-    `
-    document.head.appendChild(printStyle)
+    document.documentElement.style.setProperty('--nbi-print-width', `${paper.width}mm`)
+    document.documentElement.style.setProperty('--nbi-print-height', `${paper.height}mm`)
 
     const printSection = document.createElement('div')
     printSection.id = 'nbi-print-section'
@@ -463,7 +456,8 @@ export class ExportModal extends Component {
       window.print()
       setTimeout(() => {
         document.body.removeChild(printSection)
-        document.head.removeChild(printStyle)
+        document.documentElement.style.removeProperty('--nbi-print-width')
+        document.documentElement.style.removeProperty('--nbi-print-height')
       }, 500)
     }, 200)
   }

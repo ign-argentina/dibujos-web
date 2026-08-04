@@ -441,23 +441,27 @@
     },
     "theme": {
       "primary": "#4d9de0",
-      "secondary": "#7768ae",
+      "secondary": "#84d2f6 ",
       "accent": "#e1bc29",
       "background": "#FAFAFA",
       "panelBackground": "#ebebeb",
       "text": "#000000",
       "icons": "#757575",
-      "confirm": "#7ABE7D",
+      "success": "#7ABE7D",
       "danger": "#c25b56"
     },
     "colorPalette": [
-      "#FFF4B0",
-      "#FAEB8B",
-      "#FFA2A2",
-      "#82D3F8",
-      "#7ABE7D",
-      "#E289F2",
-      "#A5A5A5",
+      "#f94144",
+      "#f3722c",
+      "#f9c74f",
+      "#90be6d",
+      "#43aa8b",
+      "#4895ef",
+      "#277da1",
+      "#7263d2",
+      "#f159b6",
+      "#ffffff",
+      "#555555",
       "#000000"
     ]
   }

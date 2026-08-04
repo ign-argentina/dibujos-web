@@ -1,0 +1,10 @@
+/* --- CONTROLES DE ZOOM FLOTANTES INDEPENDIENTES --- */
+.nbi-zoom-controls {
+  position: absolute;
+  top: 530px;
+  right: 20px;
+  z-index: var(--nbi-z-floating);
+  display: flex;
+  flex-direction: column;
+  gap: var(--nbi-space-md);
+}

@@ -1,0 +1,101 @@
+/* --- BOTONES BRUTALISTAS --- */
+.nbi-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 48px;
+  min-height: 48px;
+  border: var(--nbi-border-width-md) solid var(--nbi-color-black);
+  border-radius: 12px;
+  background-color: var(--nbi-color-primary);
+  cursor: pointer;
+  padding: 10px;
+  transition: transform var(--nbi-transition-fast), box-shadow var(--nbi-transition-fast);
+  box-shadow: var(--nbi-shadow-md);
+  color: var(--nbi-color-black);
+  outline: none;
+}
+
+.nbi-btn svg,
+.nbi-btn__icon {
+  width: 24px;
+  height: 24px;
+  stroke-width: 2.5;
+}
+
+.nbi-btn:hover {
+  transform: scale(1.06) translateY(-2px);
+  box-shadow: var(--nbi-shadow-lg);
+}
+
+.nbi-btn:active {
+  transform: translate(4px, 4px) scale(0.95);
+  box-shadow: 0px 0px 0px 0px var(--nbi-color-black);
+  transition: transform 0.05s ease;
+}
+
+.nbi-btn.is-active {
+  background-color: var(--nbi-color-white);
+  border-width: var(--nbi-border-width-lg);
+  box-shadow: var(--nbi-shadow-sm);
+  transform: translate(2px, 2px);
+  animation: popSelected var(--nbi-transition-slow);
+}
+
+/* Modificadores de Color */
+.nbi-btn--action {
+  background-color: var(--nbi-color-secondary);
+}
+
+.nbi-btn--success {
+  background-color: var(--nbi-color-success);
+}
+
+.nbi-btn--danger {
+  background-color: var(--nbi-color-danger);
+}
+
+/* Modificador de Tamaño Pequeño */
+.nbi-btn--sm {
+  min-width: 32px;
+  min-height: 32px;
+  padding: 4px 8px;
+  font-size: var(--nbi-font-size-sm);
+  border-radius: 8px;
+  box-shadow: var(--nbi-shadow-sm);
+}
+
+.nbi-btn--sm svg,
+.nbi-btn--sm .nbi-btn__icon {
+  width: 16px;
+  height: 16px;
+}
+
+/* Modificador para Cierre de Popover/Modal */
+.nbi-btn--close-popover {
+  min-width: 28px;
+  min-height: 28px;
+  padding: 2px;
+  border-radius: 6px;
+  box-shadow: var(--nbi-shadow-sm);
+}
+
+.nbi-btn--close-popover svg,
+.nbi-btn--close-popover__icon {
+  width: 16px;
+  height: 16px;
+}
+
+@keyframes popSelected {
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.15);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}

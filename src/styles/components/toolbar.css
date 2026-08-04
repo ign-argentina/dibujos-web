@@ -1,0 +1,29 @@
+/* --- BARRA FLOTANTE DE DIBUJO --- */
+.nbi-toolbar {
+  position: absolute;
+  bottom: var(--nbi-space-xl);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: var(--nbi-z-floating);
+  display: flex;
+  align-items: center;
+  gap: var(--nbi-space-sm);
+  background-color: var(--nbi-color-panel-bg);
+  border: var(--nbi-border-width-md) solid var(--nbi-color-black);
+  border-radius: var(--nbi-radius-panel);
+  box-shadow: var(--nbi-shadow-lg);
+  padding: 10px var(--nbi-space-md);
+  transition: transform var(--nbi-transition-normal);
+}
+
+.nbi-toolbar:hover {
+  transform: translateX(-50%) translateY(-2px);
+}
+
+.nbi-toolbar__separator {
+  width: var(--nbi-border-width-md);
+  height: 32px;
+  background: var(--nbi-color-black);
+  border-radius: 2px;
+  flex-shrink: 0;
+}

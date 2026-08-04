@@ -18,39 +18,40 @@
   <div id="app">
     <!-- NAVBAR SUPERIOR FLOTANTE (IDENTIDAD) -->
     <nav class="nbi-window-floating nbi-navbar" id="navbar" aria-label="Navegación principal">
-      <div class="nbi-navbar-brand">
+      <div class="nbi-navbar__brand">
         <a href="https://www.ign.gob.ar" target="_blank" rel="noopener noreferrer" id="logo-link">
-          <img src="/logo-ign-blanco.svg" alt="Instituto Geográfico Nacional" class="nbi-navbar-logo" />
+          <img src="/logo-ign-blanco.svg" alt="Instituto Geográfico Nacional" class="nbi-navbar__logo" />
         </a>
-        <h1 class="nbi-navbar-title">Mapas escolares</h1>
+        <h1 class="nbi-navbar__title">Mapas escolares</h1>
       </div>
-      <span class="nbi-navbar-subtitle"></span>
+      <span class="nbi-navbar__subtitle"></span>
     </nav>
 
     <!-- BOTÓN DE ENLACE EXTERNO (ESQUINA SUPERIOR DERECHA) -->
     <a href="https://www.ign.gob.ar/AreaServicios/Descargas/MapasEscolares" target="_blank" rel="noopener noreferrer"
-      class="nbi-btn nbi-external-link-btn" id="ign-link-btn" title="Ir a Mapas Escolares IGN (abre en nueva pestaña)"
+      class="nbi-btn nbi-external-link" id="ign-link-btn" title="Ir a Mapas Escolares IGN (abre en nueva pestaña)"
       aria-label="Ir a Descargas de Mapas Escolares del Instituto Geográfico Nacional (abre en nueva pestaña)">
       <i data-lucide="external-link"></i>
       <span class="btn-text">Descargar Mapas Oficiales</span>
     </a>
 
     <!-- BOTÓN FLOTANTE PARA EXPANDIR EL CATÁLOGO -->
-    <button class="nbi-btn nbi-toggle-sidebar-btn hidden" id="toggle-sidebar-btn" title="Mostrar Mapas" aria-label="Mostrar catálogo de mapas" aria-expanded="false">
+    <button class="nbi-btn nbi-sidebar__toggle-btn hidden" id="toggle-sidebar-btn" title="Mostrar Mapas"
+      aria-label="Mostrar catálogo de mapas" aria-expanded="false">
       <i data-lucide="map"></i>
       <span class="btn-text">Mapas</span>
     </button>
 
     <!-- CATÁLOGO DE MAPAS DE PROVINCIAS (PANEL LATERAL) -->
-    <aside class="nbi-window-floating nbi-sidebar-catalog" id="sidebar-catalog" aria-label="Catálogo de mapas de Argentina">
-      <div class="nbi-sidebar-header">
-        <h2 class="nbi-sidebar-title">Elegí tu Mapa</h2>
+    <aside class="nbi-window-floating nbi-sidebar" id="sidebar-catalog" aria-label="Catálogo de mapas de Argentina">
+      <div class="nbi-sidebar__header">
+        <h2 class="nbi-sidebar__title">Elegí tu Mapa</h2>
         <button class="nbi-btn" id="close-sidebar-btn" style="min-width: 40px; min-height: 40px; padding: 6px;"
           title="Cerrar Menú" aria-label="Cerrar catálogo de mapas">
           <i data-lucide="chevron-left"></i>
         </button>
       </div>
-      <div class="nbi-sidebar-scroll" id="map-cards-container" role="region" aria-label="Listado de mapas disponibles">
+      <div class="nbi-sidebar__scroll" id="map-cards-container" role="region" aria-label="Listado de mapas disponibles">
         <!-- Las tarjetas se generarán dinámicamente desde JS -->
       </div>
     </aside>
@@ -61,18 +62,22 @@
     </main>
 
     <!-- BARRA DE HERRAMIENTAS FLOTANTE -->
-    <div class="nbi-toolbar-drawing" id="toolbar-drawing" role="toolbar" aria-label="Herramientas de dibujo">
-      <button class="nbi-btn is-active" id="tool-select" title="Puntero para seleccionar y mover" aria-label="Puntero para seleccionar y mover objetos" aria-pressed="true">
+    <div class="nbi-toolbar" id="toolbar-drawing" role="toolbar" aria-label="Herramientas de dibujo">
+      <button class="nbi-btn is-active" id="tool-select" title="Puntero para seleccionar y mover"
+        aria-label="Puntero para seleccionar y mover objetos" aria-pressed="true">
         <i data-lucide="mouse-pointer"></i>
       </button>
-      <button class="nbi-btn" id="tool-brush" title="Lápiz para dibujar libre" aria-label="Lápiz para dibujo libre" aria-pressed="false">
+      <button class="nbi-btn" id="tool-brush" title="Lápiz para dibujar libre" aria-label="Lápiz para dibujo libre"
+        aria-pressed="false">
         <i data-lucide="pencil"></i>
       </button>
-      <div class="nbi-toolbar-separator" role="separator" aria-orientation="vertical"></div>
-      <button class="nbi-btn" id="tool-rect" title="Agregar Rectángulo" aria-label="Dibujar rectángulo" aria-pressed="false">
+      <div class="nbi-toolbar__separator" role="separator" aria-orientation="vertical"></div>
+      <button class="nbi-btn" id="tool-rect" title="Agregar Rectángulo" aria-label="Dibujar rectángulo"
+        aria-pressed="false">
         <i data-lucide="square"></i>
       </button>
-      <button class="nbi-btn" id="tool-circle" title="Agregar Círculo" aria-label="Dibujar círculo" aria-pressed="false">
+      <button class="nbi-btn" id="tool-circle" title="Agregar Círculo" aria-label="Dibujar círculo"
+        aria-pressed="false">
         <i data-lucide="circle"></i>
       </button>
       <button class="nbi-btn" id="tool-arrow" title="Agregar Flecha" aria-label="Dibujar flecha" aria-pressed="false">
@@ -81,26 +86,29 @@
       <button class="nbi-btn" id="tool-text" title="Agregar Texto" aria-label="Agregar texto" aria-pressed="false">
         <i data-lucide="type"></i>
       </button>
-      <button class="nbi-btn" id="tool-pin" title="Agregar Marcador" aria-label="Agregar marcador o pin al mapa" aria-pressed="false">
+      <button class="nbi-btn" id="tool-pin" title="Agregar Marcador" aria-label="Agregar marcador o pin al mapa"
+        aria-pressed="false">
         <i data-lucide="map-pin"></i>
       </button>
       <button class="nbi-btn" id="tool-stickers" title="Decoraciones y Stickers"
         aria-label="Abrir panel de decoraciones y stickers" aria-expanded="false">
         <i data-lucide="smile"></i>
       </button>
-      <div class="nbi-toolbar-separator" role="separator" aria-orientation="vertical"></div>
-      <button class="nbi-btn nbi-btn-danger" id="tool-delete" title="Borrar elemento seleccionado" aria-label="Borrar elemento seleccionado">
+      <div class="nbi-toolbar__separator" role="separator" aria-orientation="vertical"></div>
+      <button class="nbi-btn nbi-btn--danger" id="tool-delete" title="Borrar elemento seleccionado"
+        aria-label="Borrar elemento seleccionado">
         <i data-lucide="trash-2"></i>
       </button>
-      <button class="nbi-btn nbi-btn-danger" id="tool-clear" title="Borrar todo el dibujo" aria-label="Borrar todo el dibujo del mapa">
+      <button class="nbi-btn nbi-btn--danger" id="tool-clear" title="Borrar todo el dibujo"
+        aria-label="Borrar todo el dibujo del mapa">
         <i data-lucide="eraser"></i>
       </button>
     </div>
 
     <!-- PANEL DE PROPIEDADES (ESTILOS Y COLORES) -->
-    <aside class="nbi-window-floating nbi-properties-panel" id="properties-panel" aria-label="Propiedades de pintura y trazo">
-      <div class="nbi-properties-header">
-        <h2 class="nbi-properties-title" id="properties-title">Pintura y Trazo</h2>
+    <aside class="nbi-window-floating nbi-properties" id="properties-panel" aria-label="Propiedades de pintura y trazo">
+      <div class="nbi-properties__header">
+        <h2 class="nbi-properties__title" id="properties-title">Pintura y Trazo</h2>
         <button class="nbi-btn" id="toggle-properties-btn"
           style="min-width: 32px; min-height: 32px; padding: 4px; border-radius: 8px;" title="Colapsar Panel"
           aria-label="Colapsar panel de propiedades" aria-expanded="true">
@@ -109,26 +117,54 @@
       </div>
 
       <!-- CONTENIDO EXPANDIDO -->
-      <div class="nbi-properties-body" id="properties-body">
+      <div class="nbi-properties__body" id="properties-body">
         <!-- SELECCIÓN DE COLOR -->
         <div style="display: flex; flex-direction: column; gap: 8px;">
           <span style="font-weight: 600; font-size: 0.9rem;" id="color-section-label">Elegí el Color:</span>
-          <div class="nbi-color-selector" id="color-chips-container" role="radiogroup" aria-labelledby="color-section-label">
-            <button type="button" role="radio" aria-checked="true" class="nbi-color-chip is-active" style="background-color: #faeb8b;" data-color="#faeb8b" title="Amarillo Pastel" aria-label="Color Amarillo Pastel"></button>
-            <button type="button" role="radio" aria-checked="false" class="nbi-color-chip" style="background-color: #82d3f8;" data-color="#82d3f8" title="Azul Pastel" aria-label="Color Azul Pastel"></button>
-            <button type="button" role="radio" aria-checked="false" class="nbi-color-chip" style="background-color: #7abe7d;" data-color="#7abe7d" title="Verde Pastel" aria-label="Color Verde Pastel"></button>
-            <button type="button" role="radio" aria-checked="false" class="nbi-color-chip" style="background-color: #e5828c;" data-color="#e5828c" title="Rosa Pastel" aria-label="Color Rosa Pastel"></button>
-            <button type="button" role="radio" aria-checked="false" class="nbi-color-chip" style="background-color: #cc94d6;" data-color="#cc94d6" title="Violeta Pastel" aria-label="Color Violeta Pastel"></button>
-            <button type="button" role="radio" aria-checked="false" class="nbi-color-chip" style="background-color: #FFA07A;" data-color="#FFA07A" title="Salmón Claro" aria-label="Color Salmón Claro"></button>
-            <button type="button" role="radio" aria-checked="false" class="nbi-color-chip" style="background-color: #FFD700;" data-color="#FFD700" title="Oro Amarillo" aria-label="Color Oro Amarillo"></button>
-            <button type="button" role="radio" aria-checked="false" class="nbi-color-chip" style="background-color: #98FB98;" data-color="#98FB98" title="Verde Pálido" aria-label="Color Verde Pálido"></button>
-            <button type="button" role="radio" aria-checked="false" class="nbi-color-chip" style="background-color: #AFEEEE;" data-color="#AFEEEE" title="Turquesa Pálido" aria-label="Color Turquesa Pálido"></button>
-            <button type="button" role="radio" aria-checked="false" class="nbi-color-chip" style="background-color: #FFB6C1;" data-color="#FFB6C1" title="Rosa Claro" aria-label="Color Rosa Claro"></button>
-            <button type="button" role="radio" aria-checked="false" class="nbi-color-chip" style="background-color: #B0C4DE;" data-color="#B0C4DE" title="Azul Acero" aria-label="Color Azul Acero"></button>
-            <button type="button" role="radio" aria-checked="false" class="nbi-color-chip" style="background-color: #E6E6FA;" data-color="#E6E6FA" title="Lavanda" aria-label="Color Lavanda"></button>
-            <button type="button" role="radio" aria-checked="false" class="nbi-color-chip" style="background-color: #FFA500;" data-color="#FFA500" title="Naranja Neo-Brutalista" aria-label="Color Naranja Neo-Brutalista"></button>
-            <button type="button" role="radio" aria-checked="false" class="nbi-color-chip" style="background-color: #FFFFFF;" data-color="#FFFFFF" title="Blanco Nítido" aria-label="Color Blanco Nítido"></button>
-            <button type="button" role="radio" aria-checked="false" class="nbi-color-chip" style="background-color: #000000;" data-color="#000000" title="Negro Contraste" aria-label="Color Negro Contraste"></button>
+          <div class="nbi-color-selector" id="color-chips-container" role="radiogroup"
+            aria-labelledby="color-section-label">
+            <button type="button" role="radio" aria-checked="false" class="nbi-color-chip"
+              style="background-color: #82d3f8;" data-color="#82d3f8" title="Azul Pastel"
+              aria-label="Color Azul Pastel"></button>
+            <button type="button" role="radio" aria-checked="false" class="nbi-color-chip"
+              style="background-color: #7abe7d;" data-color="#7abe7d" title="Verde Pastel"
+              aria-label="Color Verde Pastel"></button>
+            <button type="button" role="radio" aria-checked="false" class="nbi-color-chip"
+              style="background-color: #e5828c;" data-color="#e5828c" title="Rosa Pastel"
+              aria-label="Color Rosa Pastel"></button>
+            <button type="button" role="radio" aria-checked="false" class="nbi-color-chip"
+              style="background-color: #cc94d6;" data-color="#cc94d6" title="Violeta Pastel"
+              aria-label="Color Violeta Pastel"></button>
+            <button type="button" role="radio" aria-checked="false" class="nbi-color-chip"
+              style="background-color: #FFA07A;" data-color="#FFA07A" title="Salmón Claro"
+              aria-label="Color Salmón Claro"></button>
+            <button type="button" role="radio" aria-checked="false" class="nbi-color-chip"
+              style="background-color: #FFD700;" data-color="#FFD700" title="Oro Amarillo"
+              aria-label="Color Oro Amarillo"></button>
+            <button type="button" role="radio" aria-checked="false" class="nbi-color-chip"
+              style="background-color: #98FB98;" data-color="#98FB98" title="Verde Pálido"
+              aria-label="Color Verde Pálido"></button>
+            <button type="button" role="radio" aria-checked="false" class="nbi-color-chip"
+              style="background-color: #AFEEEE;" data-color="#AFEEEE" title="Turquesa Pálido"
+              aria-label="Color Turquesa Pálido"></button>
+            <button type="button" role="radio" aria-checked="false" class="nbi-color-chip"
+              style="background-color: #FFB6C1;" data-color="#FFB6C1" title="Rosa Claro"
+              aria-label="Color Rosa Claro"></button>
+            <button type="button" role="radio" aria-checked="false" class="nbi-color-chip"
+              style="background-color: #B0C4DE;" data-color="#B0C4DE" title="Azul Acero"
+              aria-label="Color Azul Acero"></button>
+            <button type="button" role="radio" aria-checked="false" class="nbi-color-chip"
+              style="background-color: #E6E6FA;" data-color="#E6E6FA" title="Lavanda"
+              aria-label="Color Lavanda"></button>
+            <button type="button" role="radio" aria-checked="false" class="nbi-color-chip"
+              style="background-color: #FFA500;" data-color="#FFA500" title="Naranja Neo-Brutalista"
+              aria-label="Color Naranja Neo-Brutalista"></button>
+            <button type="button" role="radio" aria-checked="false" class="nbi-color-chip"
+              style="background-color: #FFFFFF;" data-color="#FFFFFF" title="Blanco Nítido"
+              aria-label="Color Blanco Nítido"></button>
+            <button type="button" role="radio" aria-checked="false" class="nbi-color-chip"
+              style="background-color: #000000;" data-color="#000000" title="Negro Contraste"
+              aria-label="Color Negro Contraste"></button>
           </div>
           <div style="display: flex; flex-direction: row; gap: 8px; margin-top: 6px;">
             <label for="custom-color-picker"
@@ -136,39 +172,41 @@
               <i data-lucide="palette" style="width: 20px; height: 20px;" aria-hidden="true"></i>
               Más colores:
             </label>
-            <input type="color" id="custom-color-picker" class="nbi-color-picker-input" value="#faeb8b"
+            <input type="color" id="custom-color-picker" class="nbi-color-picker" value="#555"
               title="Seleccionar color personalizado" aria-label="Seleccionar color personalizado" />
           </div>
         </div>
 
         <!-- CONTROL DE GROSOR -->
         <div class="nbi-stroke-control">
-          <div class="nbi-stroke-header">
+          <div class="nbi-stroke-control__header">
             <label for="stroke-slider" style="font-weight: 600;">Grosor del Lápiz:</label>
             <span id="stroke-value-display">8px</span>
           </div>
           <div class="nbi-slider-wrapper">
-            <input class="nbi-slider" id="stroke-slider" type="range" min="2" max="24" value="8" aria-label="Grosor del lápiz en píxeles" />
+            <input class="nbi-slider" id="stroke-slider" type="range" min="2" max="24" value="8"
+              aria-label="Grosor del lápiz en píxeles" />
           </div>
         </div>
       </div>
 
       <!-- SECCIÓN DE COLORES RECIENTES (SOLO VISIBLE CUANDO ESTÁ COLAPSADO) -->
-      <div class="nbi-recent-colors-container hidden" id="recent-colors-container" aria-label="Últimos colores utilizados">
+      <div class="nbi-recent-colors-container hidden" id="recent-colors-container"
+        aria-label="Últimos colores utilizados">
         <!-- Se renderizan dinámicamente los 3 últimos colores -->
       </div>
 
       <!-- ACCIONES DEL SISTEMA (IMPORTACIÓN Y DESCARGA) -->
-      <div class="nbi-properties-actions">
-        <button class="nbi-btn nbi-btn-action" id="action-import-image" style="flex: 1;"
+      <div class="nbi-properties__actions">
+        <button class="nbi-btn nbi-btn--action" id="action-import-image" style="flex: 1;"
           title="Importar imagen local (PNG, JPG, WEBP, SVG)" aria-label="Importar imagen local al canvas">
           <i data-lucide="image"></i>
-          <span class="btn-text" style="font-weight: bold; margin-left: 4px;">Imagen</span>
+          <span class="btn-text" style="margin-left: 4px;">Imagen</span>
         </button>
-        <button class="nbi-btn nbi-btn-success" id="action-export" style="flex: 1;"
-          title="Exportar o imprimir mapa" aria-label="Abrir opciones para exportar o imprimir mapa">
+        <button class="nbi-btn nbi-btn--success" id="action-export" style="flex: 1;" title="Exportar o imprimir mapa"
+          aria-label="Abrir opciones para exportar o imprimir mapa">
           <i data-lucide="file-output"></i>
-          <span class="btn-text" style="font-weight: bold; margin-left: 4px;">Exportar</span>
+          <span class="btn-text" style="margin-left: 4px;">Exportar</span>
         </button>
       </div>
       <input type="file" id="image-file-input" accept="image/png, image/jpeg, image/webp, image/svg+xml"
@@ -176,7 +214,8 @@
     </aside>
 
     <!-- CONTROLES DE ZOOM FLOTANTES INDEPENDIENTES -->
-    <div class="nbi-zoom-controls-floating" id="zoom-controls" role="toolbar" aria-label="Controles de zoom del mapa" aria-orientation="vertical">
+    <div class="nbi-zoom-controls" id="zoom-controls" role="toolbar" aria-label="Controles de zoom del mapa"
+      aria-orientation="vertical">
       <button class="nbi-btn" id="action-zoom-in" title="Acercar (Zoom In)" aria-label="Acercar vista del mapa">
         <i data-lucide="zoom-in"></i>
       </button>
@@ -190,57 +229,66 @@
     </div>
 
     <!-- PANEL DE STICKERS (OCULTABLE COMPLETAMENTE) -->
-    <aside class="nbi-window-floating nbi-stickers-panel hidden" id="stickers-panel" aria-label="Panel de stickers y decoraciones">
-      <div class="nbi-stickers-header">
-        <h2 class="nbi-stickers-title">Decoraciones y Stickers</h2>
+    <aside class="nbi-window-floating nbi-stickers hidden" id="stickers-panel"
+      aria-label="Panel de stickers y decoraciones">
+      <div class="nbi-stickers__header">
+        <h2 class="nbi-stickers__title">Decoraciones y Stickers</h2>
         <button class="nbi-btn" id="toggle-stickers-btn"
           style="min-width: 32px; min-height: 32px; padding: 4px; border-radius: 8px;" title="Cerrar Panel"
           aria-label="Cerrar panel de stickers">
           <i data-lucide="chevron-down"></i>
         </button>
       </div>
-      <div class="nbi-stickers-content" id="stickers-container" role="region" aria-label="Listado de stickers disponibles">
+      <div class="nbi-stickers__content" id="stickers-container" role="region"
+        aria-label="Listado de stickers disponibles">
         <!-- Los stickers se generarán dinámicamente desde JS -->
       </div>
     </aside>
 
     <!-- MODAL DE EXPORTACIÓN E IMPRESIÓN UNIFICADO -->
-    <div id="export-modal" class="nbi-modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="export-modal-title">
+    <div id="export-modal" class="nbi-export-modal-overlay hidden" role="dialog" aria-modal="true"
+      aria-labelledby="export-modal-title">
       <div class="nbi-window-floating nbi-export-modal">
-        <div class="nbi-export-modal-header">
-          <h2 class="nbi-export-modal-title" id="export-modal-title">
+        <div class="nbi-export-modal__header">
+          <h2 class="nbi-export-modal__title" id="export-modal-title">
             <i data-lucide="file-output"></i> Exportar e Imprimir Mapa
           </h2>
-          <button class="nbi-btn nbi-btn-close-popover" id="export-modal-close" title="Cerrar ventana" aria-label="Cerrar ventana de exportación">
+          <button class="nbi-btn nbi-btn--close-popover" id="export-modal-close" title="Cerrar ventana"
+            aria-label="Cerrar ventana de exportación">
             <i data-lucide="x"></i>
           </button>
         </div>
 
-        <div class="nbi-export-modal-body">
+        <div class="nbi-export-modal__body">
           <!-- COLUMNA IZQUIERDA: CONTROLES DE CONFIGURACIÓN -->
-          <div class="nbi-export-config">
+          <div class="nbi-export-modal__config">
             <!-- DESTINO -->
-            <div class="nbi-context-section">
-              <span class="nbi-context-label">Destino:</span>
+            <div class="nbi-export-modal__section">
+              <span class="nbi-export-modal__label">Destino:</span>
               <div class="nbi-filter-group" role="radiogroup" aria-label="Destino de la exportación">
-                <button type="button" class="nbi-filter-btn is-active" id="exp-dest-save" data-dest="save" aria-pressed="true">Guardar archivo</button>
-                <button type="button" class="nbi-filter-btn" id="exp-dest-print" data-dest="print" aria-pressed="false">Imprimir</button>
+                <button type="button" class="nbi-filter-group__btn is-active" id="exp-dest-save" data-dest="save"
+                  aria-pressed="true">Guardar archivo</button>
+                <button type="button" class="nbi-filter-group__btn" id="exp-dest-print" data-dest="print"
+                  aria-pressed="false">Imprimir</button>
               </div>
             </div>
 
             <!-- FORMATO DE SALIDA (SOLO PARA GUARDAR) -->
-            <div class="nbi-context-section" id="exp-section-format">
-              <span class="nbi-context-label">Formato de Salida:</span>
+            <div class="nbi-export-modal__section" id="exp-section-format">
+              <span class="nbi-export-modal__label">Formato de Salida:</span>
               <div class="nbi-filter-group" role="radiogroup" aria-label="Formato del archivo">
-                <button type="button" class="nbi-filter-btn is-active" id="exp-fmt-pdf" data-fmt="pdf" aria-pressed="true">PDF</button>
-                <button type="button" class="nbi-filter-btn" id="exp-fmt-png" data-fmt="png" aria-pressed="false">PNG</button>
-                <button type="button" class="nbi-filter-btn" id="exp-fmt-jpg" data-fmt="jpg" aria-pressed="false">JPG</button>
+                <button type="button" class="nbi-filter-group__btn is-active" id="exp-fmt-pdf" data-fmt="pdf"
+                  aria-pressed="true">PDF</button>
+                <button type="button" class="nbi-filter-group__btn" id="exp-fmt-png" data-fmt="png"
+                  aria-pressed="false">PNG</button>
+                <button type="button" class="nbi-filter-group__btn" id="exp-fmt-jpg" data-fmt="jpg"
+                  aria-pressed="false">JPG</button>
               </div>
             </div>
 
             <!-- TAMAÑO DE PAPEL -->
-            <div class="nbi-context-section">
-              <span class="nbi-context-label">Tamaño de Papel:</span>
+            <div class="nbi-export-modal__section">
+              <span class="nbi-export-modal__label">Tamaño de Papel:</span>
               <select class="nbi-input" id="exp-paper-size" aria-label="Tamaño de papel">
                 <option value="A4" selected>A4 (210 × 297 mm)</option>
                 <option value="Oficio">Oficio / Legal (216 × 356 mm)</option>
@@ -248,31 +296,35 @@
             </div>
 
             <!-- ORIENTACIÓN -->
-            <div class="nbi-context-section">
-              <span class="nbi-context-label">Orientación del Papel:</span>
+            <div class="nbi-export-modal__section">
+              <span class="nbi-export-modal__label">Orientación del Papel:</span>
               <div class="nbi-filter-group" role="radiogroup" aria-label="Orientación del papel">
-                <button type="button" class="nbi-filter-btn is-active" id="exp-orient-portrait" data-orient="portrait" aria-pressed="true">Vertical</button>
-                <button type="button" class="nbi-filter-btn" id="exp-orient-landscape" data-orient="landscape" aria-pressed="false">Horizontal</button>
+                <button type="button" class="nbi-filter-group__btn is-active" id="exp-orient-portrait"
+                  data-orient="portrait" aria-pressed="true">Vertical</button>
+                <button type="button" class="nbi-filter-group__btn" id="exp-orient-landscape" data-orient="landscape"
+                  aria-pressed="false">Horizontal</button>
               </div>
             </div>
 
             <!-- ESCALA -->
-            <div class="nbi-context-section">
+            <div class="nbi-export-modal__section">
               <div style="display: flex; justify-content: space-between; align-items: center;">
-                <span class="nbi-context-label">Escala de Contenido:</span>
+                <span class="nbi-export-modal__label">Escala de Contenido:</span>
                 <span style="font-weight: 600; font-size: 0.85rem;" id="exp-scale-val">100%</span>
               </div>
-              <input class="nbi-slider" id="exp-scale-slider" type="range" min="50" max="250" value="100" aria-label="Porcentaje de escala del mapa" />
+              <input class="nbi-slider" id="exp-scale-slider" type="range" min="50" max="250" value="100"
+                aria-label="Porcentaje de escala del mapa" />
               <div style="display: flex; gap: 6px; margin-top: 6px;">
-                <button type="button" class="nbi-btn nbi-btn-sm" id="exp-btn-preset-100" style="flex: 1;" title="Restablecer a Escala 100% (Formato Escolar 19 × 24 cm)">
+                <button type="button" class="nbi-btn nbi-btn--sm" id="exp-btn-preset-100" style="flex: 1;"
+                  title="Restablecer a Escala 100% (Formato Escolar 19 × 24 cm)">
                   <i data-lucide="rotate-ccw"></i> Restablecer 100%
                 </button>
               </div>
             </div>
 
             <!-- CALIDAD / RESOLUCIÓN (PARA IMÁGENES) -->
-            <div class="nbi-context-section" id="exp-section-quality">
-              <span class="nbi-context-label">Calidad / Resolución:</span>
+            <div class="nbi-export-modal__section" id="exp-section-quality">
+              <span class="nbi-export-modal__label">Calidad / Resolución:</span>
               <select class="nbi-input" id="exp-quality-select" aria-label="Calidad de resolución de imagen">
                 <option value="1">Borrador (1x / 72 DPI)</option>
                 <option value="2" selected>Estándar (2x / 150 DPI)</option>
@@ -282,12 +334,13 @@
           </div>
 
           <!-- COLUMNA DERECHA: VISTA PREVIA EN TIEMPO REAL -->
-          <div class="nbi-export-preview-container">
-            <span class="nbi-context-label" style="text-align: center;">Vista Previa del Resultado:</span>
-            <div class="nbi-paper-sheet-wrapper" id="exp-sheet-wrapper">
-              <div class="nbi-paper-sheet" id="exp-paper-sheet">
-                <div class="nbi-paper-margin-box" id="exp-margin-box">
-                  <img id="exp-preview-img" alt="Vista previa del mapa para exportar" />
+          <div class="nbi-export-modal__preview-container">
+            <span class="nbi-export-modal__label" style="text-align: center;">Vista Previa del Resultado:</span>
+            <div class="nbi-export-modal__paper-sheet-wrapper" id="exp-sheet-wrapper">
+              <div class="nbi-export-modal__paper-sheet" id="exp-paper-sheet">
+                <div class="nbi-export-modal__paper-margin-box" id="exp-margin-box">
+                  <img id="exp-preview-img" class="nbi-export-modal__preview-img"
+                    alt="Vista previa del mapa para exportar" />
                 </div>
               </div>
             </div>
@@ -295,9 +348,9 @@
         </div>
 
         <!-- ACCIONES FINALES DEL MODAL -->
-        <div class="nbi-export-modal-footer">
+        <div class="nbi-export-modal__footer">
           <button type="button" class="nbi-btn" id="exp-btn-cancel">Cancelar</button>
-          <button type="button" class="nbi-btn nbi-btn-success" id="exp-btn-submit" style="min-width: 160px;">
+          <button type="button" class="nbi-btn nbi-btn--success" id="exp-btn-submit" style="min-width: 160px;">
             <i data-lucide="download" id="exp-submit-icon"></i>
             <span id="exp-submit-text" style="font-weight: bold; margin-left: 6px;">Descargar PNG</span>
           </button>
@@ -308,7 +361,7 @@
     <!-- PANTALLA ANIMADA DE CARGA -->
     <div id="loader-overlay" class="nbi-loader-overlay hidden" aria-live="polite" aria-busy="true">
       <div class="nbi-loader"></div>
-      <div class="nbi-loader-text">¡Preparando tu mapa...!</div>
+      <div class="nbi-loader__text">¡Preparando tu mapa...!</div>
     </div>
 
     <!-- REGIÓN ACCESIBLE EN TIEMPO REAL PARA LECTORES DE PANTALLA -->

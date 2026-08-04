@@ -166,35 +166,26 @@ export async function bootstrap() {
       themeStyle.innerHTML = `
         :root {
           --nbi-bg-main: ${uiConfig.theme.background || '#FAFAFA'};
-          --nbi-pastel-blue: ${uiConfig.theme.primary || '#63ccfd'};
-          --nbi-pastel-purple: ${uiConfig.theme.secondary || '#B391f0'};
-          --nbi-pastel-yellow: ${uiConfig.theme.accent || '#d0fe46'};
-          --nbi-black: ${uiConfig.theme.text || '#000000'};
-          --nbi-muted: ${uiConfig.theme.icons || '#757575'};
-          --nbi-pastel-green: ${uiConfig.theme.confirm || '#FBE158'};
-          --nbi-pastel-pink: ${uiConfig.theme.danger || '#c25b56'};
+          --nbi-primary-color: ${uiConfig.theme.primary || '#63ccfd'};
+          --nbi-secondary-color: ${uiConfig.theme.secondary || '#B391f0'};
+          --nbi-accent-color: ${uiConfig.theme.accent || '#FBE158'};
+          --nbi-text-color: ${uiConfig.theme.text || '#000000'};
+          --nbi-icons-color: ${uiConfig.theme.icons || '#757575'};
+          --nbi-success-color: ${uiConfig.theme.success || '#7ABE7D'};
+          --nbi-danger-color: ${uiConfig.theme.danger || '#c25b56'};
           --nbi-panel-bg: ${uiConfig.theme.panelBackground || '#ebebeb'};
-        }
-
-        .nbi-export-modal,
-        .nbi-sidebar-catalog,
-        .nbi-toolbar-drawing,
-        .nbi-properties-panel,
-        .nbi-stickers-panel,
-        .nbi-context-popover {
-          background-color: var(--nbi-panel-bg) !important;
         }
       `
       document.head.appendChild(themeStyle)
     }
 
     // 2. Personalización dinámica de la interfaz desde config.json
-    const headerTitle = document.querySelector('.nbi-navbar-title')
+    const headerTitle = document.querySelector('.nbi-navbar__title')
     if (headerTitle && uiConfig.title) {
       headerTitle.textContent = uiConfig.title
     }
 
-    const headerLogo = document.querySelector('.nbi-navbar-logo')
+    const headerLogo = document.querySelector('.nbi-navbar__logo')
     if (headerLogo && uiConfig.logoUrl) {
       headerLogo.src = `${import.meta.env.BASE_URL.replace(/\/$/, '')}${uiConfig.logoUrl}`
     }

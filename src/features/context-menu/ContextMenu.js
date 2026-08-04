@@ -13,7 +13,6 @@ export class ContextMenu extends Component {
     this.popoverMenu = null
     this.isOpen = false
     this.presetColors = [
-      '#FAEB8B',
       '#82D3F8',
       '#7ABE7D',
       '#E5828C',
@@ -46,7 +45,7 @@ export class ContextMenu extends Component {
 
     // 2. Menu Popover emergente
     this.popoverMenu = document.createElement('div')
-    this.popoverMenu.className = 'nbi-window-floating nbi-context-popover hidden'
+    this.popoverMenu.className = 'nbi-window-floating nbi-context hidden'
     this.popoverMenu.setAttribute('role', 'dialog')
     this.popoverMenu.setAttribute('aria-label', 'Opciones y propiedades de la figura seleccionada')
 
@@ -238,9 +237,9 @@ export class ContextMenu extends Component {
     // --- SECCIÓN DE ESTILOS Y COLORES ---
     if (!isImage) {
       contentHtml += `
-        <div class="nbi-context-section">
-          <label class="nbi-context-label">Color de Relleno</label>
-          <div class="nbi-context-colors">
+        <div class="nbi-context__section">
+          <label class="nbi-context__label">Color de Relleno</label>
+          <div class="nbi-context__colors">
       `
       this.presetColors.forEach((color) => {
         const isSelected = (obj.fill || '').toUpperCase() === color.toUpperCase()
@@ -258,9 +257,9 @@ export class ContextMenu extends Component {
 
       if (showStrokeOption) {
         contentHtml += `
-          <div class="nbi-context-section">
-            <label class="nbi-context-label">Color del Borde</label>
-            <div class="nbi-context-stroke-colors">
+          <div class="nbi-context__section">
+            <label class="nbi-context__label">Color del Borde</label>
+            <div class="nbi-context__stroke-colors">
         `
         this.presetColors.forEach((color) => {
           const isSelected = (obj.stroke || '').toUpperCase() === color.toUpperCase()
@@ -273,8 +272,8 @@ export class ContextMenu extends Component {
         })
         contentHtml += `
             </div>
-            <div class="nbi-context-stroke-width-group">
-              <label for="ctx-stroke-width" class="nbi-context-label">Grosor: <span id="ctx-stroke-val">${obj.strokeWidth || 0}px</span></label>
+            <div class="nbi-context__stroke-width-group">
+              <label for="ctx-stroke-width" class="nbi-context__label">Grosor: <span id="ctx-stroke-val">${obj.strokeWidth || 0}px</span></label>
               <input type="range" id="ctx-stroke-width" min="0" max="30" value="${obj.strokeWidth || 0}" />
             </div>
           </div>
@@ -289,14 +288,14 @@ export class ContextMenu extends Component {
       const align = obj.textAlign || 'left'
 
       contentHtml += `
-        <div class="nbi-context-section">
-          <label class="nbi-context-label">Formato de Texto</label>
-          <div class="nbi-context-text-tools">
-            <button class="nbi-btn nbi-btn-sm ${isBold ? 'is-active' : ''}" id="ctx-txt-bold" title="Negrita"><b>N</b></button>
-            <button class="nbi-btn nbi-btn-sm ${isItalic ? 'is-active' : ''}" id="ctx-txt-italic" title="Cursiva"><i>I</i></button>
-            <button class="nbi-btn nbi-btn-sm ${align === 'left' ? 'is-active' : ''}" id="ctx-txt-left" title="Alinear Izquierda"><i data-lucide="align-left"></i></button>
-            <button class="nbi-btn nbi-btn-sm ${align === 'center' ? 'is-active' : ''}" id="ctx-txt-center" title="Alinear Centro"><i data-lucide="align-center"></i></button>
-            <button class="nbi-btn nbi-btn-sm ${align === 'right' ? 'is-active' : ''}" id="ctx-txt-right" title="Alinear Derecha"><i data-lucide="align-right"></i></button>
+        <div class="nbi-context__section">
+          <label class="nbi-context__label">Formato de Texto</label>
+          <div class="nbi-context__text-tools">
+            <button class="nbi-btn nbi-btn--sm ${isBold ? 'is-active' : ''}" id="ctx-txt-bold" title="Negrita"><b>N</b></button>
+            <button class="nbi-btn nbi-btn--sm ${isItalic ? 'is-active' : ''}" id="ctx-txt-italic" title="Cursiva"><i>I</i></button>
+            <button class="nbi-btn nbi-btn--sm ${align === 'left' ? 'is-active' : ''}" id="ctx-txt-left" title="Alinear Izquierda"><i data-lucide="align-left"></i></button>
+            <button class="nbi-btn nbi-btn--sm ${align === 'center' ? 'is-active' : ''}" id="ctx-txt-center" title="Alinear Centro"><i data-lucide="align-center"></i></button>
+            <button class="nbi-btn nbi-btn--sm ${align === 'right' ? 'is-active' : ''}" id="ctx-txt-right" title="Alinear Derecha"><i data-lucide="align-right"></i></button>
           </div>
         </div>
       `
@@ -309,38 +308,38 @@ export class ContextMenu extends Component {
       const isLocked = obj.lockMovementX
 
       contentHtml += `
-        <div class="nbi-context-section">
-          <label class="nbi-context-label">Propiedades de Imagen</label>
-          <div class="nbi-context-image-tools">
-            <button class="nbi-btn nbi-btn-sm ${isFlippedX ? 'is-active' : ''}" id="ctx-img-flip-x" title="Reflejo Horizontal"><i data-lucide="flip-horizontal"></i> H</button>
-            <button class="nbi-btn nbi-btn-sm ${isFlippedY ? 'is-active' : ''}" id="ctx-img-flip-y" title="Reflejo Vertical"><i data-lucide="flip-vertical"></i> V</button>
-            <button class="nbi-btn nbi-btn-sm ${isLocked ? 'is-active' : ''}" id="ctx-img-lock" title="Bloquear Posición"><i data-lucide="${isLocked ? 'lock' : 'unlock'}"></i> Fijar</button>
+        <div class="nbi-context__section">
+          <label class="nbi-context__label">Propiedades de Imagen</label>
+          <div class="nbi-context__image-tools">
+            <button class="nbi-btn nbi-btn--sm ${isFlippedX ? 'is-active' : ''}" id="ctx-img-flip-x" title="Reflejo Horizontal"><i data-lucide="flip-horizontal"></i> H</button>
+            <button class="nbi-btn nbi-btn--sm ${isFlippedY ? 'is-active' : ''}" id="ctx-img-flip-y" title="Reflejo Vertical"><i data-lucide="flip-vertical"></i> V</button>
+            <button class="nbi-btn nbi-btn--sm ${isLocked ? 'is-active' : ''}" id="ctx-img-lock" title="Bloquear Posición"><i data-lucide="${isLocked ? 'lock' : 'unlock'}"></i> Fijar</button>
           </div>
-          <label class="nbi-context-label" style="margin-top: 10px;">Filtros de Efecto</label>
-          <div class="nbi-context-filters-grid">
-            <button class="nbi-btn nbi-btn-sm ${this.canvasManager.hasFilter(obj, 'grayscale') ? 'is-active' : ''}" id="ctx-img-grayscale">Grises</button>
-            <button class="nbi-btn nbi-btn-sm ${this.canvasManager.hasFilter(obj, 'invert') ? 'is-active' : ''}" id="ctx-img-invert">Invertir</button>
-            <button class="nbi-btn nbi-btn-sm ${this.canvasManager.hasFilter(obj, 'sepia') ? 'is-active' : ''}" id="ctx-img-sepia">Sepia</button>
+          <label class="nbi-context__label" style="margin-top: 10px;">Filtros de Efecto</label>
+          <div class="nbi-context__filters-grid">
+            <button class="nbi-btn nbi-btn--sm ${this.canvasManager.hasFilter(obj, 'grayscale') ? 'is-active' : ''}" id="ctx-img-grayscale">Grises</button>
+            <button class="nbi-btn nbi-btn--sm ${this.canvasManager.hasFilter(obj, 'invert') ? 'is-active' : ''}" id="ctx-img-invert">Invertir</button>
+            <button class="nbi-btn nbi-btn--sm ${this.canvasManager.hasFilter(obj, 'sepia') ? 'is-active' : ''}" id="ctx-img-sepia">Sepia</button>
           </div>
         </div>
       `
     }
 
     const html = `
-      <div class="nbi-window-header">
-        <span class="nbi-window-title">${typeName}</span>
-        <button class="nbi-btn-close" id="ctx-close-btn" aria-label="Cerrar opciones">&times;</button>
+      <div class="nbi-context__header">
+        <span class="nbi-context__title">${typeName}</span>
+        <button class="nbi-btn nbi-btn--close-popover" id="ctx-close-btn" aria-label="Cerrar opciones"><i data-lucide="x"></i></button>
       </div>
-      <div class="nbi-window-body">
+      <div class="nbi-context__body">
         ${contentHtml}
-        <div class="nbi-context-actions">
-          <button class="nbi-btn nbi-btn-sm" id="ctx-act-front" title="Traer al frente">
+        <div class="nbi-context__actions">
+          <button class="nbi-btn nbi-btn--sm" id="ctx-act-front" title="Traer al frente">
             <i data-lucide="arrow-up"></i> Frente
           </button>
-          <button class="nbi-btn nbi-btn-sm" id="ctx-act-back" title="Enviar al fondo">
+          <button class="nbi-btn nbi-btn--sm" id="ctx-act-back" title="Enviar al fondo">
             <i data-lucide="arrow-down"></i> Fondo
           </button>
-          <button class="nbi-btn nbi-btn-sm nbi-btn-danger" id="ctx-act-delete" title="Eliminar figura">
+          <button class="nbi-btn nbi-btn--sm nbi-btn--danger" id="ctx-act-delete" title="Eliminar figura">
             <i data-lucide="trash-2"></i>
           </button>
         </div>
@@ -356,7 +355,7 @@ export class ContextMenu extends Component {
     closeBtn?.addEventListener('click', () => this.closePopover())
 
     // --- EVENTOS DE COLOR DE RELLENO Y BORDE ---
-    const fillChips = this.popoverMenu.querySelectorAll('.nbi-context-colors .nbi-color-chip')
+    const fillChips = this.popoverMenu.querySelectorAll('.nbi-context__colors .nbi-color-chip')
     fillChips.forEach((chip) => {
       chip.addEventListener('click', () => {
         const color = chip.getAttribute('data-color')
@@ -374,7 +373,7 @@ export class ContextMenu extends Component {
     })
 
     const strokeChips = this.popoverMenu.querySelectorAll(
-      '.nbi-context-stroke-colors .nbi-color-chip'
+      '.nbi-context__stroke-colors .nbi-color-chip'
     )
     strokeChips.forEach((chip) => {
       chip.addEventListener('click', () => {

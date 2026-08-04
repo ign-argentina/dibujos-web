@@ -10,14 +10,12 @@ export class ColorPalette extends Component {
     super(container, props)
     this.canvasManager = props.canvasManager
     this.customColors = []
-    this.lastUsedColors = ['#faeb8b', '#82d3f8', '#7abe7d']
+    this.lastUsedColors = ['#555', '#82d3f8', '#7abe7d']
   }
 
   render() {
     const uiConfig = configRepository.getUiConfig()
     const palette = uiConfig.colorPalette || [
-      '#FFF4B0',
-      '#FAEB8B',
       '#FFA2A2',
       '#82D3F8',
       '#7ABE7D',
@@ -51,11 +49,6 @@ export class ColorPalette extends Component {
         this.colorChipsContainer.appendChild(chip)
       })
 
-      // Re-insertar el input picker personalizado
-      const pickerWrapper = document.createElement('div')
-      pickerWrapper.className = 'nbi-color-picker-wrapper'
-      pickerWrapper.appendChild(this.customColorPicker)
-      this.colorChipsContainer.appendChild(pickerWrapper)
     }
 
     this.renderRecentColors()

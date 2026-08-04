@@ -1,0 +1,265 @@
+/* --- PANEL DE PROPIEDADES --- */
+.nbi-properties {
+  top: 80px;
+  right: 20px;
+  width: 260px;
+  height: calc(100vh - 240px);
+  max-height: 430px;
+  background-color: var(--nbi-color-panel-bg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--nbi-space-lg);
+  transition: width var(--nbi-transition-slow), padding var(--nbi-transition-slow);
+}
+
+.nbi-properties__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: var(--nbi-border-width-md) solid var(--nbi-color-black);
+  padding-bottom: 6px;
+  flex-shrink: 0;
+}
+
+.nbi-properties__title {
+  font-size: var(--nbi-font-size-lg);
+  font-weight: var(--nbi-font-weight-bold);
+}
+
+.nbi-properties__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--nbi-space-lg);
+  flex: 1;
+  overflow: hidden;
+}
+
+.nbi-properties__actions {
+  display: flex;
+  gap: var(--nbi-space-sm);
+  margin-top: auto;
+  border-top: var(--nbi-border-width-md) solid var(--nbi-color-black);
+  padding-top: var(--nbi-space-lg);
+  flex-shrink: 0;
+}
+
+.nbi-properties__actions button {
+  font-family: inherit;
+  font-weight: var(--nbi-font-weight-semibold);
+  font-size: var(--nbi-font-size-sm);
+}
+
+/* --- ESTADO COLAPSADO DEL PANEL DE PROPIEDADES (72px DE ANCHO) --- */
+.nbi-properties.is-collapsed {
+  width: 72px;
+  padding: var(--nbi-space-md) var(--nbi-space-sm);
+  gap: var(--nbi-space-md);
+}
+
+.nbi-properties.is-collapsed .nbi-properties__title {
+  display: none;
+}
+
+.nbi-properties.is-collapsed .nbi-properties__header {
+  border-bottom: none;
+  padding-bottom: 0;
+  justify-content: center;
+}
+
+.nbi-properties.is-collapsed .nbi-properties__body {
+  display: none;
+}
+
+.nbi-properties.is-collapsed .nbi-recent-colors-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin: auto 0;
+}
+
+.nbi-properties.is-collapsed .nbi-properties__actions {
+  border-top: none;
+  padding-top: 0;
+  margin-top: auto;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.nbi-properties.is-collapsed .nbi-properties__actions .nbi-btn {
+  width: 42px;
+  height: 42px;
+  min-width: 42px;
+  min-height: 42px;
+  padding: 6px;
+}
+
+.nbi-properties.is-collapsed .btn-text {
+  display: none;
+}
+
+.nbi-recent-colors-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+/* --- CHIPS DE COLORES NBI-DS --- */
+.nbi-color-selector {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--nbi-space-sm);
+  justify-content: center;
+}
+
+.nbi-color-chip {
+  width: 30px;
+  height: 30px;
+  border: var(--nbi-border-width-md) solid var(--nbi-color-black);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: transform var(--nbi-transition-fast);
+  box-shadow: var(--nbi-shadow-sm);
+}
+
+.nbi-color-chip:hover {
+  transform: scale(1.1);
+}
+
+.nbi-color-picker {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  width: 100px;
+  height: 38px;
+  border: var(--nbi-border-width-md) solid var(--nbi-color-black);
+  border-radius: var(--nbi-radius-teen);
+  background-color: var(--nbi-color-white);
+  cursor: pointer;
+  padding: 2px var(--nbi-space-xs);
+  box-shadow: 3px 3px 0px 0px var(--nbi-color-black);
+  transition: transform var(--nbi-transition-fast), box-shadow var(--nbi-transition-fast);
+}
+
+.nbi-color-picker::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+.nbi-color-picker::-webkit-color-swatch {
+  border: 2px solid var(--nbi-color-black);
+  border-radius: 4px;
+}
+
+.nbi-color-picker::-moz-color-swatch {
+  border: 2px solid var(--nbi-color-black);
+  border-radius: 4px;
+}
+
+.nbi-color-picker:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--nbi-shadow-md);
+}
+
+.nbi-color-chip.is-active {
+  transform: scale(1.1);
+  box-shadow: 0px 0px 0px 3px var(--nbi-color-white), 0px 0px 0px 6px var(--nbi-color-black);
+}
+
+/* CONTROL DE GROSOR ELÁSTICO */
+.nbi-stroke-control {
+  display: flex;
+  flex-direction: column;
+  gap: var(--nbi-space-sm);
+}
+
+.nbi-stroke-control__header {
+  display: flex;
+  justify-content: space-between;
+  font-weight: var(--nbi-font-weight-bold);
+  font-size: var(--nbi-font-size-base);
+}
+
+.nbi-slider-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.nbi-slider {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 12px;
+  border: var(--nbi-border-width-md) solid var(--nbi-color-black);
+  border-radius: 6px;
+  background: var(--nbi-color-bg-main);
+  outline: none;
+  cursor: pointer;
+}
+
+.nbi-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 22px;
+  height: 22px;
+  border: var(--nbi-border-width-md) solid var(--nbi-color-black);
+  border-radius: 50%;
+  background: var(--nbi-color-primary);
+  cursor: pointer;
+  box-shadow: var(--nbi-shadow-sm);
+  transition: transform 0.1s ease;
+}
+
+.nbi-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+}
+
+.nbi-slider::-webkit-slider-thumb:active {
+  background: var(--nbi-color-success);
+}
+
+/* --- INPUTS BRUTALISTAS ADAPTADOS --- */
+.nbi-input {
+  width: 100%;
+  background-color: var(--nbi-color-bg-main);
+  border: var(--nbi-border-width-md) solid var(--nbi-color-black);
+  border-radius: var(--nbi-radius-teen);
+  padding: 10px 14px;
+  font-family: inherit;
+  font-size: var(--nbi-font-size-base);
+  font-weight: var(--nbi-font-weight-bold);
+  color: var(--nbi-color-black);
+  outline: none;
+  transition: box-shadow var(--nbi-transition-fast), transform var(--nbi-transition-fast);
+}
+
+.nbi-input:focus {
+  background-color: var(--nbi-color-white);
+  transform: translateY(-1px);
+  box-shadow: var(--nbi-shadow-md);
+}
+
+.nbi-input::placeholder {
+  color: var(--nbi-color-muted);
+  font-weight: var(--nbi-font-weight-semibold);
+}
+
+/* --- BARRA DE PROGRESO BRUTALISTAS PARA MAPAS --- */
+.nbi-progress {
+  background-color: var(--nbi-color-white);
+  border: var(--nbi-border-width-md) solid var(--nbi-color-black);
+  border-radius: var(--nbi-radius-pill);
+  height: 20px;
+  overflow: hidden;
+  width: 100%;
+  position: relative;
+  box-shadow: 3px 3px 0px 0px var(--nbi-color-black);
+}
+
+.nbi-progress__fill {
+  background-color: var(--nbi-color-success);
+  height: 100%;
+  width: 0%;
+  border-right: var(--nbi-border-width-md) solid var(--nbi-color-black);
+  transition: width var(--nbi-transition-fast) cubic-bezier(0.4, 0, 0.2, 1);
+}

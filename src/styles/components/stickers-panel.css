@@ -1,0 +1,100 @@
+/* --- PANEL DE STICKERS (OCULTABLE COMPLETAMENTE) --- */
+.nbi-stickers {
+  top: 80px;
+  right: 295px;
+  width: 260px;
+  height: calc(100vh - 240px);
+  max-height: 380px;
+  background-color: var(--nbi-color-panel-bg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--nbi-space-md);
+  transition: opacity 0.3s ease, transform var(--nbi-transition-normal);
+}
+
+.nbi-stickers.is-collapsed .nbi-stickers__content {
+  display: none;
+}
+
+.nbi-stickers__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: var(--nbi-border-width-md) solid var(--nbi-color-black);
+  padding-bottom: var(--nbi-space-sm);
+  flex-shrink: 0;
+}
+
+.nbi-stickers__title {
+  font-size: var(--nbi-font-size-md);
+  font-weight: var(--nbi-font-weight-bold);
+}
+
+.nbi-stickers__content {
+  flex: 1;
+  overflow-y: auto;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--nbi-space-sm);
+  padding-right: var(--nbi-space-xs);
+}
+
+/* Custom scrollbar for stickers */
+.nbi-stickers__content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.nbi-stickers__content::-webkit-scrollbar-track {
+  background: var(--nbi-color-white);
+  border-left: 2px solid var(--nbi-color-black);
+  border-radius: var(--nbi-radius-teen);
+}
+
+.nbi-stickers__content::-webkit-scrollbar-thumb {
+  background: var(--nbi-color-black);
+  border: 1px solid var(--nbi-color-white);
+  border-radius: var(--nbi-radius-teen);
+}
+
+.nbi-stickers__item {
+  border: var(--nbi-border-width-md) solid var(--nbi-color-black);
+  border-radius: 8px;
+  background-color: var(--nbi-color-white);
+  aspect-ratio: 1 / 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--nbi-space-xs);
+  transition: transform var(--nbi-transition-fast), box-shadow var(--nbi-transition-fast);
+  box-shadow: var(--nbi-shadow-sm);
+  outline: none;
+}
+
+.nbi-stickers__item:hover {
+  transform: scale(1.1) translateY(-1px);
+  box-shadow: 3px 3px 0px 0px var(--nbi-color-black);
+}
+
+.nbi-stickers__item:active {
+  transform: translate(1px, 1px);
+  box-shadow: 1px 1px 0px 0px var(--nbi-color-black);
+}
+
+.nbi-stickers__item:focus-visible {
+  transform: scale(1.1);
+  box-shadow: 3px 3px 0px 0px var(--nbi-color-black);
+}
+
+.nbi-stickers__img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  filter: grayscale(1) brightness(0.3);
+  /* Turns all SVGs into a neat uniform dark gray */
+  transition: filter var(--nbi-transition-fast);
+}
+
+.nbi-stickers__item:hover .nbi-stickers__img {
+  filter: grayscale(1) brightness(0.1);
+}
