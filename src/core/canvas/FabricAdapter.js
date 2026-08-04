@@ -104,6 +104,16 @@ export class FabricAdapter {
   }
 
   /**
+   * Mueve un objeto a una posición específica de z-index
+   * @param {Object} obj
+   * @param {number} index
+   */
+  moveObjectTo(obj, index) {
+    if (!this.canvas) return
+    this.canvas.moveTo(obj, index)
+  }
+
+  /**
    * Obtiene el nivel de zoom actual
    * @returns {number}
    */

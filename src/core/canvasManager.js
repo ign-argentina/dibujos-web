@@ -4,6 +4,14 @@ import { ShapeFactory } from './canvas/ShapeFactory.js'
 import { ExportService } from './export/ExportService.js'
 import { ToolService } from './canvas/tools/ToolService.js'
 
+import { CommandHistory } from './canvas/commands/CommandHistory.js'
+import { DeleteCommand } from './canvas/commands/DeleteCommand.js'
+import { DuplicateCommand } from './canvas/commands/DuplicateCommand.js'
+import { BringToFrontCommand } from './canvas/commands/BringToFrontCommand.js'
+import { SendToBackCommand } from './canvas/commands/SendToBackCommand.js'
+import { ClearCommand } from './canvas/commands/ClearCommand.js'
+import { ResizeManager } from './utils/ResizeManager.js'
+
 export class CanvasManager {
   constructor(container, options = {}) {
     if (!(container instanceof HTMLElement)) {
@@ -15,7 +23,8 @@ export class CanvasManager {
     this.adapter = new FabricAdapter()
     this.canvas = null
     this.canvasEl = null
-    this.resizeObserver = null
+    this.resizeManager = null
+    this.commandHistory = new CommandHistory()
 
     // Dimensiones en caché para evitar bucles de redimensionamiento
     this.canvasWidth = 0
@@ -119,12 +128,8 @@ export class CanvasManager {
   }
 
   observeResize() {
-    if ('ResizeObserver' in window) {
-      this.resizeObserver = new ResizeObserver(() => this.resizeCanvas())
-      this.resizeObserver.observe(this.container)
-    } else {
-      window.addEventListener('resize', () => this.resizeCanvas())
-    }
+    this.resizeManager = new ResizeManager(() => this.resizeCanvas(), 100)
+    this.resizeManager.observe(this.container)
   }
 
   async loadMap(url) {
@@ -202,6 +207,31 @@ export class CanvasManager {
         canvas.defaultCursor = 'grab'
         canvas.setCursor('grab')
         canvas.selection = false
+      }
+
+      // Atajos de teclado para Deshacer/Rehacer (Ctrl+Z y Ctrl+Y o Ctrl+Shift+Z)
+      const activeElement = document.activeElement
+      const isInputFocused = activeElement && (
+        activeElement.tagName === 'INPUT' || 
+        activeElement.tagName === 'TEXTAREA' || 
+        activeElement.isContentEditable
+      )
+      
+      const activeObject = this.canvas?.getActiveObject()
+      const isEditingText = activeObject && activeObject.type === 'textbox' && activeObject.isEditing
+
+      if (!isInputFocused && !isEditingText) {
+        if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') {
+          e.preventDefault()
+          if (e.shiftKey) {
+            this.redo()
+          } else {
+            this.undo()
+          }
+        } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'y') {
+          e.preventDefault()
+          this.redo()
+        }
       }
     })
 
@@ -535,10 +565,8 @@ export class CanvasManager {
     if (!this.canvas) return
     const activeObject = this.adapter.getActiveObject()
     if (activeObject && activeObject !== this.currentMapImage) {
-      this.adapter.removeObject(activeObject)
-      this.adapter.discardActiveObject()
-      this.adapter.requestRenderAll()
-      this.adapter.fire('object:modified')
+      const cmd = new DeleteCommand(this, activeObject)
+      this.commandHistory.execute(cmd)
     }
   }
 
@@ -547,40 +575,16 @@ export class CanvasManager {
     const activeObject = this.adapter.getActiveObject()
     if (!activeObject || activeObject === this.currentMapImage) return
 
-    try {
-      const cloned = await activeObject.clone()
-      cloned.set({
-        left: activeObject.left + 20,
-        top: activeObject.top + 20,
-        evented: true,
-        selectable: true,
-      })
-
-      if (cloned.type === 'activeSelection') {
-        cloned.canvas = this.canvas
-        cloned.forEachObject((obj) => {
-          this.adapter.addObject(obj)
-        })
-        cloned.setCoordinates()
-      } else {
-        this.adapter.addObject(cloned)
-      }
-
-      this.adapter.setActiveObject(cloned)
-      this.adapter.requestRenderAll()
-      this.adapter.fire('object:modified')
-    } catch (err) {
-      console.error('Error duplicando objeto:', err)
-    }
+    const cmd = new DuplicateCommand(this, activeObject)
+    await this.commandHistory.execute(cmd)
   }
 
   bringToFront() {
     if (!this.canvas) return
     const activeObject = this.adapter.getActiveObject()
     if (activeObject && activeObject !== this.currentMapImage) {
-      this.adapter.bringObjectToFront(activeObject)
-      this.adapter.requestRenderAll()
-      this.adapter.fire('object:modified')
+      const cmd = new BringToFrontCommand(this, activeObject)
+      this.commandHistory.execute(cmd)
     }
   }
 
@@ -588,28 +592,15 @@ export class CanvasManager {
     if (!this.canvas) return
     const activeObject = this.adapter.getActiveObject()
     if (activeObject && activeObject !== this.currentMapImage) {
-      this.adapter.sendObjectToBack(activeObject)
-      if (this.currentMapImage) {
-        this.adapter.sendObjectToBack(this.currentMapImage)
-      }
-      this.adapter.requestRenderAll()
-      this.adapter.fire('object:modified')
+      const cmd = new SendToBackCommand(this, activeObject)
+      this.commandHistory.execute(cmd)
     }
   }
 
   clearCanvas() {
     if (!this.canvas) return
-
-    const objects = this.adapter.getObjects()
-    for (let i = objects.length - 1; i >= 0; i--) {
-      const obj = objects[i]
-      if (obj !== this.currentMapImage && obj.isMapBase !== true) {
-        this.adapter.removeObject(obj)
-      }
-    }
-    this.adapter.discardActiveObject()
-    this.adapter.requestRenderAll()
-    this.adapter.fire('object:modified')
+    const cmd = new ClearCommand(this)
+    this.commandHistory.execute(cmd)
   }
 
   serialize() {
@@ -647,8 +638,8 @@ export class CanvasManager {
   }
 
   dispose() {
-    if (this.resizeObserver) {
-      this.resizeObserver.disconnect()
+    if (this.resizeManager) {
+      this.resizeManager.disconnect()
     }
     this.adapter.dispose()
     this.canvas = null
@@ -820,5 +811,13 @@ export class CanvasManager {
 
   applyFilter(obj, filterType, enabledOrVal) {
     this.adapter.applyFilter(obj, filterType, enabledOrVal)
+  }
+
+  undo() {
+    this.commandHistory.undo()
+  }
+
+  redo() {
+    this.commandHistory.redo()
   }
 }
