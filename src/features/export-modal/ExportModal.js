@@ -2,6 +2,7 @@ import { jsPDF } from 'jspdf'
 import { Component } from '../Component.js'
 import { appStore } from '../../state/AppStore.js'
 import { ExportService } from '../../core/export/ExportService.js'
+import { configRepository } from '../../core/repositories/ConfigRepository.js'
 
 /**
  * Componente que gestiona el cuadro de diálogo de exportación de mapas (Formatos, Calidad, Previsualización, PDF e Impresión).
@@ -31,9 +32,9 @@ export class ExportModal extends Component {
       Oficio: { width: 215.9, height: 355.6 },
     }
 
-    // Estado inicial de la exportación (Predeterminado a formato escolar 19x24 cm)
+    // Estado inicial de la exportación (Predeterminado a formato escolar 19x24 cm y formato PDF)
     this.destination = 'save' // 'save' | 'print'
-    this.format = 'png' // 'png' | 'jpg' | 'pdf'
+    this.format = 'pdf' // 'png' | 'jpg' | 'pdf'
     this.paperSizeKey = 'A4'
     this.orientation = 'portrait' // 'portrait' | 'landscape'
     this.scale = 100 // Escala inicial 100%
@@ -267,6 +268,8 @@ export class ExportModal extends Component {
     this.orientation = isPortrait ? 'portrait' : 'landscape'
     this.scale = 100
     this.margin = 0
+    this.format = 'pdf'
+    this.destination = 'save'
 
     const paperSelect = document.getElementById('exp-paper-size')
     if (paperSelect) paperSelect.value = 'A4'
@@ -401,8 +404,9 @@ export class ExportModal extends Component {
       targetHeight: targetHeightPx,
     })
 
+    const prefix = configRepository.getExportFilenamePrefix()
     const mapName = await this.getMapName()
-    const fileName = `mapa_${mapName}_anotado.${this.format}`
+    const fileName = `${prefix}${mapName}.${this.format}`
     const link = document.createElement('a')
     link.download = fileName
     link.href = dataUrl
@@ -446,8 +450,9 @@ export class ExportModal extends Component {
     const offsetY = (paper.height - finalH) / 2
 
     doc.addImage(dataUrl, 'PNG', offsetX, offsetY, finalW, finalH)
+    const prefix = configRepository.getExportFilenamePrefix()
     const mapName = await this.getMapName()
-    doc.save(`mapa_${mapName}_anotado.pdf`)
+    doc.save(`${prefix}${mapName}.pdf`)
   }
 
   async executePrint() {

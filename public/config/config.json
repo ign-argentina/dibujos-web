@@ -432,6 +432,7 @@
   ],
   "ui": {
     "title": "Dibujos sobre Mapas Escolares",
+    "exportFilenamePrefix": "mapas_escolares_IGN_",
     "logoUrl": "/logo-ign-blanco.svg",
     "logoLink": "https://www.ign.gob.ar",
     "externalLink": {

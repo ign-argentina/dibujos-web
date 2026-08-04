@@ -48,6 +48,10 @@ export class ConfigRepository {
   getUiConfig() {
     return this.config?.ui || {}
   }
+
+  getExportFilenamePrefix() {
+    return this.config?.ui?.exportFilenamePrefix || 'mapas_escolares_IGN_'
+  }
 }
 
 export const configRepository = new ConfigRepository()

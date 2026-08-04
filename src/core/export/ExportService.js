@@ -77,7 +77,7 @@ export class ExportService {
    * @param {string} fileName
    * @returns {Promise<void>}
    */
-  static async exportToPNG(canvasManager, fileName = 'mapa_anotado.png') {
+  static async exportToPNG(canvasManager, fileName = 'mapas_escolares_IGN_.png') {
     try {
       const dataUrl = await this.getExportDataURL(canvasManager, {
         format: 'png',
