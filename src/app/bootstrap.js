@@ -93,8 +93,13 @@ export async function bootstrap() {
     if (mapData) {
       loaderOverlay.classList.remove('hidden')
       try {
+        const mapSource = configRepository.getMapImageSource()
         const mapUrl =
-          mapData.imageUrl || `${import.meta.env.BASE_URL.replace(/\/$/, '')}${mapData.imagePath}`
+          mapSource === 'imagePath'
+            ? mapData.imagePath
+              ? `${import.meta.env.BASE_URL.replace(/\/$/, '')}${mapData.imagePath}`
+              : mapData.imageUrl
+            : mapData.imageUrl || `${import.meta.env.BASE_URL.replace(/\/$/, '')}${mapData.imagePath}`
         await canvasManager.loadMap(mapUrl)
 
         // 4. Cargar dibujos guardados de la provincia activa (si existen)

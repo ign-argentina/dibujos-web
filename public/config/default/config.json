@@ -1,4 +1,5 @@
 {
+  "mapImageSource": "imageUrl",
   "maps": [
     {
       "id": "planisferio",

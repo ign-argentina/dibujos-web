@@ -37,6 +37,10 @@ export class ConfigRepository {
     }
   }
 
+  getMapImageSource() {
+    return this.config?.mapImageSource || 'imageUrl'
+  }
+
   getMaps() {
     return this.config?.maps || []
   }
