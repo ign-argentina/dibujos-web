@@ -35,7 +35,7 @@
 }
 
 .nbi-btn.is-active {
-  background-color: var(--nbi-color-white);
+  background-color: var(--nbi-accent-color);
   border-width: var(--nbi-border-width-lg);
   box-shadow: var(--nbi-shadow-sm);
   transform: translate(2px, 2px);

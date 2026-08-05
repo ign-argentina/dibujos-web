@@ -64,6 +64,13 @@
   left: 20px;
   z-index: var(--nbi-z-sidebar-btn);
   background-color: var(--nbi-color-secondary);
+  font-family: inherit;
+}
+
+.nbi-sidebar__toggle-btn span.btn-text {
+  font-weight: var(--nbi-font-weight-semibold);
+  font-size: var(--nbi-font-size-md);
+  margin-left: 5px;
 }
 
 /* TARJETAS DE PROVINCIAS (CUADRADAS 110x110px) */

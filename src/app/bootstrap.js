@@ -180,14 +180,14 @@ export async function bootstrap() {
       themeStyle.innerHTML = `
         :root {
           --nbi-bg-main: ${uiConfig.theme.background || '#FAFAFA'};
-          --nbi-primary-color: ${uiConfig.theme.primary || '#63ccfd'};
-          --nbi-secondary-color: ${uiConfig.theme.secondary || '#B391f0'};
-          --nbi-accent-color: ${uiConfig.theme.accent || '#FBE158'};
+          --nbi-primary-color: ${uiConfig.theme.primary || '#41C0F0'};
+          --nbi-secondary-color: ${uiConfig.theme.secondary || '#9678ce'};
+          --nbi-accent-color: ${uiConfig.theme.accent || '#EEC461'};
           --nbi-text-color: ${uiConfig.theme.text || '#000000'};
           --nbi-icons-color: ${uiConfig.theme.icons || '#757575'};
-          --nbi-success-color: ${uiConfig.theme.success || '#7ABE7D'};
-          --nbi-danger-color: ${uiConfig.theme.danger || '#c25b56'};
-          --nbi-panel-bg: ${uiConfig.theme.panelBackground || '#ebebeb'};
+          --nbi-success-color: ${uiConfig.theme.success || '#00B2BB'};
+          --nbi-danger-color: ${uiConfig.theme.danger || '#EB5E50'};
+          --nbi-color-panel-bg: ${uiConfig.theme.panelBackground || '#ebebeb'};
         }
       `
       document.head.appendChild(themeStyle)

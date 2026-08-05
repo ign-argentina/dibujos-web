@@ -8,8 +8,8 @@
   z-index: var(--nbi-z-canvas);
   background-size: 20px 20px;
   background-image:
-    linear-gradient(to right, var(--nbi-color-panel-bg) 1px, transparent 1px),
-    linear-gradient(to bottom, var(--nbi-color-panel-bg) 1px, transparent 1px);
+    linear-gradient(to right, var(--nbi-grey) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--nbi-grey) 1px, transparent 1px);
 }
 
 .fabric-canvas-wrapper {

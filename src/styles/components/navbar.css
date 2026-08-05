@@ -20,14 +20,15 @@
 }
 
 .nbi-navbar__logo {
-  height: 30px;
+  height: 33px;
   width: auto;
 }
 
 .nbi-navbar__title {
-  font-size: var(--nbi-font-size-xl);
+  font-size: var(--nbi-font-size-xxl);
   font-weight: var(--nbi-font-weight-bold);
   letter-spacing: -0.5px;
+  color: var(--nbi-color-white);
 }
 
 .nbi-navbar__subtitle {

@@ -45,8 +45,11 @@
 
 .nbi-properties__actions button {
   font-family: inherit;
+}
+
+#action-export > span.btn-text {
   font-weight: var(--nbi-font-weight-semibold);
-  font-size: var(--nbi-font-size-sm);
+  font-size: var(--nbi-font-size-md);
 }
 
 /* --- ESTADO COLAPSADO DEL PANEL DE PROPIEDADES (72px DE ANCHO) --- */
