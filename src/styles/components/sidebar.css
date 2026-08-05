@@ -1,0 +1,218 @@
+/* --- PANEL LATERAL DE MAPAS (CATÁLOGO) --- */
+.nbi-sidebar {
+  top: 80px;
+  left: 20px;
+  bottom: 20px;
+  width: 320px;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--nbi-color-panel-bg);
+  transition: transform var(--nbi-transition-slow), opacity var(--nbi-transition-slow);
+}
+
+.nbi-sidebar.is-collapsed {
+  transform: translateX(-340px);
+}
+
+.nbi-sidebar__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--nbi-space-lg);
+  padding-bottom: var(--nbi-space-md);
+  border-bottom: var(--nbi-border-width-md) solid var(--nbi-color-black);
+}
+
+.nbi-sidebar__title {
+  font-size: var(--nbi-font-size-xxl);
+  font-weight: var(--nbi-font-weight-bold);
+  letter-spacing: -0.5px;
+}
+
+.nbi-sidebar__scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: var(--nbi-space-xs);
+  display: grid;
+  grid-template-columns: repeat(2, 100px);
+  gap: var(--nbi-space-lg);
+  justify-content: center;
+  align-content: start;
+}
+
+/* Custom scrollbar para estética brutalista */
+.nbi-sidebar__scroll::-webkit-scrollbar {
+  width: 12px;
+}
+
+.nbi-sidebar__scroll::-webkit-scrollbar-track {
+  background: var(--nbi-color-white);
+  border-left: var(--nbi-border-width-md) solid var(--nbi-color-black);
+  border-radius: 6px;
+}
+
+.nbi-sidebar__scroll::-webkit-scrollbar-thumb {
+  background: var(--nbi-color-black);
+  border: 2px solid var(--nbi-color-white);
+  border-radius: 6px;
+}
+
+/* BOTÓN DE COLAPSAR SIDEBAR */
+.nbi-sidebar__toggle-btn {
+  position: absolute;
+  top: 84px;
+  left: 20px;
+  z-index: var(--nbi-z-sidebar-btn);
+  background-color: var(--nbi-color-secondary);
+}
+
+/* TARJETAS DE PROVINCIAS (CUADRADAS 110x110px) */
+.nbi-map-card {
+  width: 110px;
+  height: 110px;
+  background-color: var(--nbi-color-white);
+  border: var(--nbi-border-width-md) solid var(--nbi-color-black);
+  border-radius: 12px;
+  box-shadow: var(--nbi-shadow-md);
+  cursor: pointer;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  transition: transform var(--nbi-transition-fast), box-shadow var(--nbi-transition-fast);
+}
+
+.nbi-map-card:hover {
+  transform: scale(1.08) translateY(-2px);
+  box-shadow: var(--nbi-shadow-lg);
+}
+
+.nbi-map-card:active {
+  transform: translate(2px, 2px);
+  box-shadow: var(--nbi-shadow-sm);
+}
+
+.nbi-map-card.is-active {
+  border-color: var(--nbi-color-black);
+  background-color: var(--nbi-color-accent);
+  box-shadow: var(--nbi-shadow-md);
+  transform: scale(1.02);
+}
+
+.nbi-map-card__image {
+  width: 100%;
+  height: auto;
+  flex: 1;
+  min-height: 50px;
+  object-fit: cover;
+  border-bottom: var(--nbi-border-width-md) solid var(--nbi-color-black);
+  background-color: var(--nbi-color-bg-main);
+  flex-shrink: 1;
+  filter: contrast(0.9);
+}
+
+.nbi-map-card__info {
+  min-height: 35px;
+  padding: var(--nbi-space-xs);
+  font-weight: var(--nbi-font-weight-semibold);
+  text-align: center;
+  font-size: var(--nbi-font-size-xs);
+  line-height: 1.1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  word-break: normal;
+  overflow-wrap: anywhere;
+  background-color: var(--nbi-color-white);
+  transition: background-color var(--nbi-transition-fast);
+  flex-shrink: 0;
+}
+
+.nbi-map-card.is-active .nbi-map-card__info {
+  background-color: var(--nbi-color-accent);
+}
+
+/* --- CONTROLES DEL BUSCADOR Y FILTROS --- */
+.nbi-sidebar__controls {
+  display: flex;
+  flex-direction: column;
+  gap: var(--nbi-space-md);
+  padding-bottom: var(--nbi-space-lg);
+  border-bottom: var(--nbi-border-width-md) solid var(--nbi-color-black);
+  margin-bottom: var(--nbi-space-lg);
+}
+
+.nbi-search {
+  position: relative;
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.nbi-search .nbi-input {
+  padding-left: 36px;
+  /* Icon on the left */
+  padding-right: 36px;
+  /* Clear button on the right */
+}
+
+.nbi-search__icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+}
+
+.nbi-search__icon svg {
+  width: 16px;
+  height: 16px;
+  stroke-width: 2.5;
+  color: var(--nbi-color-black);
+}
+
+.nbi-search__clear-btn {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  z-index: 2;
+}
+
+.nbi-search__clear-btn svg {
+  width: 16px;
+  height: 16px;
+  stroke-width: 2.5;
+  color: var(--nbi-color-black);
+  transition: transform var(--nbi-transition-fast);
+}
+
+.nbi-search__clear-btn:hover svg {
+  transform: scale(1.2) rotate(90deg);
+}
+
+.nbi-search__clear-btn:active svg {
+  transform: scale(0.9);
+}
+
+
+
+.nbi-sidebar__empty {
+  grid-column: span 2;
+  text-align: center;
+  font-weight: var(--nbi-font-weight-bold);
+  color: var(--nbi-color-muted);
+  padding: var(--nbi-space-xxl) 0;
+  font-size: var(--nbi-font-size-base);
+}

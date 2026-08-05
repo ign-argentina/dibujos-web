@@ -1,0 +1,38 @@
+/* --- FILTROS Y BOTONES DE OPCIÓN (TABS/PILLS) --- */
+.nbi-filter-group {
+  display: flex;
+  gap: 6px;
+}
+
+.nbi-filter-group__btn {
+  flex: 1;
+  min-height: 36px;
+  padding: 6px var(--nbi-space-xs);
+  font-family: inherit;
+  font-size: var(--nbi-font-size-sm);
+  font-weight: var(--nbi-font-weight-semibold);
+  border: var(--nbi-border-width-md) solid var(--nbi-color-black);
+  border-radius: 8px;
+  background-color: var(--nbi-color-white);
+  cursor: pointer;
+  transition: transform var(--nbi-transition-fast), box-shadow var(--nbi-transition-fast), background-color var(--nbi-transition-fast);
+  box-shadow: var(--nbi-shadow-sm);
+  color: var(--nbi-color-black);
+  outline: none;
+}
+
+.nbi-filter-group__btn:hover {
+  transform: scale(1.02) translateY(-1px);
+  box-shadow: 3px 3px 0px 0px var(--nbi-color-black);
+}
+
+.nbi-filter-group__btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: 0px 0px 0px 0px var(--nbi-color-black);
+}
+
+.nbi-filter-group__btn.is-active {
+  background-color: var(--nbi-color-accent);
+  box-shadow: 1px 1px 0px 0px var(--nbi-color-black);
+  transform: translate(1px, 1px);
+}

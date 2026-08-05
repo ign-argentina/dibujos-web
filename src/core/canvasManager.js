@@ -1,4 +1,17 @@
-import { Canvas, FabricImage, Rect, Circle, Textbox, Path, PencilBrush, util, loadSVGFromURL, filters } from 'fabric'
+import { FabricImage } from 'fabric'
+import { FabricAdapter } from './canvas/FabricAdapter.js'
+import { ShapeFactory } from './canvas/ShapeFactory.js'
+import { ExportService } from './export/ExportService.js'
+import { ToolService } from './canvas/tools/ToolService.js'
+
+import { CommandHistory } from './canvas/commands/CommandHistory.js'
+import { DeleteCommand } from './canvas/commands/DeleteCommand.js'
+import { DuplicateCommand } from './canvas/commands/DuplicateCommand.js'
+import { BringToFrontCommand } from './canvas/commands/BringToFrontCommand.js'
+import { SendToBackCommand } from './canvas/commands/SendToBackCommand.js'
+import { ClearCommand } from './canvas/commands/ClearCommand.js'
+import { ResizeManager } from './utils/ResizeManager.js'
+import { compressImage } from './utils/imageCompressor.js'
 
 export class CanvasManager {
   constructor(container, options = {}) {
@@ -8,9 +21,11 @@ export class CanvasManager {
 
     this.container = container
     this.options = options
+    this.adapter = new FabricAdapter()
     this.canvas = null
     this.canvasEl = null
-    this.resizeObserver = null
+    this.resizeManager = null
+    this.commandHistory = new CommandHistory()
 
     // Dimensiones en caché para evitar bucles de redimensionamiento
     this.canvasWidth = 0
@@ -40,11 +55,15 @@ export class CanvasManager {
   init() {
     this.createCanvasElement()
 
-    this.canvas = new Canvas(this.canvasEl, {
+    this.adapter.init(this.canvasEl, {
       selection: true,
       preserveObjectStacking: true,
       ...this.options,
     })
+    this.canvas = this.adapter.canvas
+
+    this.toolService = new ToolService(this)
+    this.toolService.setTool(this.activeTool)
 
     this.configureDrawingBrush()
     this.observeZoomAndPan()
@@ -57,13 +76,16 @@ export class CanvasManager {
     this.canvasEl.className = 'fabric-canvas'
     this.canvasEl.setAttribute('tabindex', '0')
     this.canvasEl.setAttribute('role', 'img')
-    this.canvasEl.setAttribute('aria-label', 'Lienzo interactivo de dibujo sobre el mapa. Presioná Delete o Supr para borrar figuras seleccionadas o Escape para deseleccionar.')
-    
+    this.canvasEl.setAttribute(
+      'aria-label',
+      'Lienzo interactivo de dibujo sobre el mapa. Presioná Delete o Supr para borrar figuras seleccionadas o Escape para deseleccionar.'
+    )
+
     // Escuchador de eventos de teclado en el canvas para accesibilidad
     this.canvasEl.addEventListener('keydown', (e) => {
       if (e.key === 'Delete' || e.key === 'Backspace') {
         const activeObj = this.canvas?.getActiveObject()
-        if (activeObj && !(activeObj instanceof Textbox && activeObj.isEditing)) {
+        if (activeObj && !(activeObj.type === 'textbox' && activeObj.isEditing)) {
           e.preventDefault()
           this.deleteSelected()
         }
@@ -80,14 +102,7 @@ export class CanvasManager {
   }
 
   configureDrawingBrush() {
-    if (!this.canvas) return
-
-    // Instancia el pincel de dibujo
-    if (!this.canvas.freeDrawingBrush) {
-      this.canvas.freeDrawingBrush = new PencilBrush(this.canvas)
-    }
-    this.canvas.freeDrawingBrush.color = this.activeColor
-    this.canvas.freeDrawingBrush.width = this.activeStrokeWidth
+    this.adapter.setBrushOptions(this.activeColor, this.activeStrokeWidth)
   }
 
   resizeCanvas() {
@@ -103,9 +118,9 @@ export class CanvasManager {
       this.canvasWidth = width
       this.canvasHeight = height
 
-      this.canvas.setDimensions({ width, height })
-      this.canvas.calcOffset()
-      this.canvas.requestRenderAll()
+      this.adapter.setDimensions({ width, height })
+      this.adapter.calcOffset()
+      this.adapter.requestRenderAll()
 
       if (this.currentMapImage) {
         this.fitMapToCanvas()
@@ -114,45 +129,23 @@ export class CanvasManager {
   }
 
   observeResize() {
-    if ('ResizeObserver' in window) {
-      this.resizeObserver = new ResizeObserver(() => this.resizeCanvas())
-      this.resizeObserver.observe(this.container)
-    } else {
-      window.addEventListener('resize', () => this.resizeCanvas())
-    }
+    this.resizeManager = new ResizeManager(() => this.resizeCanvas(), 100)
+    this.resizeManager.observe(this.container)
   }
 
   async loadMap(url) {
     if (!this.canvas) return
 
     if (this.currentMapImage) {
-      this.canvas.remove(this.currentMapImage)
+      this.adapter.removeObject(this.currentMapImage)
       this.currentMapImage = null
     }
 
     try {
       this.currentMapUrl = url
 
-      // FabricImage.fromURL en v7: (url, loadOptions, imageOptions)
-      const img = await FabricImage.fromURL(url, {
-        crossOrigin: 'anonymous',
-      }, {})
-
-      img.set({
-        selectable: false,
-        evented: false,
-        hasControls: false,
-        hasBorders: false,
-        lockMovementX: true,
-        lockMovementY: true,
-        hoverCursor: 'default',
-        originX: 'left',
-        originY: 'top',
-      })
-
+      const img = await this.adapter.loadBackgroundImage(url)
       this.currentMapImage = img
-
-      this.canvas.insertAt(0, img)
       this.fitMapToCanvas()
 
       return img
@@ -196,8 +189,8 @@ export class CanvasManager {
     const xOffset = (canvasWidth - canvasWidth * zoom) / 2
     const yOffset = (canvasHeight - canvasHeight * zoom) / 2
 
-    this.canvas.setViewportTransform([zoom, 0, 0, zoom, xOffset, yOffset])
-    this.canvas.requestRenderAll()
+    this.adapter.setViewportTransform([zoom, 0, 0, zoom, xOffset, yOffset])
+    this.adapter.requestRenderAll()
   }
 
   observeZoomAndPan() {
@@ -215,6 +208,31 @@ export class CanvasManager {
         canvas.defaultCursor = 'grab'
         canvas.setCursor('grab')
         canvas.selection = false
+      }
+
+      // Atajos de teclado para Deshacer/Rehacer (Ctrl+Z y Ctrl+Y o Ctrl+Shift+Z)
+      const activeElement = document.activeElement
+      const isInputFocused = activeElement && (
+        activeElement.tagName === 'INPUT' || 
+        activeElement.tagName === 'TEXTAREA' || 
+        activeElement.isContentEditable
+      )
+      
+      const activeObject = this.canvas?.getActiveObject()
+      const isEditingText = activeObject && activeObject.type === 'textbox' && activeObject.isEditing
+
+      if (!isInputFocused && !isEditingText) {
+        if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') {
+          e.preventDefault()
+          if (e.shiftKey) {
+            this.redo()
+          } else {
+            this.undo()
+          }
+        } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'y') {
+          e.preventDefault()
+          this.redo()
+        }
       }
     })
 
@@ -262,8 +280,8 @@ export class CanvasManager {
         return
       }
 
-      if (['rect', 'circle', 'arrow', 'text', 'pin'].includes(this.activeTool) && (e.button === 0 || !e.button)) {
-        this.startShapeDrawing(opt)
+      if (e.button === 0 || !e.button) {
+        this.toolService.handleMouseDown(opt)
       }
     })
 
@@ -282,9 +300,7 @@ export class CanvasManager {
         return
       }
 
-      if (this.isDrawingShape) {
-        this.updateShapeDrawing(opt)
-      }
+      this.toolService.handleMouseMove(opt)
     })
 
     canvas.on('mouse:up', (opt) => {
@@ -304,9 +320,7 @@ export class CanvasManager {
         return
       }
 
-      if (this.isDrawingShape) {
-        this.finishShapeDrawing(opt)
-      }
+      this.toolService.handleMouseUp(opt)
     })
   }
 
@@ -322,24 +336,18 @@ export class CanvasManager {
 
   zoomIn(factor = 1.25) {
     if (!this.canvas) return
-    let zoom = this.canvas.getZoom() * factor
+    let zoom = this.adapter.getZoom() * factor
     if (zoom > 8) zoom = 8
-    this.canvas.zoomToPoint(
-      { x: this.canvasWidth / 2, y: this.canvasHeight / 2 },
-      zoom
-    )
-    this.canvas.requestRenderAll()
+    this.adapter.zoomToPoint({ x: this.canvasWidth / 2, y: this.canvasHeight / 2 }, zoom)
+    this.adapter.requestRenderAll()
   }
 
   zoomOut(factor = 1.25) {
     if (!this.canvas) return
-    let zoom = this.canvas.getZoom() / factor
+    let zoom = this.adapter.getZoom() / factor
     if (zoom < 0.5) zoom = 0.5
-    this.canvas.zoomToPoint(
-      { x: this.canvasWidth / 2, y: this.canvasHeight / 2 },
-      zoom
-    )
-    this.canvas.requestRenderAll()
+    this.adapter.zoomToPoint({ x: this.canvasWidth / 2, y: this.canvasHeight / 2 }, zoom)
+    this.adapter.requestRenderAll()
   }
 
   zoomHome() {
@@ -347,8 +355,8 @@ export class CanvasManager {
     if (this.currentMapImage) {
       this.fitMapToCanvas()
     } else {
-      this.canvas.setViewportTransform([1, 0, 0, 1, 0, 0])
-      this.canvas.requestRenderAll()
+      this.adapter.setViewportTransform([1, 0, 0, 1, 0, 0])
+      this.adapter.requestRenderAll()
     }
   }
 
@@ -358,23 +366,8 @@ export class CanvasManager {
     this.announceA11y(`Herramienta ${tool} activada`)
     if (!this.canvas) return
 
-    if (tool === 'brush') {
-      this.canvas.isDrawingMode = true
-      this.configureDrawingBrush()
-      this.canvas.defaultCursor = 'default'
-      this.canvas.setCursor('default')
-      this.canvas.selection = false
-    } else if (['rect', 'circle', 'arrow', 'text', 'pin'].includes(tool)) {
-      this.canvas.isDrawingMode = false
-      this.canvas.selection = false
-      this.canvas.defaultCursor = 'crosshair'
-      this.canvas.setCursor('crosshair')
-    } else {
-      this.activeTool = 'select'
-      this.canvas.isDrawingMode = false
-      this.canvas.selection = true
-      this.canvas.defaultCursor = 'default'
-      this.canvas.setCursor('default')
+    if (this.toolService) {
+      this.toolService.setTool(tool)
     }
   }
 
@@ -413,19 +406,19 @@ export class CanvasManager {
     this.configureDrawingBrush()
 
     if (this.canvas) {
-      const activeObject = this.canvas.getActiveObject()
+      const activeObject = this.adapter.getActiveObject()
       if (activeObject) {
-        if (activeObject instanceof Textbox) {
+        if (activeObject.type === 'textbox') {
           activeObject.set({ fill: color })
-        } else if (activeObject instanceof Path && activeObject.fill === 'transparent') {
+        } else if (activeObject.type === 'path' && activeObject.fill === 'transparent') {
           activeObject.set({ stroke: color })
         } else if (activeObject.type === 'group' || activeObject.getObjects) {
           this.colorSVGGroup(activeObject, color)
         } else {
           activeObject.set({ fill: color, stroke: color })
         }
-        this.canvas.requestRenderAll()
-        this.canvas.fire('object:modified')
+        this.adapter.requestRenderAll()
+        this.adapter.fire('object:modified')
       }
     }
   }
@@ -435,11 +428,11 @@ export class CanvasManager {
     this.configureDrawingBrush()
 
     if (this.canvas) {
-      const activeObject = this.canvas.getActiveObject()
-      if (activeObject && !(activeObject instanceof Textbox)) {
+      const activeObject = this.adapter.getActiveObject()
+      if (activeObject && activeObject.type !== 'textbox') {
         activeObject.set({ strokeWidth: this.activeStrokeWidth })
-        this.canvas.requestRenderAll()
-        this.canvas.fire('object:modified')
+        this.adapter.requestRenderAll()
+        this.adapter.fire('object:modified')
       }
     }
   }
@@ -467,254 +460,6 @@ export class CanvasManager {
     return `M ${x1} ${y1} L ${x2} ${y2} M ${x3} ${y3} L ${x2} ${y2} L ${x4} ${y4}`
   }
 
-  startShapeDrawing(opt) {
-    if (!this.canvas) return
-    const pointer = this.canvas.getScenePoint(opt.e)
-    this.isDrawingShape = true
-    this.drawStartPoint = pointer
-
-    const x = pointer.x
-    const y = pointer.y
-
-    switch (this.activeTool) {
-      case 'rect':
-        this.previewShape = new Rect({
-          left: x,
-          top: y,
-          width: 1,
-          height: 1,
-          fill: this.activeColor,
-          stroke: this.activeColor,
-          strokeWidth: 2,
-          rx: 4,
-          ry: 4,
-          originX: 'left',
-          originY: 'top',
-          opacity: 0.7,
-          selectable: false,
-          evented: false,
-        })
-        break
-      case 'circle':
-        this.previewShape = new Circle({
-          left: x,
-          top: y,
-          radius: 1,
-          fill: this.activeColor,
-          stroke: this.activeColor,
-          strokeWidth: 2,
-          originX: 'left',
-          originY: 'top',
-          opacity: 0.7,
-          selectable: false,
-          evented: false,
-        })
-        break
-      case 'arrow':
-        this.previewShape = new Path(this.createArrowPath(x, y, x + 1, y + 1), {
-          stroke: this.activeColor,
-          strokeWidth: this.activeStrokeWidth,
-          fill: 'transparent',
-          strokeLineCap: 'round',
-          strokeLineJoin: 'round',
-          selectable: false,
-          evented: false,
-        })
-        break
-      case 'text':
-        this.previewShape = new Textbox('Escribí acá', {
-          left: x,
-          top: y,
-          fontFamily: 'Fredoka',
-          fontSize: 24,
-          fontWeight: '500',
-          fill: this.activeColor,
-          stroke: 'transparent',
-          originX: 'left',
-          originY: 'top',
-          textAlign: 'left',
-          width: 1,
-          selectable: false,
-          evented: false,
-        })
-        break
-      case 'pin':
-        this.previewShape = new Path('M 0 0 C -12 -13 -18 -24 -18 -34 A 18 18 0 1 1 18 -34 C 18 -24 12 -13 0 0 Z M 0 -40 A 6 6 0 1 0 0 -28 A 6 6 0 1 0 0 -40 Z', {
-          left: x,
-          top: y,
-          fill: this.activeColor,
-          stroke: '#000000',
-          strokeWidth: 3,
-          originX: 'center',
-          originY: 'bottom',
-          opacity: 0.9,
-          scaleX: 0.1,
-          scaleY: 0.1,
-          selectable: false,
-          evented: false,
-        })
-        break
-    }
-
-    if (this.previewShape) {
-      this.canvas.add(this.previewShape)
-      this.canvas.requestRenderAll()
-    }
-  }
-
-  updateShapeDrawing(opt) {
-    if (!this.isDrawingShape || !this.drawStartPoint || !this.previewShape) return
-
-    const pointer = this.canvas.getScenePoint(opt.e)
-    const startX = this.drawStartPoint.x
-    const startY = this.drawStartPoint.y
-    const currentX = pointer.x
-    const currentY = pointer.y
-
-    const deltaX = currentX - startX
-    const deltaY = currentY - startY
-
-    switch (this.activeTool) {
-      case 'rect': {
-        const left = Math.min(startX, currentX)
-        const top = Math.min(startY, currentY)
-        const width = Math.max(Math.abs(deltaX), 1)
-        const height = Math.max(Math.abs(deltaY), 1)
-        this.previewShape.set({ left, top, width, height })
-        break
-      }
-      case 'circle': {
-        const diameter = Math.max(Math.abs(deltaX), Math.abs(deltaY))
-        const radius = Math.max(diameter / 2, 1)
-        const left = Math.min(startX, currentX)
-        const top = Math.min(startY, currentY)
-        this.previewShape.set({ left, top, radius })
-        break
-      }
-      case 'arrow': {
-        this.canvas.remove(this.previewShape)
-        this.previewShape = new Path(this.createArrowPath(startX, startY, currentX, currentY), {
-          stroke: this.activeColor,
-          strokeWidth: this.activeStrokeWidth,
-          fill: 'transparent',
-          strokeLineCap: 'round',
-          strokeLineJoin: 'round',
-          selectable: false,
-          evented: false,
-        })
-        this.canvas.add(this.previewShape)
-        break
-      }
-      case 'text': {
-        const left = Math.min(startX, currentX)
-        const top = Math.min(startY, currentY)
-        const width = Math.max(Math.abs(deltaX), 120)
-        this.previewShape.set({ left, top, width })
-        break
-      }
-      case 'pin': {
-        const dist = Math.hypot(deltaX, deltaY)
-        const scale = Math.max(0.2, Math.min(3, dist / 50))
-        this.previewShape.set({ left: startX, top: startY, scaleX: scale, scaleY: scale })
-        break
-      }
-    }
-
-    this.canvas.requestRenderAll()
-  }
-
-  finishShapeDrawing(opt) {
-    if (!this.isDrawingShape || !this.drawStartPoint || !this.previewShape) return
-
-    const pointer = this.canvas.getScenePoint(opt.e)
-    const startX = this.drawStartPoint.x
-    const startY = this.drawStartPoint.y
-    const currentX = pointer.x
-    const currentY = pointer.y
-
-    const dist = Math.hypot(currentX - startX, currentY - startY)
-    const isClick = dist < 5
-
-    const toolWas = this.activeTool
-    const finalShape = this.previewShape
-
-    this.isDrawingShape = false
-    this.drawStartPoint = null
-    this.previewShape = null
-
-    if (isClick) {
-      switch (toolWas) {
-        case 'rect':
-          finalShape.set({
-            left: startX,
-            top: startY,
-            width: 140,
-            height: 100,
-            originX: 'center',
-            originY: 'center',
-          })
-          break
-        case 'circle':
-          finalShape.set({
-            left: startX,
-            top: startY,
-            radius: 60,
-            originX: 'center',
-            originY: 'center',
-          })
-          break
-        case 'arrow':
-          this.canvas.remove(finalShape)
-          const defaultArrow = new Path(this.createArrowPath(startX - 50, startY, startX + 50, startY), {
-            stroke: this.activeColor,
-            strokeWidth: this.activeStrokeWidth,
-            fill: 'transparent',
-            strokeLineCap: 'round',
-            strokeLineJoin: 'round',
-          })
-          this.canvas.add(defaultArrow)
-          this.finishCreatedObject(defaultArrow, toolWas)
-          return
-        case 'text':
-          finalShape.set({
-            left: startX,
-            top: startY,
-            width: 180,
-            originX: 'center',
-            originY: 'center',
-            textAlign: 'center',
-          })
-          break
-        case 'pin':
-          finalShape.set({
-            left: startX,
-            top: startY,
-            scaleX: 1,
-            scaleY: 1,
-            originX: 'center',
-            originY: 'bottom',
-          })
-          break
-      }
-    } else {
-      if (toolWas === 'rect' || toolWas === 'circle' || toolWas === 'text') {
-        finalShape.set({
-          originX: 'left',
-          originY: 'top',
-        })
-      } else if (toolWas === 'pin') {
-        finalShape.set({
-          left: startX,
-          top: startY,
-          originX: 'center',
-          originY: 'bottom',
-        })
-      }
-    }
-
-    this.finishCreatedObject(finalShape, toolWas)
-  }
-
   finishCreatedObject(shape, toolWas) {
     shape.set({
       selectable: true,
@@ -740,203 +485,132 @@ export class CanvasManager {
     if (!this.canvas) return
     const center = this.getViewportCenter()
 
-    const rect = new Rect({
+    const rect = ShapeFactory.createRect({
       left: center.left,
       top: center.top,
-      width: 140,
-      height: 100,
-      fill: this.activeColor,
-      stroke: this.activeColor,
-      strokeWidth: 2,
-      rx: 4,
-      ry: 4,
-      originX: 'center',
-      originY: 'center',
-      opacity: 0.7,
+      color: this.activeColor,
     })
 
-    this.canvas.add(rect)
-    this.canvas.setActiveObject(rect)
-    this.canvas.requestRenderAll()
-    this.canvas.fire('object:modified')
+    this.adapter.addObject(rect)
+    this.adapter.setActiveObject(rect)
+    this.adapter.requestRenderAll()
+    this.adapter.fire('object:modified')
   }
 
   addCircle() {
     if (!this.canvas) return
     const center = this.getViewportCenter()
 
-    const circle = new Circle({
+    const circle = ShapeFactory.createCircle({
       left: center.left,
       top: center.top,
-      radius: 60,
-      fill: this.activeColor,
-      stroke: this.activeColor,
-      strokeWidth: 2,
-      originX: 'center',
-      originY: 'center',
-      opacity: 0.7,
+      color: this.activeColor,
     })
 
-    this.canvas.add(circle)
-    this.canvas.setActiveObject(circle)
-    this.canvas.requestRenderAll()
-    this.canvas.fire('object:modified')
+    this.adapter.addObject(circle)
+    this.adapter.setActiveObject(circle)
+    this.adapter.requestRenderAll()
+    this.adapter.fire('object:modified')
   }
 
   addArrow() {
     if (!this.canvas) return
     const center = this.getViewportCenter()
 
-    const arrow = new Path('M -50 0 L 50 0 M 20 -15 L 50 0 L 20 15', {
+    const arrow = ShapeFactory.createArrow('M -50 0 L 50 0 M 20 -15 L 50 0 L 20 15', {
       left: center.left,
       top: center.top,
-      stroke: this.activeColor,
+      color: this.activeColor,
       strokeWidth: this.activeStrokeWidth,
-      fill: 'transparent',
-      strokeLineCap: 'round',
-      strokeLineJoin: 'round',
-      originX: 'center',
-      originY: 'center',
     })
 
-    this.canvas.add(arrow)
-    this.canvas.setActiveObject(arrow)
-    this.canvas.requestRenderAll()
-    this.canvas.fire('object:modified')
+    this.adapter.addObject(arrow)
+    this.adapter.setActiveObject(arrow)
+    this.adapter.requestRenderAll()
+    this.adapter.fire('object:modified')
   }
 
   addText() {
     if (!this.canvas) return
     const center = this.getViewportCenter()
 
-    const text = new Textbox('Escribí acá', {
+    const text = ShapeFactory.createText('Escribí acá', {
       left: center.left,
       top: center.top,
-      fontFamily: 'Fredoka',
-      fontSize: 24,
-      fontWeight: '500',
-      fill: this.activeColor,
-      stroke: 'transparent',
-      originX: 'center',
-      originY: 'center',
-      textAlign: 'center',
-      width: 180,
+      color: this.activeColor,
     })
 
-    this.canvas.add(text)
-    this.canvas.setActiveObject(text)
-    this.canvas.requestRenderAll()
-    this.canvas.fire('object:modified')
+    this.adapter.addObject(text)
+    this.adapter.setActiveObject(text)
+    this.adapter.requestRenderAll()
+    this.adapter.fire('object:modified')
   }
 
   addPin() {
     if (!this.canvas) return
     const center = this.getViewportCenter()
 
-    // Crear un pin/marcador neo-brutalista (gota invertida con un círculo central calado)
-    const pin = new Path('M 0 0 C -12 -13 -18 -24 -18 -34 A 18 18 0 1 1 18 -34 C 18 -24 12 -13 0 0 Z M 0 -40 A 6 6 0 1 0 0 -28 A 6 6 0 1 0 0 -40 Z', {
+    const pin = ShapeFactory.createPin({
       left: center.left,
       top: center.top,
-      fill: this.activeColor,
-      stroke: '#000000',
-      strokeWidth: 3,
-      originX: 'center',
-      originY: 'bottom', // El extremo inferior del marcador coincide con el punto del mapa
-      opacity: 0.9,
+      color: this.activeColor,
     })
 
-    this.canvas.add(pin)
-    this.canvas.setActiveObject(pin)
-    this.canvas.requestRenderAll()
-    this.canvas.fire('object:modified')
+    this.adapter.addObject(pin)
+    this.adapter.setActiveObject(pin)
+    this.adapter.requestRenderAll()
+    this.adapter.fire('object:modified')
   }
 
   deleteSelected() {
     if (!this.canvas) return
-    const activeObject = this.canvas.getActiveObject()
+    const activeObject = this.adapter.getActiveObject()
     if (activeObject && activeObject !== this.currentMapImage) {
-      this.canvas.remove(activeObject)
-      this.canvas.discardActiveObject()
-      this.canvas.requestRenderAll()
-      this.canvas.fire('object:modified')
+      const cmd = new DeleteCommand(this, activeObject)
+      this.commandHistory.execute(cmd)
     }
   }
 
   async duplicateSelected() {
     if (!this.canvas) return
-    const activeObject = this.canvas.getActiveObject()
+    const activeObject = this.adapter.getActiveObject()
     if (!activeObject || activeObject === this.currentMapImage) return
 
-    try {
-      const cloned = await activeObject.clone()
-      cloned.set({
-        left: activeObject.left + 20,
-        top: activeObject.top + 20,
-        evented: true,
-        selectable: true,
-      })
-
-      if (cloned.type === 'activeSelection') {
-        cloned.canvas = this.canvas
-        cloned.forEachObject((obj) => {
-          this.canvas.add(obj)
-        })
-        cloned.setCoordinates()
-      } else {
-        this.canvas.add(cloned)
-      }
-
-      this.canvas.setActiveObject(cloned)
-      this.canvas.requestRenderAll()
-      this.canvas.fire('object:modified')
-    } catch (err) {
-      console.error('Error duplicando objeto:', err)
-    }
+    const cmd = new DuplicateCommand(this, activeObject)
+    await this.commandHistory.execute(cmd)
   }
 
   bringToFront() {
     if (!this.canvas) return
-    const activeObject = this.canvas.getActiveObject()
+    const activeObject = this.adapter.getActiveObject()
     if (activeObject && activeObject !== this.currentMapImage) {
-      this.canvas.bringObjectToFront(activeObject)
-      this.canvas.requestRenderAll()
-      this.canvas.fire('object:modified')
+      const cmd = new BringToFrontCommand(this, activeObject)
+      this.commandHistory.execute(cmd)
     }
   }
 
   sendToBack() {
     if (!this.canvas) return
-    const activeObject = this.canvas.getActiveObject()
+    const activeObject = this.adapter.getActiveObject()
     if (activeObject && activeObject !== this.currentMapImage) {
-      this.canvas.sendObjectToBack(activeObject)
-      if (this.currentMapImage) {
-        this.canvas.sendObjectToBack(this.currentMapImage)
-      }
-      this.canvas.requestRenderAll()
-      this.canvas.fire('object:modified')
+      const cmd = new SendToBackCommand(this, activeObject)
+      this.commandHistory.execute(cmd)
     }
   }
 
   clearCanvas() {
     if (!this.canvas) return
-
-    const objects = this.canvas.getObjects()
-    for (let i = objects.length - 1; i >= 0; i--) {
-      const obj = objects[i]
-      if (obj !== this.currentMapImage) {
-        this.canvas.remove(obj)
-      }
-    }
-    this.canvas.discardActiveObject()
-    this.canvas.requestRenderAll()
-    this.canvas.fire('object:modified')
+    const cmd = new ClearCommand(this)
+    this.commandHistory.execute(cmd)
   }
 
   serialize() {
     if (!this.canvas) return null
 
-    const objects = this.canvas.getObjects().filter(obj => obj !== this.currentMapImage)
-    const serializedObjects = objects.map(obj => obj.toObject())
+    const objects = this.adapter
+      .getObjects()
+      .filter((obj) => obj !== this.currentMapImage && obj.isMapBase !== true)
+    const serializedObjects = objects.map((obj) => obj.toObject())
     return JSON.stringify(serializedObjects)
   }
 
@@ -947,54 +621,29 @@ export class CanvasManager {
       const jsonObjects = JSON.parse(jsonString)
       if (!Array.isArray(jsonObjects) || jsonObjects.length === 0) return
 
-      const objects = await util.enlivenObjects(jsonObjects)
+      const objects = await this.adapter.enlivenObjects(jsonObjects)
 
       this.canvas.renderOnAddRemove = false
       objects.forEach((obj) => {
-        this.canvas.add(obj)
+        this.adapter.addObject(obj)
       })
       this.canvas.renderOnAddRemove = true
-      this.canvas.requestRenderAll()
+      this.adapter.requestRenderAll()
     } catch (error) {
       console.error('Error deserializando trazos de dibujo:', error)
     }
   }
 
   exportToPNG(fileName = 'mapa_anotado.png') {
-    if (!this.canvas) return
-
-    this.canvas.discardActiveObject()
-    this.canvas.requestRenderAll()
-
-    setTimeout(() => {
-      try {
-        const dataUrl = this.canvas.toDataURL({
-          format: 'png',
-          quality: 1.0,
-          multiplier: 2,
-        })
-
-        const link = document.createElement('a')
-        link.download = fileName
-        link.href = dataUrl
-        document.body.appendChild(link)
-        link.click()
-        document.body.removeChild(link)
-      } catch (error) {
-        console.error('Error exportando lienzo a PNG:', error)
-      }
-    }, 50)
+    ExportService.exportToPNG(this, fileName)
   }
 
   dispose() {
-    if (this.resizeObserver) {
-      this.resizeObserver.disconnect()
+    if (this.resizeManager) {
+      this.resizeManager.disconnect()
     }
-
-    if (this.canvas) {
-      this.canvas.dispose()
-      this.canvas = null
-    }
+    this.adapter.dispose()
+    this.canvas = null
   }
 
   async addSticker(url) {
@@ -1002,8 +651,8 @@ export class CanvasManager {
     const center = this.getViewportCenter()
 
     try {
-      const { objects, options } = await loadSVGFromURL(url)
-      const stickerGroup = util.groupSVGElements(objects, options)
+      const { objects, options } = await this.adapter.loadSVG(url)
+      const stickerGroup = this.adapter.groupSVGElements(objects, options)
 
       stickerGroup.set({
         left: center.left,
@@ -1025,10 +674,10 @@ export class CanvasManager {
       // Colorear el sticker con el color activo
       this.colorSVGGroup(stickerGroup, this.activeColor)
 
-      this.canvas.add(stickerGroup)
-      this.canvas.setActiveObject(stickerGroup)
-      this.canvas.requestRenderAll()
-      this.canvas.fire('object:modified')
+      this.adapter.addObject(stickerGroup)
+      this.adapter.setActiveObject(stickerGroup)
+      this.adapter.requestRenderAll()
+      this.adapter.fire('object:modified')
       return stickerGroup
     } catch (err) {
       console.error('Error cargando sticker en el canvas:', err)
@@ -1053,74 +702,78 @@ export class CanvasManager {
     }
 
     setElementColor(group)
-    this.canvas.requestRenderAll()
+    this.adapter.requestRenderAll()
   }
 
   async addLocalImage(file) {
     if (!this.canvas || !file) return
 
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader()
+    // 1. Validar el tamaño del archivo (Límite: 10 MB)
+    const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10MB
+    if (file.size > MAX_FILE_SIZE) {
+      throw new Error('FILE_TOO_LARGE')
+    }
 
-      reader.onload = async (e) => {
-        const dataUrl = e.target.result
-        try {
-          const center = this.getViewportCenter()
+    try {
+      // 2. Comprimir/Redimensionar la imagen si es rasterizada
+      const imageData = await compressImage(file, { maxWidth: 1024, maxHeight: 1024, quality: 0.8 })
 
-          const img = await FabricImage.fromURL(dataUrl, {
-            crossOrigin: 'anonymous',
-          }, {})
+      // 3. Insertar la imagen en el lienzo
+      const center = this.getViewportCenter()
 
-          const maxDim = Math.min(this.canvasWidth * 0.5, this.canvasHeight * 0.5, 400)
-          let scale = 1
-          if (img.width > maxDim || img.height > maxDim) {
-            scale = Math.min(maxDim / img.width, maxDim / img.height)
-          }
+      const img = await FabricImage.fromURL(
+        imageData.dataUrl,
+        {
+          crossOrigin: 'anonymous',
+        },
+        {}
+      )
 
-          img.set({
-            left: center.left,
-            top: center.top,
-            originX: 'center',
-            originY: 'center',
-            scaleX: scale,
-            scaleY: scale,
-            cornerColor: '#000000',
-            transparentCorners: false,
-            cornerSize: 10,
-            borderColor: '#000000',
-            borderScaleFactor: 2,
-            hasRotatingPoint: true,
-          })
-
-          this.canvas.add(img)
-          this.canvas.setActiveObject(img)
-          this.canvas.requestRenderAll()
-          this.canvas.fire('object:modified')
-          resolve(img)
-        } catch (err) {
-          console.error('Error insertando imagen local:', err)
-          reject(err)
-        }
+      const maxDim = Math.min(this.canvasWidth * 0.5, this.canvasHeight * 0.5, 400)
+      let scale = 1
+      if (img.width > maxDim || img.height > maxDim) {
+        scale = Math.min(maxDim / img.width, maxDim / img.height)
       }
 
-      reader.onerror = (err) => reject(err)
-      reader.readAsDataURL(file)
-    })
+      img.set({
+        left: center.left,
+        top: center.top,
+        originX: 'center',
+        originY: 'center',
+        scaleX: scale,
+        scaleY: scale,
+        cornerColor: '#000000',
+        transparentCorners: false,
+        cornerSize: 10,
+        borderColor: '#000000',
+        borderScaleFactor: 2,
+        hasRotatingPoint: true,
+      })
+
+      this.adapter.addObject(img)
+      this.adapter.setActiveObject(img)
+      this.adapter.requestRenderAll()
+      this.adapter.fire('object:modified')
+      return img
+    } catch (err) {
+      console.error('Error insertando imagen local:', err)
+      throw err
+    }
   }
 
   getExportDataURL(options = {}) {
     if (!this.canvas || !this.currentMapImage) return ''
-    const { format = 'png', quality = 1.0, targetWidth, targetHeight } = options
+    const { format = 'png', quality = 1.0, targetWidth } = options
 
     // Deseleccionar objetos activos para que no salgan controles en la exportación
-    this.canvas.discardActiveObject()
-    this.canvas.requestRenderAll()
+    this.adapter.discardActiveObject()
+    this.adapter.requestRenderAll()
 
     // Guardar el viewport transform actual
-    const vpt = [...this.canvas.viewportTransform]
+    const vpt = this.adapter.getViewportTransform()
 
     // Resetear temporalmente el zoom y paneo
-    this.canvas.setViewportTransform([1, 0, 0, 1, 0, 0])
+    this.adapter.setViewportTransform([1, 0, 0, 1, 0, 0])
 
     // Límites reales del mapa base
     const left = this.currentMapImage.left
@@ -1136,20 +789,36 @@ export class CanvasManager {
       multiplier = options.multiplier
     }
 
-    const dataUrl = this.canvas.toDataURL({
+    const dataUrl = this.adapter.toDataURL({
       format: format === 'jpg' ? 'jpeg' : format,
       quality: Math.min(Math.max(quality, 0.1), 1.0),
       multiplier: multiplier,
       left,
       top,
       width,
-      height
+      height,
     })
 
     // Restaurar zoom y paneo del usuario
-    this.canvas.setViewportTransform(vpt)
-    this.canvas.requestRenderAll()
+    this.adapter.setViewportTransform(vpt)
+    this.adapter.requestRenderAll()
 
     return dataUrl
+  }
+
+  hasFilter(obj, filterType) {
+    return this.adapter.hasFilter(obj, filterType)
+  }
+
+  applyFilter(obj, filterType, enabledOrVal) {
+    this.adapter.applyFilter(obj, filterType, enabledOrVal)
+  }
+
+  undo() {
+    this.commandHistory.undo()
+  }
+
+  redo() {
+    this.commandHistory.redo()
   }
 }

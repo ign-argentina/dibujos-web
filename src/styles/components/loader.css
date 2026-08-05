@@ -1,0 +1,42 @@
+/* --- INDICADOR DE CARGA --- */
+.nbi-loader-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(250, 250, 250, 0.8);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: var(--nbi-z-modal);
+  gap: var(--nbi-space-md);
+  transition: opacity var(--nbi-transition-normal);
+}
+
+.nbi-loader {
+  width: 60px;
+  height: 60px;
+  border: var(--nbi-border-width-lg) solid var(--nbi-color-black);
+  border-radius: var(--nbi-radius-panel);
+  background-color: var(--nbi-color-primary);
+  box-shadow: var(--nbi-shadow-lg);
+  animation: loadingPop 1s infinite alternate cubic-bezier(0.175, 0.885, 0.32, 1.2);
+}
+
+@keyframes loadingPop {
+  0% {
+    transform: scale(0.9) rotate(0deg);
+  }
+
+  100% {
+    transform: scale(1.1) rotate(15deg);
+  }
+}
+
+.nbi-loader__text {
+  font-weight: var(--nbi-font-weight-bold);
+  font-size: var(--nbi-font-size-lg);
+  letter-spacing: -0.5px;
+}

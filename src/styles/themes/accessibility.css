@@ -1,0 +1,97 @@
+/* ==========================================================================
+   TEMA DE ACCESIBILIDAD Y ADAPTABILIDAD VISUAL
+   ========================================================================== */
+
+/* --- 1. MODO ALTO CONTRASTE --- */
+.theme-high-contrast {
+  /* Forzar colores de alto contraste en variables semánticas */
+  --nbi-pastel-yellow: #ffff00;
+  --nbi-pastel-blue: #0000ff;
+  --nbi-pastel-green: #00ff00;
+  --nbi-pastel-pink: #ff0000;
+  --nbi-pastel-purple: #ff00ff;
+  
+  --nbi-grey: #ffffff;
+  --nbi-bg-main: #ffffff;
+  --nbi-muted: #000000;
+  
+  --nbi-color-primary: #0000ff;
+  --nbi-color-secondary: #ff00ff;
+  --nbi-color-accent: #ffff00;
+  --nbi-color-bg-main: #ffffff;
+  --nbi-color-panel-bg: #ffffff;
+  --nbi-color-white: #ffffff;
+  --nbi-color-black: #000000;
+  --nbi-color-muted: #000000;
+  --nbi-color-success: #00ff00;
+  --nbi-color-danger: #ff0000;
+
+  /* Bordes y sombras más gruesos y de alto contraste */
+  --nbi-border-width-sm: 3px;
+  --nbi-border-width-md: 4px;
+  --nbi-border-width-lg: 5px;
+
+  --nbi-shadow-sm: 3px 3px 0px 0px #000000;
+  --nbi-shadow-md: 5px 5px 0px 0px #000000;
+  --nbi-shadow-lg: 7px 7px 0px 0px #000000;
+}
+
+/* Indicador de foco reforzado en Alto Contraste */
+.theme-high-contrast *:focus-visible {
+  outline: 4px solid #0000ff !important;
+  outline-offset: 4px !important;
+}
+
+/* Filtros en Alto Contraste para SVGs/Stickers (remueve la opacidad baja y gris) */
+.theme-high-contrast .nbi-stickers__img {
+  filter: none !important;
+}
+
+/* --- 2. ESCALA DE TEXTO AGRANDADO --- */
+.theme-large-text {
+  --nbi-font-size-xs: 0.85rem;
+  --nbi-font-size-sm: 0.95rem;
+  --nbi-font-size-base: 1.1rem;
+  --nbi-font-size-md: 1.2rem;
+  --nbi-font-size-lg: 1.35rem;
+  --nbi-font-size-xl: 1.5rem;
+  --nbi-font-size-xxl: 1.7rem;
+}
+
+/* Permitir flexibilidad de tamaño en los contenedores al agrandar texto */
+.theme-large-text .nbi-properties,
+.theme-large-text .nbi-stickers,
+.theme-large-text .nbi-sidebar {
+  height: auto !important;
+  max-height: 90vh !important;
+}
+
+.theme-large-text .nbi-export-modal__body {
+  max-height: calc(90vh - 180px);
+}
+
+/* --- 3. TIPOGRAFÍA ACCESIBLE / LECTURA FÁCIL --- */
+.theme-accessible-font {
+  /* Fuente Sans-Serif limpia de sistema o Comic Sans (más legible para dislexia) */
+  --nbi-font-family: Arial, sans-serif;
+  letter-spacing: 0.05ch;
+  word-spacing: 0.1ch;
+  line-height: 1.6;
+}
+
+/* --- 4. AUMENTO DE ESPACIADOS / BLANCOS --- */
+.theme-large-spacing {
+  --nbi-space-xs: 8px;
+  --nbi-space-sm: 12px;
+  --nbi-space-md: 16px;
+  --nbi-space-lg: 20px;
+  --nbi-space-xl: 24px;
+  --nbi-space-xxl: 28px;
+  --nbi-space-3xl: 36px;
+}
+
+/* Ajustes de tamaño mínimo de área de toque interactiva */
+.theme-large-spacing .nbi-btn,
+.theme-large-spacing .nbi-filter-group__btn {
+  min-height: 52px;
+}

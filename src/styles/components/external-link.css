@@ -1,0 +1,43 @@
+/* --- BOTÓN DE ENLACE EXTERNO (ESQUINA SUPERIOR DERECHA) --- */
+.nbi-external-link {
+  position: absolute;
+  top: 14px;
+  right: 20px;
+  z-index: var(--nbi-z-floating);
+  background-color: var(--nbi-color-secondary);
+  text-decoration: none;
+  font-weight: var(--nbi-font-weight-semibold);
+  font-size: var(--nbi-font-size-sm);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--nbi-space-xs);
+  padding: 10px var(--nbi-space-md);
+  white-space: nowrap;
+  border: var(--nbi-border-width-md) solid var(--nbi-color-black);
+  border-radius: var(--nbi-radius-panel);
+  box-shadow: var(--nbi-shadow-sm);
+  color: var(--nbi-color-black);
+  transition: background-color var(--nbi-transition-fast), transform var(--nbi-transition-fast);
+}
+
+.nbi-external-link:hover {
+  background-color: var(--nbi-color-white);
+  transform: translateY(-1px);
+}
+
+.nbi-external-link svg {
+  width: 20px;
+  height: 20px;
+  stroke-width: 2.5;
+}
+
+/* Responsivo para pantallas pequeñas */
+@media (max-width: 768px) {
+  .nbi-external-link .btn-text {
+    display: none;
+  }
+
+  .nbi-external-link {
+    padding: 10px;
+  }
+}

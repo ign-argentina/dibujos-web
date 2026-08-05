@@ -1,0 +1,184 @@
+import { Component } from '../Component.js'
+import { configRepository } from '../../core/repositories/ConfigRepository.js'
+
+/**
+ * Componente que renderiza y gestiona la paleta de colores predefinida, personalizada y reciente.
+ * También controla el tamaño del pincel de dibujo.
+ */
+export class ColorPalette extends Component {
+  constructor(container, props) {
+    super(container, props)
+    this.canvasManager = props.canvasManager
+    this.customColors = []
+    this.lastUsedColors = ['#555', '#82d3f8', '#7abe7d']
+  }
+
+  render() {
+    const uiConfig = configRepository.getUiConfig()
+    const palette = uiConfig.colorPalette || [
+      '#FFA2A2',
+      '#82D3F8',
+      '#7ABE7D',
+      '#E289F2',
+      '#A5A5A5',
+      '#000000',
+    ]
+
+    this.colorChipsContainer = document.getElementById('color-chips-container')
+    this.recentColorsContainer = document.getElementById('recent-colors-container')
+    this.strokeSlider = document.getElementById('stroke-slider')
+    this.strokeValueDisplay = document.getElementById('stroke-value-display')
+    this.customColorPicker = document.getElementById('custom-color-picker')
+    this.propertiesPanel = document.getElementById('properties-panel')
+    this.togglePropertiesBtn = document.getElementById('toggle-properties-btn')
+
+
+
+    // Inyectar chips de colores dinámicamente según la paleta configurada
+    if (this.colorChipsContainer) {
+      this.colorChipsContainer.innerHTML = ''
+      palette.forEach((color) => {
+        const chip = document.createElement('button')
+        chip.type = 'button'
+        chip.role = 'radio'
+        chip.className = 'nbi-color-chip'
+        chip.style.backgroundColor = color
+        chip.setAttribute('data-color', color)
+        chip.setAttribute('title', `Color: ${color}`)
+        chip.setAttribute('aria-label', `Color ${color}`)
+        this.colorChipsContainer.appendChild(chip)
+      })
+
+    }
+
+    this.renderRecentColors()
+  }
+
+  bindEvents() {
+    this.addEvent(this.colorChipsContainer, 'click', (e) => {
+      const chip = e.target.closest('.nbi-color-chip')
+      if (chip) {
+        const color = chip.getAttribute('data-color')
+        this.selectColor(color, chip)
+      }
+    })
+
+    this.addEvent(this.customColorPicker, 'change', (e) => {
+      const hexColor = e.target.value.toUpperCase()
+      this.customColors = this.customColors.filter((c) => c !== hexColor)
+      this.customColors.push(hexColor)
+      if (this.customColors.length > 5) {
+        this.customColors.shift()
+      }
+      this.renderCustomChips()
+      const targetChip = this.colorChipsContainer.querySelector(
+        `.nbi-color-chip[data-color="${hexColor}"]`
+      )
+      this.selectColor(hexColor, targetChip)
+    })
+
+    this.addEvent(this.strokeSlider, 'input', (e) => {
+      const width = e.target.value
+      this.strokeValueDisplay.textContent = `${width}px`
+      this.canvasManager.setActiveStrokeWidth(width)
+    })
+
+    this.addEvent(this.togglePropertiesBtn, 'click', () => {
+      const isCollapsed = this.propertiesPanel.classList.toggle('is-collapsed')
+      const icon = this.togglePropertiesBtn.querySelector('i')
+
+      if (isCollapsed) {
+        this.togglePropertiesBtn.setAttribute('title', 'Expandir Panel')
+        this.togglePropertiesBtn.setAttribute('aria-label', 'Expandir panel de color')
+        this.togglePropertiesBtn.setAttribute('aria-expanded', 'false')
+        if (icon) icon.setAttribute('data-lucide', 'chevron-left')
+        this.recentColorsContainer.classList.remove('hidden')
+        this.renderRecentColors()
+      } else {
+        this.togglePropertiesBtn.setAttribute('title', 'Colapsar Panel')
+        this.togglePropertiesBtn.setAttribute('aria-label', 'Colapsar panel de color')
+        this.togglePropertiesBtn.setAttribute('aria-expanded', 'true')
+        if (icon) icon.setAttribute('data-lucide', 'chevron-right')
+        this.recentColorsContainer.classList.add('hidden')
+      }
+
+      if (window.lucide) {
+        window.lucide.createIcons()
+      }
+    })
+  }
+
+  selectColor(color, activeChip) {
+    this.lastUsedColors = [
+      color,
+      ...this.lastUsedColors.filter((c) => c.toLowerCase() !== color.toLowerCase()),
+    ].slice(0, 3)
+
+    document.querySelectorAll('.nbi-color-chip').forEach((c) => {
+      c.classList.remove('is-active')
+      c.setAttribute('aria-checked', 'false')
+    })
+
+    if (activeChip) {
+      activeChip.classList.add('is-active')
+      activeChip.setAttribute('aria-checked', 'true')
+    }
+
+    this.canvasManager.setActiveColor(color)
+    this.renderRecentColors()
+  }
+
+  renderRecentColors() {
+    if (!this.recentColorsContainer) return
+    this.recentColorsContainer.innerHTML = ''
+
+    this.lastUsedColors.forEach((color) => {
+      const chip = document.createElement('button')
+      chip.type = 'button'
+      chip.role = 'radio'
+      chip.className = 'nbi-color-chip'
+      const isSelected = color.toLowerCase() === this.canvasManager.activeColor.toLowerCase()
+      if (isSelected) {
+        chip.classList.add('is-active')
+      }
+      chip.setAttribute('aria-checked', isSelected ? 'true' : 'false')
+      chip.style.backgroundColor = color
+      chip.setAttribute('data-color', color)
+      chip.setAttribute('title', `Color reciente: ${color}`)
+      chip.setAttribute('aria-label', `Color reciente ${color}`)
+
+      chip.addEventListener('click', () => {
+        this.selectColor(color, chip)
+      })
+
+      this.recentColorsContainer.appendChild(chip)
+    })
+  }
+
+  renderCustomChips() {
+    this.colorChipsContainer
+      .querySelectorAll('.nbi-color-chip.is-custom-chip')
+      .forEach((c) => c.remove())
+    const blackChip = this.colorChipsContainer.querySelector(
+      '.nbi-color-chip[data-color="#000000"]'
+    )
+
+    this.customColors.forEach((color) => {
+      const chip = document.createElement('button')
+      chip.type = 'button'
+      chip.role = 'radio'
+      chip.setAttribute('aria-checked', 'false')
+      chip.className = 'nbi-color-chip is-custom-chip'
+      chip.style.backgroundColor = color
+      chip.setAttribute('data-color', color)
+      chip.setAttribute('title', `Personalizado: ${color}`)
+      chip.setAttribute('aria-label', `Color personalizado ${color}`)
+
+      if (blackChip) {
+        this.colorChipsContainer.insertBefore(chip, blackChip)
+      } else {
+        this.colorChipsContainer.appendChild(chip)
+      }
+    })
+  }
+}
