@@ -11,6 +11,7 @@ import { BringToFrontCommand } from './canvas/commands/BringToFrontCommand.js'
 import { SendToBackCommand } from './canvas/commands/SendToBackCommand.js'
 import { ClearCommand } from './canvas/commands/ClearCommand.js'
 import { ResizeManager } from './utils/ResizeManager.js'
+import { compressImage } from './utils/imageCompressor.js'
 
 export class CanvasManager {
   constructor(container, options = {}) {
@@ -707,57 +708,57 @@ export class CanvasManager {
   async addLocalImage(file) {
     if (!this.canvas || !file) return
 
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader()
+    // 1. Validar el tamaño del archivo (Límite: 10 MB)
+    const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10MB
+    if (file.size > MAX_FILE_SIZE) {
+      throw new Error('FILE_TOO_LARGE')
+    }
 
-      reader.onload = async (e) => {
-        const dataUrl = e.target.result
-        try {
-          const center = this.getViewportCenter()
+    try {
+      // 2. Comprimir/Redimensionar la imagen si es rasterizada
+      const imageData = await compressImage(file, { maxWidth: 1024, maxHeight: 1024, quality: 0.8 })
 
-          const img = await FabricImage.fromURL(
-            dataUrl,
-            {
-              crossOrigin: 'anonymous',
-            },
-            {}
-          )
+      // 3. Insertar la imagen en el lienzo
+      const center = this.getViewportCenter()
 
-          const maxDim = Math.min(this.canvasWidth * 0.5, this.canvasHeight * 0.5, 400)
-          let scale = 1
-          if (img.width > maxDim || img.height > maxDim) {
-            scale = Math.min(maxDim / img.width, maxDim / img.height)
-          }
+      const img = await FabricImage.fromURL(
+        imageData.dataUrl,
+        {
+          crossOrigin: 'anonymous',
+        },
+        {}
+      )
 
-          img.set({
-            left: center.left,
-            top: center.top,
-            originX: 'center',
-            originY: 'center',
-            scaleX: scale,
-            scaleY: scale,
-            cornerColor: '#000000',
-            transparentCorners: false,
-            cornerSize: 10,
-            borderColor: '#000000',
-            borderScaleFactor: 2,
-            hasRotatingPoint: true,
-          })
-
-          this.adapter.addObject(img)
-          this.adapter.setActiveObject(img)
-          this.adapter.requestRenderAll()
-          this.adapter.fire('object:modified')
-          resolve(img)
-        } catch (err) {
-          console.error('Error insertando imagen local:', err)
-          reject(err)
-        }
+      const maxDim = Math.min(this.canvasWidth * 0.5, this.canvasHeight * 0.5, 400)
+      let scale = 1
+      if (img.width > maxDim || img.height > maxDim) {
+        scale = Math.min(maxDim / img.width, maxDim / img.height)
       }
 
-      reader.onerror = (err) => reject(err)
-      reader.readAsDataURL(file)
-    })
+      img.set({
+        left: center.left,
+        top: center.top,
+        originX: 'center',
+        originY: 'center',
+        scaleX: scale,
+        scaleY: scale,
+        cornerColor: '#000000',
+        transparentCorners: false,
+        cornerSize: 10,
+        borderColor: '#000000',
+        borderScaleFactor: 2,
+        hasRotatingPoint: true,
+      })
+
+      this.adapter.addObject(img)
+      this.adapter.setActiveObject(img)
+      this.adapter.requestRenderAll()
+      this.adapter.fire('object:modified')
+      return img
+    } catch (err) {
+      console.error('Error insertando imagen local:', err)
+      throw err
+    }
   }
 
   getExportDataURL(options = {}) {

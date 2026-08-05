@@ -127,11 +127,20 @@ export async function bootstrap() {
     imageFileInput?.click()
   })
 
-  imageFileInput?.addEventListener('change', (e) => {
+  imageFileInput?.addEventListener('change', async (e) => {
     const file = e.target.files?.[0]
     if (file) {
-      canvasManager.addLocalImage(file)
-      imageFileInput.value = ''
+      try {
+        await canvasManager.addLocalImage(file)
+      } catch (err) {
+        if (err.message === 'FILE_TOO_LARGE') {
+          alert('El archivo seleccionado supera el límite de 10 MB. Por favor, elige una imagen más liviana.')
+        } else {
+          alert('No se pudo cargar la imagen. Es posible que el archivo esté dañado o tenga un formato no compatible.')
+        }
+      } finally {
+        imageFileInput.value = ''
+      }
     }
   })
 
