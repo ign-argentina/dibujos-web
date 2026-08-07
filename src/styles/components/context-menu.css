@@ -116,7 +116,7 @@
   margin: 0;
 }
 
-.nbi-color-picker {
+.nbi-context .nbi-color-picker {
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
@@ -132,20 +132,20 @@
   transition: transform var(--nbi-transition-fast);
 }
 
-.nbi-color-picker:hover {
+.nbi-context .nbi-color-picker:hover {
   transform: scale(1.1);
 }
 
-.nbi-color-picker::-webkit-color-swatch-wrapper {
+.nbi-context .nbi-color-picker::-webkit-color-swatch-wrapper {
   padding: 0;
 }
 
-.nbi-color-picker::-webkit-color-swatch {
+.nbi-context .nbi-color-picker::-webkit-color-swatch {
   border: none;
   border-radius: 50%;
 }
 
-.nbi-color-picker::-moz-color-swatch {
+.nbi-context .nbi-color-picker::-moz-color-swatch {
   border: none;
   border-radius: 50%;
 }

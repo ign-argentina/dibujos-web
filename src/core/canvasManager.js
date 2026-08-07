@@ -416,6 +416,23 @@ export class CanvasManager {
     })
   }
 
+  /**
+   * Determina la propiedad de color principal (fill o stroke) para un objeto.
+   * @param {Object} obj
+   * @returns {string|null}
+   */
+  getPrimaryColorProperty(obj) {
+    if (!obj) return null
+    if (obj.type === 'textbox') return 'fill'
+    if (obj.type === 'polyline') return 'stroke'
+    if (obj.type === 'path') {
+      const pathData = obj.path ? obj.path.toString() : ''
+      const isPin = pathData.includes('C -12 -13') || pathData.includes('M 0 0 C -12')
+      return isPin ? 'fill' : 'stroke'
+    }
+    return 'fill'
+  }
+
   setActiveColor(color) {
     this.activeColor = color
     this.configureDrawingBrush()
@@ -423,14 +440,19 @@ export class CanvasManager {
     if (this.canvas) {
       const activeObject = this.adapter.getActiveObject()
       if (activeObject) {
-        if (activeObject.type === 'textbox') {
-          activeObject.set({ fill: color })
-        } else if ((activeObject.type === 'path' && activeObject.fill === 'transparent') || activeObject.type === 'polyline') {
-          activeObject.set({ stroke: color })
-        } else if (activeObject.type === 'group' || activeObject.getObjects) {
+        if (activeObject.type === 'group' || activeObject.getObjects) {
           this.colorSVGGroup(activeObject, color)
         } else {
-          activeObject.set({ fill: color, stroke: color })
+          const prop = this.getPrimaryColorProperty(activeObject)
+          if (prop === 'fill') {
+            const hasSameStroke = activeObject.stroke === activeObject.fill
+            activeObject.set({ fill: color })
+            if (hasSameStroke && ['rect', 'circle', 'polygon'].includes(activeObject.type)) {
+              activeObject.set({ stroke: color })
+            }
+          } else if (prop === 'stroke') {
+            activeObject.set({ stroke: color })
+          }
         }
         this.adapter.requestRenderAll()
         this.adapter.fire('object:modified')

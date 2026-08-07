@@ -58,6 +58,11 @@ export class ContextMenu extends Component {
       this.togglePopover()
     })
 
+    // Evitar que los clics dentro del menú contextual burbujeen hasta el documento
+    this.addEvent(this.popoverMenu, 'click', (e) => {
+      e.stopPropagation()
+    })
+
     // Ocultar popover si se hace clic fuera
     this.addEvent(document, 'click', (e) => {
       if (
@@ -244,7 +249,7 @@ export class ContextMenu extends Component {
     const isPin = isPath && !(obj.fill === 'transparent' || obj.fill === '')
 
     const showFillOption = isRect || isCircle || isPolygon || isText || isGroup || isPin
-    const showStrokeOption = isRect || isCircle || isPolyline || isPolygon || (isPath && !isPin)
+    const showStrokeOption = isRect || isCircle || isPolyline || isPolygon || isPath
 
     let contentHtml = ''
 
@@ -257,7 +262,7 @@ export class ContextMenu extends Component {
         <div class="nbi-context__section">
           <div style="display: flex; justify-content: space-between; align-items: center;">
             <label class="nbi-context__label">Color de Relleno</label>
-            ${(isRect || isCircle) ? `
+            ${(isRect || isCircle || isPolygon) ? `
               <label class="nbi-context__checkbox-label">
                 <input type="checkbox" id="ctx-fill-transparent" ${isTransparent ? 'checked' : ''} />
                 Sin relleno
