@@ -78,6 +78,7 @@
   padding: 2px;
   border-radius: 6px;
   box-shadow: var(--nbi-shadow-sm);
+  background-color: var(--nbi-color-danger);
 }
 
 .nbi-btn--close-popover svg,

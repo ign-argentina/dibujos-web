@@ -44,12 +44,9 @@
 }
 
 .nbi-properties__actions button {
-  font-family: inherit;
-}
-
-#action-export>span.btn-text {
-  font-weight: var(--nbi-font-weight-semibold);
-  font-size: var(--nbi-font-size-md);
+  font-family: var(--nbi-font-family);
+  font-size: var(--nbi-font-size-base);
+  font-weight: var(--nbi-font-weight-bold);
 }
 
 /* --- ESTADO COLAPSADO DEL PANEL DE PROPIEDADES (72px DE ANCHO) --- */
@@ -229,7 +226,7 @@
 .nbi-slider {
   -webkit-appearance: none;
   width: 100%;
-  height: 12px;
+  height: 10px;
   border: var(--nbi-border-width-md) solid var(--nbi-color-black);
   border-radius: 6px;
   background: var(--nbi-color-bg-main);
