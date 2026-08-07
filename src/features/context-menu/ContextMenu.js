@@ -13,27 +13,24 @@ export class ContextMenu extends Component {
     this.popoverMenu = null
     this.isOpen = false
     this.presetColors = [
-      '#82D3F8',
-      '#7ABE7D',
-      '#E5828C',
-      '#CC94D6',
-      '#FFA07A',
-      '#FFD700',
-      '#98FB98',
-      '#AFEEEE',
-      '#FFB6C1',
-      '#B0C4DE',
-      '#E6E6FA',
-      '#FFA500',
-      '#FFFFFF',
-      '#000000',
-    ]
+      "#FFFFFF", // Blanco
+      "#9E9E9E", // Gris
+      "#000000", // Negro
+      "#F44336", // Rojo
+      "#FF9800", // Naranja
+      "#FFEB3B", // Amarillo
+      "#4CAF50", // Verde
+      "#00BCD4", // Cian
+      "#2196F3", // Azul
+      "#3F51B5", // Índigo
+      "#9C27B0", // Violeta
+      "#E91E63"  // Rosa
+    ];
 
     this.mount()
   }
 
   render() {
-
     // 1. Botón disparador flotante
     this.triggerBtn = document.createElement('button')
     this.triggerBtn.className = 'nbi-btn nbi-context-trigger hidden'
@@ -49,8 +46,6 @@ export class ContextMenu extends Component {
     this.popoverMenu.setAttribute('role', 'dialog')
     this.popoverMenu.setAttribute('aria-label', 'Opciones y propiedades de la figura seleccionada')
 
-
-
     this.container.appendChild(this.popoverMenu)
   }
 
@@ -59,6 +54,11 @@ export class ContextMenu extends Component {
     this.addEvent(this.triggerBtn, 'click', (e) => {
       e.stopPropagation()
       this.togglePopover()
+    })
+
+    // Evitar que los clics dentro del menú contextual burbujeen hasta el documento
+    this.addEvent(this.popoverMenu, 'click', (e) => {
+      e.stopPropagation()
     })
 
     // Ocultar popover si se hace clic fuera
@@ -220,89 +220,196 @@ export class ContextMenu extends Component {
     if (obj.type === 'polyline') return 'Polilínea'
     if (obj.type === 'polygon') return 'Polígono libre'
     if (obj.type === 'path') {
+      const pathData = obj.path ? obj.path.toString() : ''
+      if (pathData.includes('C -12 -13') || pathData.includes('M 0 0 C -12')) return 'Marcador'
       return obj.fill === 'transparent' ? 'Flecha' : 'Dibujo'
     }
     if (obj.type === 'group') return 'Sticker'
     return 'Figura'
   }
 
+  getFilterVal(obj, filterTypeName, propName, defaultVal = 0) {
+    if (!obj.filters || !Array.isArray(obj.filters)) return defaultVal
+    const f = obj.filters.find((f) => f.type === filterTypeName)
+    return f && f[propName] !== undefined ? f[propName] : defaultVal
+  }
+
   buildPopoverContent(obj) {
     const typeName = this.getFriendlyTypeName(obj)
     const isText = obj.type === 'textbox'
     const isImage = obj.type === 'image' && obj !== this.canvasManager.currentMapImage
+    const isRect = obj.type === 'rect'
+    const isCircle = obj.type === 'circle'
     const isPolyline = obj.type === 'polyline'
     const isPolygon = obj.type === 'polygon'
+    const isGroup = obj.type === 'group' || obj.getObjects
+    const isPath = obj.type === 'path'
+    const isPin = isPath && !(obj.fill === 'transparent' || obj.fill === '')
 
-    const showFillOption = !isImage && !isPolyline
-    const showStrokeOption =
-      isPolyline ||
-      isPolygon ||
-      (!(obj.type === 'path' && obj.fill === 'transparent') && obj.type !== 'group' && !isImage)
+    const showFillOption = isRect || isCircle || isPolygon || isText || isGroup || isPath || isPin
+    const showStrokeOption = isRect || isCircle || isPolyline || isPolygon || isPath
 
     let contentHtml = ''
 
-    // --- SECCIÓN DE ESTILOS Y COLORES ---
-    if (!isImage) {
-      if (showFillOption) {
-        contentHtml += `
-          <div class="nbi-context__section">
-            <label class="nbi-context__label">Color de Relleno</label>
-            <div class="nbi-context__colors">
-        `
-        this.presetColors.forEach((color) => {
-          const isSelected = (obj.fill || '').toUpperCase() === color.toUpperCase()
-          contentHtml += `
-            <button class="nbi-color-chip ${isSelected ? 'is-active' : ''}" 
-                    style="background-color: ${color};" 
-                    data-color="${color}" 
-                    aria-label="Color ${color}"></button>
-          `
-        })
-        contentHtml += `
-            </div>
-          </div>
-        `
-      }
+    // 1. SECCIÓN DE COLOR DE RELLENO
+    if (showFillOption) {
+      const currentFill = obj.fill && obj.fill !== 'transparent' ? obj.fill : '#82D3F8'
+      const isTransparent = obj.fill === 'transparent' || obj.fill === ''
 
-      if (showStrokeOption) {
-        contentHtml += `
-          <div class="nbi-context__section">
-            <label class="nbi-context__label">Color del Borde</label>
-            <div class="nbi-context__stroke-colors">
-        `
-        this.presetColors.forEach((color) => {
-          const isSelected = (obj.stroke || '').toUpperCase() === color.toUpperCase()
-          contentHtml += `
-            <button class="nbi-color-chip ${isSelected ? 'is-active' : ''}" 
-                    style="background-color: ${color};" 
-                    data-color="${color}" 
-                    data-stroke-color="${color}" 
-                    aria-label="Color borde ${color}"></button>
-          `
-        })
-        contentHtml += `
-            </div>
-            <div class="nbi-context__stroke-width-group">
-              <label for="ctx-stroke-width" class="nbi-context__label">Grosor: <span id="ctx-stroke-val">${obj.strokeWidth || 0}px</span></label>
-              <input type="range" id="ctx-stroke-width" min="0" max="30" value="${obj.strokeWidth || 0}" />
-            </div>
+      contentHtml += `
+        <div class="nbi-context__section">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <label class="nbi-context__label">Color de Relleno</label>
+            ${(isRect || isCircle || isPolygon || isPath) ? `
+              <label class="nbi-context__checkbox-label">
+                <input type="checkbox" id="ctx-fill-transparent" ${isTransparent ? 'checked' : ''} />
+                Sin relleno
+              </label>
+            ` : ''}
           </div>
+          <div class="nbi-context__colors">
+      `
+      this.presetColors.forEach((color) => {
+        const isSelected = (obj.fill || '').toUpperCase() === color.toUpperCase() && !isTransparent
+        contentHtml += `
+          <button class="nbi-color-chip ${isSelected ? 'is-active' : ''}" 
+                  style="background-color: ${color};" 
+                  data-color="${color}" 
+                  aria-label="Color ${color}"></button>
         `
-      }
+      })
+      contentHtml += `
+          </div>
+          <div style="display: flex; flex-direction: row; gap: 6px; margin-top: 6px; align-items: center;">
+            <label for="ctx-fill-picker" style="font-weight: var(--nbi-font-weight-semibold); font-size: var(--nbi-font-size-sm); display: flex; align-items: center; gap: 4px; cursor: pointer; margin: 0;">
+              <i data-lucide="palette" style="width: 14px; height: 14px;" aria-hidden="true"></i>
+              Más colores:
+            </label>
+            <input type="color" id="ctx-fill-picker" class="nbi-color-picker" value="${currentFill}" title="Color personalizado" />
+          </div>
+        </div>
+      `
     }
 
-    // --- SECCIÓN DE TEXTO ---
+    // 2. SECCIÓN DE COLOR DE BORDE / ESTILO DE LÍNEA
+    if (showStrokeOption) {
+      const currentStroke = obj.stroke || '#000000'
+      const currentWidth = obj.strokeWidth || 2
+      const currentDash = obj.strokeDashArray
+
+      let dashType = 'solid'
+      if (Array.isArray(currentDash) && currentDash.length > 0) {
+        dashType = currentDash[0] <= 4 ? 'dotted' : 'dashed'
+      }
+
+      contentHtml += `
+        <div class="nbi-context__section">
+          <label class="nbi-context__label">Color del Borde</label>
+          <div class="nbi-context__stroke-colors">
+      `
+      this.presetColors.forEach((color) => {
+        const isSelected = (obj.stroke || '').toUpperCase() === color.toUpperCase()
+        contentHtml += `
+          <button class="nbi-color-chip ${isSelected ? 'is-active' : ''}" 
+                  style="background-color: ${color};" 
+                  data-color="${color}" 
+                  data-stroke-color="${color}" 
+                  aria-label="Color borde ${color}"></button>
+        `
+      })
+      contentHtml += `
+          </div>
+          <div style="display: flex; flex-direction: row; gap: 6px; margin-top: 6px; align-items: center;">
+            <label for="ctx-stroke-picker" style="font-weight: var(--nbi-font-weight-semibold); font-size: var(--nbi-font-size-sm); display: flex; align-items: center; gap: 4px; cursor: pointer; margin: 0;">
+              <i data-lucide="palette" style="width: 14px; height: 14px;" aria-hidden="true"></i>
+              Personalizar:
+            </label>
+            <input type="color" id="ctx-stroke-picker" class="nbi-color-picker" value="${currentStroke}" title="Color de borde personalizado" />
+          </div>
+        </div>
+        <div class="nbi-context__section">
+          <div class="nbi-context__stroke-width-group">
+            <label for="ctx-stroke-width" class="nbi-context__label">Grosor: <span id="ctx-stroke-val">${currentWidth}px</span></label>
+            <input type="range" class="nbi-slider" id="ctx-stroke-width" min="1" max="30" value="${currentWidth}" />
+          </div>
+        </div>
+        <div class="nbi-context__section">
+          <label class="nbi-context__label">Estilo de Línea</label>
+          <div class="nbi-filter-group">
+            <button class="nbi-filter-group__btn ${dashType === 'solid' ? 'is-active' : ''}" id="ctx-dash-solid">Sólido</button>
+            <button class="nbi-filter-group__btn ${dashType === 'dashed' ? 'is-active' : ''}" id="ctx-dash-dashed">Guiones</button>
+            <button class="nbi-filter-group__btn ${dashType === 'dotted' ? 'is-active' : ''}" id="ctx-dash-dotted">Puntos</button>
+          </div>
+        </div>
+      `
+    }
+
+    // 3. SECCIÓN DE ESQUINAS REDONDEADAS (RECTÁNGULO)
+    if (isRect) {
+      const currentRx = obj.rx || 0
+      contentHtml += `
+        <div class="nbi-context__section">
+          <div style="display: flex; justify-content: space-between;">
+            <label for="ctx-corner-rx" class="nbi-context__label">Esquinas Redondeadas:</label>
+            <span style="font-weight: var(--nbi-font-weight-semibold); font-size: var(--nbi-font-size-sm);" id="ctx-rx-val">${currentRx}px</span>
+          </div>
+          <input class="nbi-slider" id="ctx-corner-rx" type="range" min="0" max="40" value="${currentRx}" />
+        </div>
+      `
+    }
+
+    // 4. SECCIÓN DE OPACIDAD
+    const currentOpacity = Math.round((obj.opacity !== undefined ? obj.opacity : 1) * 100)
+    contentHtml += `
+      <div class="nbi-context__section">
+        <div style="display: flex; justify-content: space-between;">
+          <label for="ctx-opacity-slider" class="nbi-context__label">Opacidad:</label>
+          <span style="font-weight: var(--nbi-font-weight-semibold); font-size: var(--nbi-font-size-sm);" id="ctx-opacity-val">${currentOpacity}%</span>
+        </div>
+        <input class="nbi-slider" id="ctx-opacity-slider" type="range" min="10" max="100" value="${currentOpacity}" />
+      </div>
+    `
+
+    // 5. SECCIÓN DE TEXTO AVANZADA
     if (isText) {
+      const currentText = obj.text || ''
+      const currentFont = obj.fontFamily || 'Fredoka'
+      const currentSize = obj.fontSize || 24
       const isBold = obj.fontWeight === 'bold'
       const isItalic = obj.fontStyle === 'italic'
+      const isUnderline = !!obj.underline
       const align = obj.textAlign || 'left'
 
       contentHtml += `
+        <div class="nbi-context__section">
+          <label class="nbi-context__label">Contenido</label>
+          <textarea class="nbi-context__textarea" id="ctx-text-content" rows="2">${currentText}</textarea>
+        </div>
+        <div class="nbi-context__section">
+          <label class="nbi-context__label">Familia de Fuente</label>
+          <select class="nbi-input" id="ctx-font-family">
+            <option value="Fredoka" ${currentFont === 'Fredoka' ? 'selected' : ''}>Fredoka</option>
+            <option value="Roboto" ${currentFont === 'Roboto' ? 'selected' : ''}>Roboto</option>
+            <option value="Caveat" ${currentFont === 'Caveat' ? 'selected' : ''}>Caveat</option>
+            <option value="Arial" ${currentFont === 'Arial' ? 'selected' : ''}>Arial</option>
+            <option value="Georgia" ${currentFont === 'Georgia' ? 'selected' : ''}>Georgia</option>
+            <option value="Comic Sans MS" ${currentFont === 'Comic Sans MS' ? 'selected' : ''}>Comic Sans</option>
+          </select>
+        </div>
+        <div class="nbi-context__section">
+          <div style="display: flex; justify-content: space-between;">
+            <label for="ctx-font-size" class="nbi-context__label">Tamaño de Fuente:</label>
+            <span style="font-weight: var(--nbi-font-weight-semibold); font-size: var(--nbi-font-size-sm);" id="ctx-size-val">${currentSize}px</span>
+          </div>
+          <input class="nbi-slider" id="ctx-font-size" type="range" min="12" max="72" value="${currentSize}" />
+        </div>
         <div class="nbi-context__section">
           <label class="nbi-context__label">Formato de Texto</label>
           <div class="nbi-context__text-tools">
             <button class="nbi-btn nbi-btn--sm ${isBold ? 'is-active' : ''}" id="ctx-txt-bold" title="Negrita"><b>N</b></button>
             <button class="nbi-btn nbi-btn--sm ${isItalic ? 'is-active' : ''}" id="ctx-txt-italic" title="Cursiva"><i>I</i></button>
+            <button class="nbi-btn nbi-btn--sm ${isUnderline ? 'is-active' : ''}" id="ctx-txt-underline" title="Subrayado"><u>U</u></button>
+            <div style="flex-grow: 1;"></div>
             <button class="nbi-btn nbi-btn--sm ${align === 'left' ? 'is-active' : ''}" id="ctx-txt-left" title="Alinear Izquierda"><i data-lucide="align-left"></i></button>
             <button class="nbi-btn nbi-btn--sm ${align === 'center' ? 'is-active' : ''}" id="ctx-txt-center" title="Alinear Centro"><i data-lucide="align-center"></i></button>
             <button class="nbi-btn nbi-btn--sm ${align === 'right' ? 'is-active' : ''}" id="ctx-txt-right" title="Alinear Derecha"><i data-lucide="align-right"></i></button>
@@ -311,11 +418,25 @@ export class ContextMenu extends Component {
       `
     }
 
-    // --- SECCIÓN DE IMAGEN ---
+    // 6. SECCIÓN DE IMAGEN AVANZADA
     if (isImage) {
       const isFlippedX = obj.flipX
       const isFlippedY = obj.flipY
       const isLocked = obj.lockMovementX
+
+      const hasGrayscale = this.canvasManager.hasFilter(obj, 'grayscale')
+      const hasInvert = this.canvasManager.hasFilter(obj, 'invert')
+      const hasSepia = this.canvasManager.hasFilter(obj, 'sepia')
+
+      const brightnessVal = Math.round(
+        this.getFilterVal(obj, 'Brightness', 'brightness', 0) * 100
+      )
+      const contrastVal = Math.round(
+        this.getFilterVal(obj, 'Contrast', 'contrast', 0) * 100
+      )
+      const blurVal = Math.round(
+        this.getFilterVal(obj, 'Blur', 'blur', 0) * 100
+      )
 
       contentHtml += `
         <div class="nbi-context__section">
@@ -325,12 +446,35 @@ export class ContextMenu extends Component {
             <button class="nbi-btn nbi-btn--sm ${isFlippedY ? 'is-active' : ''}" id="ctx-img-flip-y" title="Reflejo Vertical"><i data-lucide="flip-vertical"></i> V</button>
             <button class="nbi-btn nbi-btn--sm ${isLocked ? 'is-active' : ''}" id="ctx-img-lock" title="Bloquear Posición"><i data-lucide="${isLocked ? 'lock' : 'unlock'}"></i> Fijar</button>
           </div>
-          <label class="nbi-context__label" style="margin-top: 10px;">Filtros de Efecto</label>
+        </div>
+        <div class="nbi-context__section">
+          <label class="nbi-context__label">Filtros de Color</label>
           <div class="nbi-context__filters-grid">
-            <button class="nbi-btn nbi-btn--sm ${this.canvasManager.hasFilter(obj, 'grayscale') ? 'is-active' : ''}" id="ctx-img-grayscale">Grises</button>
-            <button class="nbi-btn nbi-btn--sm ${this.canvasManager.hasFilter(obj, 'invert') ? 'is-active' : ''}" id="ctx-img-invert">Invertir</button>
-            <button class="nbi-btn nbi-btn--sm ${this.canvasManager.hasFilter(obj, 'sepia') ? 'is-active' : ''}" id="ctx-img-sepia">Sepia</button>
+            <button class="nbi-btn nbi-btn--sm ${hasGrayscale ? 'is-active' : ''}" id="ctx-img-grayscale">Grises</button>
+            <button class="nbi-btn nbi-btn--sm ${hasInvert ? 'is-active' : ''}" id="ctx-img-invert">Invertir</button>
+            <button class="nbi-btn nbi-btn--sm ${hasSepia ? 'is-active' : ''}" id="ctx-img-sepia">Sepia</button>
           </div>
+        </div>
+        <div class="nbi-context__section">
+          <div style="display: flex; justify-content: space-between;">
+            <label for="ctx-img-brightness" class="nbi-context__label">Brillo:</label>
+            <span style="font-weight: var(--nbi-font-weight-semibold); font-size: var(--nbi-font-size-sm);" id="ctx-brightness-val">${brightnessVal}%</span>
+          </div>
+          <input class="nbi-slider" id="ctx-img-brightness" type="range" min="-100" max="100" value="${brightnessVal}" />
+        </div>
+        <div class="nbi-context__section">
+          <div style="display: flex; justify-content: space-between;">
+            <label for="ctx-img-contrast" class="nbi-context__label">Contraste:</label>
+            <span style="font-weight: var(--nbi-font-weight-semibold); font-size: var(--nbi-font-size-sm);" id="ctx-contrast-val">${contrastVal}%</span>
+          </div>
+          <input class="nbi-slider" id="ctx-img-contrast" type="range" min="-100" max="100" value="${contrastVal}" />
+        </div>
+        <div class="nbi-context__section">
+          <div style="display: flex; justify-content: space-between;">
+            <label for="ctx-img-blur" class="nbi-context__label">Desenfoque:</label>
+            <span style="font-weight: var(--nbi-font-weight-semibold); font-size: var(--nbi-font-size-sm);" id="ctx-blur-val">${blurVal}%</span>
+          </div>
+          <input class="nbi-slider" id="ctx-img-blur" type="range" min="0" max="100" value="${blurVal}" />
         </div>
       `
     }
@@ -343,6 +487,9 @@ export class ContextMenu extends Component {
       <div class="nbi-context__body">
         ${contentHtml}
         <div class="nbi-context__actions">
+          <button class="nbi-btn nbi-btn--sm" id="ctx-act-duplicate" title="Clonar objeto">
+            <i data-lucide="copy"></i> Clonar
+          </button>
           <button class="nbi-btn nbi-btn--sm" id="ctx-act-front" title="Traer al frente">
             <i data-lucide="arrow-up"></i> Frente
           </button>
@@ -372,6 +519,12 @@ export class ContextMenu extends Component {
         fillChips.forEach((c) => c.classList.remove('is-active'))
         chip.classList.add('is-active')
 
+        const fillTransparentCb = this.popoverMenu.querySelector('#ctx-fill-transparent')
+        if (fillTransparentCb) fillTransparentCb.checked = false
+
+        const fillPicker = this.popoverMenu.querySelector('#ctx-fill-picker')
+        if (fillPicker) fillPicker.value = color
+
         if (obj.type === 'group' || obj.getObjects) {
           this.canvasManager.colorSVGGroup(obj, color)
         } else {
@@ -382,18 +535,70 @@ export class ContextMenu extends Component {
       })
     })
 
-    const strokeChips = this.popoverMenu.querySelectorAll(
-      '.nbi-context__stroke-colors .nbi-color-chip'
-    )
+    const fillPicker = this.popoverMenu.querySelector('#ctx-fill-picker')
+    fillPicker?.addEventListener('input', (e) => {
+      const color = e.target.value
+      fillChips.forEach((c) => c.classList.remove('is-active'))
+
+      const fillTransparentCb = this.popoverMenu.querySelector('#ctx-fill-transparent')
+      if (fillTransparentCb) fillTransparentCb.checked = false
+
+      if (obj.type === 'group' || obj.getObjects) {
+        this.canvasManager.colorSVGGroup(obj, color)
+      } else {
+        obj.set('fill', color)
+      }
+      this.canvas.requestRenderAll()
+    })
+    fillPicker?.addEventListener('change', () => {
+      this.canvas.fire('object:modified')
+    })
+
+    const fillTransparentCb = this.popoverMenu.querySelector('#ctx-fill-transparent')
+    fillTransparentCb?.addEventListener('change', (e) => {
+      if (e.target.checked) {
+        fillChips.forEach((c) => c.classList.remove('is-active'))
+        obj.set('fill', 'transparent')
+      } else {
+        const defaultColor = this.canvasManager.activeColor || '#82D3F8'
+        obj.set('fill', defaultColor)
+        fillChips.forEach((c) => {
+          if (c.getAttribute('data-color').toUpperCase() === defaultColor.toUpperCase()) {
+            c.classList.add('is-active')
+          }
+        })
+        if (fillPicker) fillPicker.value = defaultColor
+      }
+      this.canvas.requestRenderAll()
+      this.canvas.fire('object:modified')
+    })
+
+    const strokeChips = this.popoverMenu.querySelectorAll('.nbi-context__stroke-colors .nbi-color-chip')
     strokeChips.forEach((chip) => {
       chip.addEventListener('click', () => {
         const color = chip.getAttribute('data-color')
         strokeChips.forEach((c) => c.classList.remove('is-active'))
         chip.classList.add('is-active')
+
+        const strokePicker = this.popoverMenu.querySelector('#ctx-stroke-picker')
+        if (strokePicker) strokePicker.value = color
+
         obj.set('stroke', color)
         this.canvas.requestRenderAll()
         this.canvas.fire('object:modified')
       })
+    })
+
+    const strokePicker = this.popoverMenu.querySelector('#ctx-stroke-picker')
+    strokePicker?.addEventListener('input', (e) => {
+      const color = e.target.value
+      strokeChips.forEach((c) => c.classList.remove('is-active'))
+
+      obj.set('stroke', color)
+      this.canvas.requestRenderAll()
+    })
+    strokePicker?.addEventListener('change', () => {
+      this.canvas.fire('object:modified')
     })
 
     const strokeWidthInput = this.popoverMenu.querySelector('#ctx-stroke-width')
@@ -403,11 +608,110 @@ export class ContextMenu extends Component {
       if (strokeValDisplay) strokeValDisplay.textContent = `${val}px`
       obj.set('strokeWidth', val)
       this.canvas.requestRenderAll()
+    })
+    strokeWidthInput?.addEventListener('change', () => {
+      this.canvas.fire('object:modified')
+    })
+
+    const dashSolid = this.popoverMenu.querySelector('#ctx-dash-solid')
+    const dashDashed = this.popoverMenu.querySelector('#ctx-dash-dashed')
+    const dashDotted = this.popoverMenu.querySelector('#ctx-dash-dotted')
+
+    const updateDashButtons = (activeBtn) => {
+      [dashSolid, dashDashed, dashDotted].forEach((b) => b?.classList.remove('is-active'))
+      activeBtn?.classList.add('is-active')
+    }
+
+    dashSolid?.addEventListener('click', () => {
+      updateDashButtons(dashSolid)
+      obj.set('strokeDashArray', null)
+      this.canvas.requestRenderAll()
+      this.canvas.fire('object:modified')
+    })
+
+    dashDashed?.addEventListener('click', () => {
+      updateDashButtons(dashDashed)
+      const w = obj.strokeWidth || 4
+      obj.set('strokeDashArray', [w * 2, w * 2])
+      this.canvas.requestRenderAll()
+      this.canvas.fire('object:modified')
+    })
+
+    dashDotted?.addEventListener('click', () => {
+      updateDashButtons(dashDotted)
+      const w = obj.strokeWidth || 4
+      obj.set('strokeDashArray', [w, w * 1.5])
+      this.canvas.requestRenderAll()
+      this.canvas.fire('object:modified')
+    })
+
+    // --- EVENTO DE ESQUINAS REDONDEADAS (RX) ---
+    const rxSlider = this.popoverMenu.querySelector('#ctx-corner-rx')
+    const rxValText = this.popoverMenu.querySelector('#ctx-rx-val')
+    rxSlider?.addEventListener('input', (e) => {
+      const val = parseInt(e.target.value, 10)
+      if (rxValText) rxValText.textContent = `${val}px`
+      obj.set({ rx: val, ry: val })
+      this.canvas.requestRenderAll()
+    })
+    rxSlider?.addEventListener('change', () => {
+      this.canvas.fire('object:modified')
+    })
+
+    // --- EVENTO DE OPACIDAD ---
+    const opacitySlider = this.popoverMenu.querySelector('#ctx-opacity-slider')
+    const opacityValText = this.popoverMenu.querySelector('#ctx-opacity-val')
+    opacitySlider?.addEventListener('input', (e) => {
+      const pct = parseInt(e.target.value, 10)
+      if (opacityValText) opacityValText.textContent = `${pct}%`
+      obj.set('opacity', pct / 100)
+      this.canvas.requestRenderAll()
+    })
+    opacitySlider?.addEventListener('change', () => {
       this.canvas.fire('object:modified')
     })
 
     // --- EVENTOS DE TEXTO ---
     if (obj.type === 'textbox') {
+      const textInput = this.popoverMenu.querySelector('#ctx-text-content')
+      textInput?.addEventListener('input', (e) => {
+        obj.set('text', e.target.value)
+        this.canvas.requestRenderAll()
+        this.updateTriggerPosition(obj)
+      })
+      textInput?.addEventListener('change', () => {
+        this.canvas.fire('object:modified')
+      })
+
+      const fontFamilySelect = this.popoverMenu.querySelector('#ctx-font-family')
+      fontFamilySelect?.addEventListener('change', (e) => {
+        obj.set('fontFamily', e.target.value)
+        this.canvas.requestRenderAll()
+        this.canvas.fire('object:modified')
+      })
+
+      const fontSizeSlider = this.popoverMenu.querySelector('#ctx-font-size')
+      const fontSizeValDisplay = this.popoverMenu.querySelector('#ctx-size-val')
+      fontSizeSlider?.addEventListener('input', (e) => {
+        const val = parseInt(e.target.value, 10)
+        if (fontSizeValDisplay) fontSizeValDisplay.textContent = `${val}px`
+        obj.set('fontSize', val)
+        this.canvas.requestRenderAll()
+        this.updateTriggerPosition(obj)
+      })
+      fontSizeSlider?.addEventListener('change', () => {
+        this.canvas.fire('object:modified')
+      })
+
+      const underlineBtn = this.popoverMenu.querySelector('#ctx-txt-underline')
+      underlineBtn?.addEventListener('click', () => {
+        const val = !obj.underline
+        obj.set('underline', val)
+        underlineBtn.classList.toggle('is-active', val)
+        this.canvas.requestRenderAll()
+        this.canvas.fire('object:modified')
+      })
+
       const boldBtn = this.popoverMenu.querySelector('#ctx-txt-bold')
       boldBtn?.addEventListener('click', () => {
         const val = obj.fontWeight === 'bold' ? 'normal' : 'bold'
@@ -499,9 +803,38 @@ export class ContextMenu extends Component {
         sepiaBtn.classList.toggle('is-active', active)
         this.canvasManager.applyFilter(obj, 'sepia', active)
       })
+
+      const brightnessSlider = this.popoverMenu.querySelector('#ctx-img-brightness')
+      const brightnessValText = this.popoverMenu.querySelector('#ctx-brightness-val')
+      brightnessSlider?.addEventListener('input', (e) => {
+        const pct = parseInt(e.target.value, 10)
+        if (brightnessValText) brightnessValText.textContent = `${pct}%`
+        this.canvasManager.applyFilter(obj, 'brightness', pct / 100)
+      })
+
+      const contrastSlider = this.popoverMenu.querySelector('#ctx-img-contrast')
+      const contrastValText = this.popoverMenu.querySelector('#ctx-contrast-val')
+      contrastSlider?.addEventListener('input', (e) => {
+        const pct = parseInt(e.target.value, 10)
+        if (contrastValText) contrastValText.textContent = `${pct}%`
+        this.canvasManager.applyFilter(obj, 'contrast', pct / 100)
+      })
+
+      const blurSlider = this.popoverMenu.querySelector('#ctx-img-blur')
+      const blurValText = this.popoverMenu.querySelector('#ctx-blur-val')
+      blurSlider?.addEventListener('input', (e) => {
+        const pct = parseInt(e.target.value, 10)
+        if (blurValText) blurValText.textContent = `${pct}%`
+        this.canvasManager.applyFilter(obj, 'blur', pct / 100)
+      })
     }
 
     // --- ACCIONES GENERALES ---
+    this.popoverMenu.querySelector('#ctx-act-duplicate')?.addEventListener('click', () => {
+      this.canvasManager.duplicateSelected()
+      this.closePopover()
+    })
+
     this.popoverMenu.querySelector('#ctx-act-front')?.addEventListener('click', () => {
       this.canvasManager.bringToFront()
     })
