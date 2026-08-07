@@ -5,6 +5,8 @@ import { CircleTool } from './CircleTool.js'
 import { ArrowTool } from './ArrowTool.js'
 import { TextTool } from './TextTool.js'
 import { PinTool } from './PinTool.js'
+import { PolylineTool } from './PolylineTool.js'
+import { PolygonTool } from './PolygonTool.js'
 
 /**
  * Controlador de herramientas de dibujo del lienzo.
@@ -28,6 +30,8 @@ export class ToolService {
     this.tools.set('arrow', new ArrowTool(this.canvasManager))
     this.tools.set('text', new TextTool(this.canvasManager))
     this.tools.set('pin', new PinTool(this.canvasManager))
+    this.tools.set('polyline', new PolylineTool(this.canvasManager))
+    this.tools.set('polygon', new PolygonTool(this.canvasManager))
   }
 
   /**
@@ -73,6 +77,16 @@ export class ToolService {
   handleMouseUp(opt) {
     if (this.activeTool) {
       this.activeTool.onMouseUp(opt)
+    }
+  }
+
+  /**
+   * Despacha el evento dblclick del ratón a la herramienta activa.
+   * @param {Object} opt
+   */
+  handleMouseDblClick(opt) {
+    if (this.activeTool && typeof this.activeTool.onMouseDblClick === 'function') {
+      this.activeTool.onMouseDblClick(opt)
     }
   }
 }

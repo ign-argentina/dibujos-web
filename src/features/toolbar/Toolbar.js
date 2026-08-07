@@ -17,6 +17,8 @@ export class Toolbar extends Component {
       rect: document.getElementById('tool-rect'),
       circle: document.getElementById('tool-circle'),
       arrow: document.getElementById('tool-arrow'),
+      polyline: document.getElementById('tool-polyline'),
+      polygon: document.getElementById('tool-polygon'),
       text: document.getElementById('tool-text'),
       pin: document.getElementById('tool-pin'),
     }

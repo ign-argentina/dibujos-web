@@ -31,11 +31,29 @@ vi.mock('fabric', () => {
     }
   }
 
+  class MockPolyline {
+    constructor(points, opts) {
+      this.points = points
+      Object.assign(this, opts)
+      this.type = 'polyline'
+    }
+  }
+
+  class MockPolygon {
+    constructor(points, opts) {
+      this.points = points
+      Object.assign(this, opts)
+      this.type = 'polygon'
+    }
+  }
+
   return {
     Rect: MockRect,
     Circle: MockCircle,
     Textbox: MockTextbox,
     Path: MockPath,
+    Polyline: MockPolyline,
+    Polygon: MockPolygon,
   }
 })
 
@@ -85,5 +103,25 @@ describe('ShapeFactory', () => {
     expect(pin.stroke).toBe('#000000')
     expect(pin.strokeWidth).toBe(3)
     expect(pin.originY).toBe('bottom')
+  })
+
+  it('debería instanciar una Polyline con opciones correctas', () => {
+    const points = [{ x: 0, y: 0 }, { x: 10, y: 10 }]
+    const polyline = ShapeFactory.createPolyline(points, { color: '#FF0000', strokeWidth: 5 })
+    expect(polyline.type).toBe('polyline')
+    expect(polyline.points).toEqual(points)
+    expect(polyline.stroke).toBe('#FF0000')
+    expect(polyline.strokeWidth).toBe(5)
+    expect(polyline.fill).toBe('transparent')
+  })
+
+  it('debería instanciar un Polygon con opciones correctas', () => {
+    const points = [{ x: 0, y: 0 }, { x: 10, y: 10 }, { x: 0, y: 10 }]
+    const polygon = ShapeFactory.createPolygon(points, { color: '#00FF00', strokeWidth: 5 })
+    expect(polygon.type).toBe('polygon')
+    expect(polygon.points).toEqual(points)
+    expect(polygon.stroke).toBe('#00FF00')
+    expect(polygon.strokeWidth).toBe(5)
+    expect(polygon.fill).toBe('#00FF00')
   })
 })

@@ -83,6 +83,14 @@ export class CanvasManager {
 
     // Escuchador de eventos de teclado en el canvas para accesibilidad
     this.canvasEl.addEventListener('keydown', (e) => {
+      if (this.toolService && this.toolService.activeTool && typeof this.toolService.activeTool.onKeyDown === 'function') {
+        const handled = this.toolService.activeTool.onKeyDown(e)
+        if (handled) {
+          e.preventDefault()
+          return
+        }
+      }
+
       if (e.key === 'Delete' || e.key === 'Backspace') {
         const activeObj = this.canvas?.getActiveObject()
         if (activeObj && !(activeObj.type === 'textbox' && activeObj.isEditing)) {
@@ -243,7 +251,7 @@ export class CanvasManager {
           canvas.defaultCursor = 'default'
           canvas.setCursor('default')
           canvas.selection = true
-        } else if (['rect', 'circle', 'arrow', 'text', 'pin'].includes(this.activeTool)) {
+        } else if (['rect', 'circle', 'arrow', 'polyline', 'polygon', 'text', 'pin'].includes(this.activeTool)) {
           canvas.defaultCursor = 'crosshair'
           canvas.setCursor('crosshair')
           canvas.selection = false
@@ -308,7 +316,7 @@ export class CanvasManager {
         isDragging = false
         if (isSpacePressed) {
           canvas.defaultCursor = 'grab'
-        } else if (['rect', 'circle', 'arrow', 'text', 'pin'].includes(this.activeTool)) {
+        } else if (['rect', 'circle', 'arrow', 'polyline', 'polygon', 'text', 'pin'].includes(this.activeTool)) {
           canvas.defaultCursor = 'crosshair'
         } else {
           canvas.defaultCursor = 'default'
@@ -321,6 +329,13 @@ export class CanvasManager {
       }
 
       this.toolService.handleMouseUp(opt)
+    })
+
+    canvas.on('mouse:dblclick', (opt) => {
+      const e = opt.e
+      if (e.button === 0 || !e.button) {
+        this.toolService.handleMouseDblClick(opt)
+      }
     })
   }
 
@@ -410,7 +425,7 @@ export class CanvasManager {
       if (activeObject) {
         if (activeObject.type === 'textbox') {
           activeObject.set({ fill: color })
-        } else if (activeObject.type === 'path' && activeObject.fill === 'transparent') {
+        } else if ((activeObject.type === 'path' && activeObject.fill === 'transparent') || activeObject.type === 'polyline') {
           activeObject.set({ stroke: color })
         } else if (activeObject.type === 'group' || activeObject.getObjects) {
           this.colorSVGGroup(activeObject, color)

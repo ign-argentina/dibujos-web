@@ -1,4 +1,4 @@
-import { Rect, Circle, Textbox, Path } from 'fabric'
+import { Rect, Circle, Textbox, Path, Polyline, Polygon } from 'fabric'
 
 /**
  * Fábrica estática para la creación centralizada de objetos/formas del lienzo.
@@ -113,4 +113,48 @@ export class ShapeFactory {
       }
     )
   }
+
+  /**
+   * Crea una polilínea
+   * @param {Array<Object>} points
+   * @param {Object} options
+   * @returns {Polyline}
+   */
+  static createPolyline(points = [], options = {}) {
+    return new Polyline(points, {
+      fill: 'transparent',
+      stroke: options.color || '#FFF4B0',
+      strokeWidth: options.strokeWidth || 4,
+      strokeLineCap: 'round',
+      strokeLineJoin: 'round',
+      originX: 'left',
+      originY: 'top',
+      selectable: options.selectable !== undefined ? options.selectable : true,
+      evented: options.evented !== undefined ? options.evented : true,
+      ...options,
+    })
+  }
+
+  /**
+   * Crea un polígono libre
+   * @param {Array<Object>} points
+   * @param {Object} options
+   * @returns {Polygon}
+   */
+  static createPolygon(points = [], options = {}) {
+    return new Polygon(points, {
+      fill: options.color || '#FFF4B0',
+      stroke: options.color || '#FFF4B0',
+      strokeWidth: options.strokeWidth || 4,
+      strokeLineCap: 'round',
+      strokeLineJoin: 'round',
+      originX: 'left',
+      originY: 'top',
+      opacity: 0.7,
+      selectable: options.selectable !== undefined ? options.selectable : true,
+      evented: options.evented !== undefined ? options.evented : true,
+      ...options,
+    })
+  }
 }
+

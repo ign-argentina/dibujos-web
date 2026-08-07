@@ -217,6 +217,8 @@ export class ContextMenu extends Component {
     if (obj.type === 'rect') return 'Rectángulo'
     if (obj.type === 'circle') return 'Círculo'
     if (obj.type === 'image' && obj !== this.canvasManager.currentMapImage) return 'Imagen'
+    if (obj.type === 'polyline') return 'Polilínea'
+    if (obj.type === 'polygon') return 'Polígono libre'
     if (obj.type === 'path') {
       return obj.fill === 'transparent' ? 'Flecha' : 'Dibujo'
     }
@@ -228,32 +230,39 @@ export class ContextMenu extends Component {
     const typeName = this.getFriendlyTypeName(obj)
     const isText = obj.type === 'textbox'
     const isImage = obj.type === 'image' && obj !== this.canvasManager.currentMapImage
+    const isPolyline = obj.type === 'polyline'
+    const isPolygon = obj.type === 'polygon'
 
+    const showFillOption = !isImage && !isPolyline
     const showStrokeOption =
-      !(obj.type === 'path' && obj.fill === 'transparent') && obj.type !== 'group' && !isImage
+      isPolyline ||
+      isPolygon ||
+      (!(obj.type === 'path' && obj.fill === 'transparent') && obj.type !== 'group' && !isImage)
 
     let contentHtml = ''
 
     // --- SECCIÓN DE ESTILOS Y COLORES ---
     if (!isImage) {
-      contentHtml += `
-        <div class="nbi-context__section">
-          <label class="nbi-context__label">Color de Relleno</label>
-          <div class="nbi-context__colors">
-      `
-      this.presetColors.forEach((color) => {
-        const isSelected = (obj.fill || '').toUpperCase() === color.toUpperCase()
+      if (showFillOption) {
         contentHtml += `
-          <button class="nbi-color-chip ${isSelected ? 'is-active' : ''}" 
-                  style="background-color: ${color};" 
-                  data-color="${color}" 
-                  aria-label="Color ${color}"></button>
+          <div class="nbi-context__section">
+            <label class="nbi-context__label">Color de Relleno</label>
+            <div class="nbi-context__colors">
         `
-      })
-      contentHtml += `
+        this.presetColors.forEach((color) => {
+          const isSelected = (obj.fill || '').toUpperCase() === color.toUpperCase()
+          contentHtml += `
+            <button class="nbi-color-chip ${isSelected ? 'is-active' : ''}" 
+                    style="background-color: ${color};" 
+                    data-color="${color}" 
+                    aria-label="Color ${color}"></button>
+          `
+        })
+        contentHtml += `
+            </div>
           </div>
-        </div>
-      `
+        `
+      }
 
       if (showStrokeOption) {
         contentHtml += `
@@ -266,6 +275,7 @@ export class ContextMenu extends Component {
           contentHtml += `
             <button class="nbi-color-chip ${isSelected ? 'is-active' : ''}" 
                     style="background-color: ${color};" 
+                    data-color="${color}" 
                     data-stroke-color="${color}" 
                     aria-label="Color borde ${color}"></button>
           `
