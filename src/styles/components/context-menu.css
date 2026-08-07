@@ -21,7 +21,7 @@
   position: absolute;
   z-index: var(--nbi-z-modal);
   width: 270px;
-  max-height: 460px;
+  max-height: min(460px, calc(100vh - 40px));
   background-color: var(--nbi-color-panel-bg);
   display: flex;
   flex-direction: column;

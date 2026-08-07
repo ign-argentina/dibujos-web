@@ -251,6 +251,59 @@ export class ContextMenu extends Component {
     return f && f[propName] !== undefined ? f[propName] : defaultVal
   }
 
+  setupDraggable() {
+    const header = this.popoverMenu.querySelector('.nbi-context__header')
+    if (!header) return
+
+    header.style.cursor = 'move'
+
+    const onMouseDown = (e) => {
+      // Ignorar clics en el botón de cerrar
+      if (e.target.closest('#ctx-close-btn')) return
+
+      e.preventDefault()
+      e.stopPropagation()
+
+      const startX = e.clientX
+      const startY = e.clientY
+
+      const styleLeft = parseInt(this.popoverMenu.style.left, 10) || 0
+      const styleTop = parseInt(this.popoverMenu.style.top, 10) || 0
+
+      const onMouseMove = (moveEvent) => {
+        const deltaX = moveEvent.clientX - startX
+        const deltaY = moveEvent.clientY - startY
+
+        let newLeft = styleLeft + deltaX
+        let newTop = styleTop + deltaY
+
+        const containerRect = this.container.getBoundingClientRect()
+        const popoverRect = this.popoverMenu.getBoundingClientRect()
+
+        const minLeft = 10
+        const maxLeft = Math.max(minLeft, containerRect.width - popoverRect.width - 10)
+        newLeft = Math.max(minLeft, Math.min(newLeft, maxLeft))
+
+        const minTop = 10
+        const maxTop = Math.max(minTop, containerRect.height - popoverRect.height - 10)
+        newTop = Math.max(minTop, Math.min(newTop, maxTop))
+
+        this.popoverMenu.style.left = `${Math.round(newLeft)}px`
+        this.popoverMenu.style.top = `${Math.round(newTop)}px`
+      }
+
+      const onMouseUp = () => {
+        document.removeEventListener('mousemove', onMouseMove)
+        document.removeEventListener('mouseup', onMouseUp)
+      }
+
+      document.addEventListener('mousemove', onMouseMove)
+      document.addEventListener('mouseup', onMouseUp)
+    }
+
+    header.addEventListener('mousedown', onMouseDown)
+  }
+
   buildPopoverContent(obj) {
     const typeName = this.getFriendlyTypeName(obj)
     const isText = obj.type === 'textbox'
@@ -522,6 +575,7 @@ export class ContextMenu extends Component {
 
     this.popoverMenu.innerHTML = html
     this.attachInspectorEvents(obj)
+    this.setupDraggable()
   }
 
   attachInspectorEvents(obj) {
