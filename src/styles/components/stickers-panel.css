@@ -33,10 +33,36 @@
 .nbi-stickers__content {
   flex: 1;
   overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--nbi-space-md);
+  padding-right: var(--nbi-space-xs);
+}
+
+.nbi-stickers__category {
+  display: flex;
+  flex-direction: column;
+  gap: var(--nbi-space-sm);
+  margin-top: var(--nbi-space-sm);
+}
+
+.nbi-stickers__category:first-of-type {
+  margin-top: 0;
+}
+
+.nbi-stickers__category-title {
+  font-size: var(--nbi-font-size-sm);
+  font-weight: var(--nbi-font-weight-bold);
+  color: var(--nbi-color-black);
+  margin: 0;
+  padding-bottom: var(--nbi-space-xs);
+  border-bottom: var(--nbi-border-width-sm) solid var(--nbi-color-black);
+}
+
+.nbi-stickers__category-items {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: var(--nbi-space-sm);
-  padding-right: var(--nbi-space-xs);
 }
 
 /* Custom scrollbar for stickers */

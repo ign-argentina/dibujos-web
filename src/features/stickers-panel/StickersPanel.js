@@ -19,26 +19,44 @@ export class StickersPanel extends Component {
     // Generar la galería de stickers dinámicamente desde el StickersRepository
     if (this.stickersContainer) {
       this.stickersContainer.innerHTML = ''
-      const stickers = await stickerRepository.getAll()
-      stickers.forEach((name) => {
-        const item = document.createElement('button')
-        item.className = 'nbi-stickers__item'
-        item.setAttribute('title', `Agregar sticker de ${name.replace(/-/g, ' ')}`)
-        item.setAttribute('aria-label', `Agregar sticker de ${name.replace(/-/g, ' ')}`)
+      const categories = await stickerRepository.getCategorized()
+      categories.forEach((category) => {
+        if (category.stickers.length === 0) return
 
-        const img = document.createElement('img')
-        img.src = `${import.meta.env.BASE_URL}stickers/${name}.svg`
-        img.alt = name
-        img.className = 'nbi-stickers__img'
-        img.setAttribute('loading', 'lazy')
+        const section = document.createElement('section')
+        section.className = 'nbi-stickers__category'
 
-        item.appendChild(img)
+        const title = document.createElement('h3')
+        title.className = 'nbi-stickers__category-title'
+        title.textContent = category.name
+        section.appendChild(title)
 
-        item.addEventListener('click', () => {
-          this.canvasManager.addSticker(`${import.meta.env.BASE_URL}stickers/${name}.svg`)
+        const itemsContainer = document.createElement('div')
+        itemsContainer.className = 'nbi-stickers__category-items'
+
+        category.stickers.forEach((name) => {
+          const item = document.createElement('button')
+          item.className = 'nbi-stickers__item'
+          item.setAttribute('title', `Agregar sticker de ${name.replace(/-/g, ' ')}`)
+          item.setAttribute('aria-label', `Agregar sticker de ${name.replace(/-/g, ' ')}`)
+
+          const img = document.createElement('img')
+          img.src = `${import.meta.env.BASE_URL}stickers/${name}.svg`
+          img.alt = name
+          img.className = 'nbi-stickers__img'
+          img.setAttribute('loading', 'lazy')
+
+          item.appendChild(img)
+
+          item.addEventListener('click', () => {
+            this.canvasManager.addSticker(`${import.meta.env.BASE_URL}stickers/${name}.svg`)
+          })
+
+          itemsContainer.appendChild(item)
         })
 
-        this.stickersContainer.appendChild(item)
+        section.appendChild(itemsContainer)
+        this.stickersContainer.appendChild(section)
       })
     }
   }
