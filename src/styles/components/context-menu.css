@@ -89,3 +89,81 @@
   padding-top: 10px;
   margin-top: 4px;
 }
+
+/* Nuevos estilos para color picker, checkbox y controles extendidos */
+.nbi-context__colors-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+
+.nbi-context__checkbox-label {
+  font-size: var(--nbi-font-size-sm);
+  font-weight: var(--nbi-font-weight-semibold);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  margin-bottom: 2px;
+}
+
+.nbi-context__checkbox-label input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--nbi-color-accent);
+  cursor: pointer;
+  margin: 0;
+}
+
+.nbi-color-picker {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 50% !important;
+  border: var(--nbi-border-width-sm) solid var(--nbi-color-black) !important;
+  cursor: pointer;
+  background: none;
+  padding: 0;
+  box-shadow: var(--nbi-shadow-sm);
+  overflow: hidden;
+  transition: transform var(--nbi-transition-fast);
+}
+
+.nbi-color-picker:hover {
+  transform: scale(1.1);
+}
+
+.nbi-color-picker::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+.nbi-color-picker::-webkit-color-swatch {
+  border: none;
+  border-radius: 50%;
+}
+
+.nbi-color-picker::-moz-color-swatch {
+  border: none;
+  border-radius: 50%;
+}
+
+.nbi-context__textarea {
+  font-family: inherit;
+  border: var(--nbi-border-width-md) solid var(--nbi-color-black);
+  border-radius: 4px;
+  padding: 6px;
+  outline: none;
+}
+
+.nbi-context select.nbi-input {
+  border: var(--nbi-border-width-md) solid var(--nbi-color-black);
+  border-radius: 4px;
+  padding: 6px;
+  background-color: var(--nbi-color-white);
+  font-family: inherit;
+  outline: none;
+  cursor: pointer;
+}
