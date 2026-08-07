@@ -248,7 +248,7 @@ export class ContextMenu extends Component {
     const isPath = obj.type === 'path'
     const isPin = isPath && !(obj.fill === 'transparent' || obj.fill === '')
 
-    const showFillOption = isRect || isCircle || isPolygon || isText || isGroup || isPin
+    const showFillOption = isRect || isCircle || isPolygon || isText || isGroup || isPath || isPin
     const showStrokeOption = isRect || isCircle || isPolyline || isPolygon || isPath
 
     let contentHtml = ''
@@ -257,12 +257,12 @@ export class ContextMenu extends Component {
     if (showFillOption) {
       const currentFill = obj.fill && obj.fill !== 'transparent' ? obj.fill : '#82D3F8'
       const isTransparent = obj.fill === 'transparent' || obj.fill === ''
-      
+
       contentHtml += `
         <div class="nbi-context__section">
           <div style="display: flex; justify-content: space-between; align-items: center;">
             <label class="nbi-context__label">Color de Relleno</label>
-            ${(isRect || isCircle || isPolygon) ? `
+            ${(isRect || isCircle || isPolygon || isPath) ? `
               <label class="nbi-context__checkbox-label">
                 <input type="checkbox" id="ctx-fill-transparent" ${isTransparent ? 'checked' : ''} />
                 Sin relleno
@@ -508,7 +508,7 @@ export class ContextMenu extends Component {
         const color = chip.getAttribute('data-color')
         fillChips.forEach((c) => c.classList.remove('is-active'))
         chip.classList.add('is-active')
-        
+
         const fillTransparentCb = this.popoverMenu.querySelector('#ctx-fill-transparent')
         if (fillTransparentCb) fillTransparentCb.checked = false
 
@@ -529,7 +529,7 @@ export class ContextMenu extends Component {
     fillPicker?.addEventListener('input', (e) => {
       const color = e.target.value
       fillChips.forEach((c) => c.classList.remove('is-active'))
-      
+
       const fillTransparentCb = this.popoverMenu.querySelector('#ctx-fill-transparent')
       if (fillTransparentCb) fillTransparentCb.checked = false
 
