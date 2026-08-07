@@ -38,12 +38,16 @@ vi.mock('fabric', () => {
 
   MockFabricImage.fromURL = vi.fn().mockResolvedValue(new MockFabricImage())
 
+  class MockFabricObject {}
+  MockFabricObject.ownDefaults = {}
+
   class MockPencilBrush {}
 
   return {
     Canvas: MockCanvas,
     FabricImage: MockFabricImage,
     PencilBrush: MockPencilBrush,
+    FabricObject: MockFabricObject,
     util: {
       enlivenObjects: vi.fn().mockResolvedValue([]),
       groupSVGElements: vi.fn().mockReturnValue({}),

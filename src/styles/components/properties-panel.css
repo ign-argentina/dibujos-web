@@ -166,15 +166,18 @@
 }
 
 .nbi-color-picker--sidebar {
-  width: 70px !important;
-  height: 34px !important;
-  border-radius: 4px !important;
-  border: var(--nbi-border-width-md) solid var(--nbi-color-black) !important;
-  box-shadow: 2px 2px 0px 0px var(--nbi-color-black) !important;
-  cursor: pointer !important;
-  transition: transform var(--nbi-transition-fast), box-shadow var(--nbi-transition-fast) !important;
-  padding: 0 !important;
-  background: none !important;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  width: 100px;
+  height: 34px;
+  border: var(--nbi-border-width-md) solid var(--nbi-color-black);
+  border-radius: var(--nbi-radius-teen);
+  background-color: var(--nbi-color-white);
+  cursor: pointer;
+  padding: 2px var(--nbi-space-xs);
+  box-shadow: 3px 3px 0px 0px var(--nbi-color-black);
+  transition: transform var(--nbi-transition-fast), box-shadow var(--nbi-transition-fast);
 }
 
 .nbi-color-picker--sidebar:hover {
