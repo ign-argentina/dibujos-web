@@ -42,13 +42,26 @@ export class ColorPalette extends Component {
         chip.type = 'button'
         chip.role = 'radio'
         chip.className = 'nbi-color-chip'
+        const isSelected = color.toLowerCase() === this.canvasManager.activeColor.toLowerCase()
+        if (isSelected) {
+          chip.classList.add('is-active')
+          chip.setAttribute('aria-checked', 'true')
+        } else {
+          chip.setAttribute('aria-checked', 'false')
+        }
         chip.style.backgroundColor = color
         chip.setAttribute('data-color', color)
         chip.setAttribute('title', `Color: ${color}`)
         chip.setAttribute('aria-label', `Color ${color}`)
         this.colorChipsContainer.appendChild(chip)
       })
+    }
 
+    if (this.strokeSlider) {
+      this.strokeSlider.value = this.canvasManager.activeStrokeWidth
+    }
+    if (this.strokeValueDisplay) {
+      this.strokeValueDisplay.textContent = `${this.canvasManager.activeStrokeWidth}px`
     }
 
     this.renderRecentColors()

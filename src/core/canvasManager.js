@@ -36,9 +36,9 @@ export class CanvasManager {
     this.currentMapUrl = null
 
     // Propiedades de herramientas NBI
-    this.activeColor = '#FFF4B0'
-    this.activeStrokeWidth = 8
-    this.activeTool = 'select'
+    this.activeColor = '#000000'
+    this.activeStrokeWidth = 4
+    this.activeTool = 'pan'
     this.onToolChange = null
 
     // Estado de dibujo interactivo de figuras
@@ -209,16 +209,7 @@ export class CanvasManager {
     let lastPosX = 0
     let lastPosY = 0
     let isSpacePressed = false
-
     window.addEventListener('keydown', (e) => {
-      if (e.code === 'Space') {
-        isSpacePressed = true
-        canvas.defaultCursor = 'grab'
-        canvas.setCursor('grab')
-        canvas.selection = false
-      }
-
-      // Atajos de teclado para Deshacer/Rehacer (Ctrl+Z y Ctrl+Y o Ctrl+Shift+Z)
       const activeElement = document.activeElement
       const isInputFocused = activeElement && (
         activeElement.tagName === 'INPUT' || 
@@ -228,6 +219,13 @@ export class CanvasManager {
       
       const activeObject = this.canvas?.getActiveObject()
       const isEditingText = activeObject && activeObject.type === 'textbox' && activeObject.isEditing
+
+      if (e.code === 'Space' && !isInputFocused && !isEditingText) {
+        isSpacePressed = true
+        canvas.defaultCursor = 'grab'
+        canvas.setCursor('grab')
+        canvas.selection = false
+      }
 
       if (!isInputFocused && !isEditingText) {
         if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') {
@@ -247,7 +245,11 @@ export class CanvasManager {
     window.addEventListener('keyup', (e) => {
       if (e.code === 'Space') {
         isSpacePressed = false
-        if (this.activeTool === 'select') {
+        if (this.activeTool === 'pan') {
+          canvas.defaultCursor = 'grab'
+          canvas.setCursor('grab')
+          canvas.selection = false
+        } else if (this.activeTool === 'select') {
           canvas.defaultCursor = 'default'
           canvas.setCursor('default')
           canvas.selection = true
@@ -277,8 +279,11 @@ export class CanvasManager {
     canvas.on('mouse:down', (opt) => {
       const e = opt.e
       const isRightClick = e.button === 2 || e.which === 3
+      const isLeftClick = e.button === 0 || !e.button
 
-      if (isSpacePressed || isRightClick) {
+      const shouldDrag = isSpacePressed || (this.activeTool === 'pan' && isLeftClick)
+
+      if (shouldDrag) {
         isDragging = true
         canvas.selection = false
         lastPosX = e.clientX
@@ -288,7 +293,11 @@ export class CanvasManager {
         return
       }
 
-      if (e.button === 0 || !e.button) {
+      if (isRightClick) {
+        return
+      }
+
+      if (isLeftClick) {
         this.toolService.handleMouseDown(opt)
       }
     })
@@ -314,7 +323,7 @@ export class CanvasManager {
     canvas.on('mouse:up', (opt) => {
       if (isDragging) {
         isDragging = false
-        if (isSpacePressed) {
+        if (isSpacePressed || this.activeTool === 'pan') {
           canvas.defaultCursor = 'grab'
         } else if (['rect', 'circle', 'arrow', 'polyline', 'polygon', 'text', 'pin'].includes(this.activeTool)) {
           canvas.defaultCursor = 'crosshair'
@@ -398,6 +407,7 @@ export class CanvasManager {
 
   updateToolbarAriaPressed(activeTool) {
     const toolMap = {
+      pan: 'tool-pan',
       select: 'tool-select',
       brush: 'tool-brush',
       rect: 'tool-rect',

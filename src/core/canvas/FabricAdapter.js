@@ -240,6 +240,15 @@ export class FabricAdapter {
   }
 
   /**
+   * Determina si se omiten las interacciones con objetos (para modo desplazamiento)
+   * @param {boolean} skip
+   */
+  setSkipTargetFind(skip) {
+    if (!this.canvas) return
+    this.canvas.skipTargetFind = skip
+  }
+
+  /**
    * Determina el cursor predeterminado del lienzo
    * @param {string} cursor
    */

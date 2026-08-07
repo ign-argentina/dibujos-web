@@ -1,4 +1,5 @@
 import { Component } from '../Component.js'
+import { ClearConfirmModal } from '../clear-confirm-modal/ClearConfirmModal.js'
 
 /**
  * Componente que gestiona la barra de herramientas de dibujo y acciones globales del lienzo.
@@ -12,6 +13,7 @@ export class Toolbar extends Component {
 
   render() {
     this.toolButtons = {
+      pan: document.getElementById('tool-pan'),
       select: document.getElementById('tool-select'),
       brush: document.getElementById('tool-brush'),
       rect: document.getElementById('tool-rect'),
@@ -28,6 +30,13 @@ export class Toolbar extends Component {
     this.zoomInBtn = document.getElementById('action-zoom-in')
     this.zoomOutBtn = document.getElementById('action-zoom-out')
     this.zoomHomeBtn = document.getElementById('action-zoom-home')
+
+    const modalEl = document.getElementById('clear-confirm-modal')
+    if (modalEl) {
+      this.clearConfirmModal = new ClearConfirmModal(modalEl, () => {
+        this.canvasManager.clearCanvas()
+      })
+    }
 
     this.updateActiveToolUI(this.canvasManager.activeTool)
   }
@@ -51,7 +60,11 @@ export class Toolbar extends Component {
 
     if (this.clearBtn) {
       this.addEvent(this.clearBtn, 'click', () => {
-        this.canvasManager.clearCanvas()
+        if (this.clearConfirmModal) {
+          this.clearConfirmModal.open()
+        } else {
+          this.canvasManager.clearCanvas()
+        }
       })
     }
 

@@ -14,6 +14,9 @@
   box-shadow: var(--nbi-shadow-md);
   color: var(--nbi-color-black);
   outline: none;
+  font-family: var(--nbi-font-family);
+  font-size: var(--nbi-font-size-base);
+  font-weight: var(--nbi-font-weight-bold);
 }
 
 .nbi-btn svg,

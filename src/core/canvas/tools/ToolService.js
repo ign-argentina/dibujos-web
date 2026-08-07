@@ -7,6 +7,7 @@ import { TextTool } from './TextTool.js'
 import { PinTool } from './PinTool.js'
 import { PolylineTool } from './PolylineTool.js'
 import { PolygonTool } from './PolygonTool.js'
+import { PanTool } from './PanTool.js'
 
 /**
  * Controlador de herramientas de dibujo del lienzo.
@@ -16,13 +17,14 @@ export class ToolService {
   constructor(canvasManager) {
     this.canvasManager = canvasManager
     this.tools = new Map()
-    this.activeToolName = 'select'
+    this.activeToolName = 'pan'
     this.activeTool = null
 
     this.registerTools()
   }
 
   registerTools() {
+    this.tools.set('pan', new PanTool(this.canvasManager))
     this.tools.set('select', new SelectTool(this.canvasManager))
     this.tools.set('brush', new BrushTool(this.canvasManager))
     this.tools.set('rect', new RectTool(this.canvasManager))
@@ -39,7 +41,7 @@ export class ToolService {
    * @param {string} toolName
    */
   setTool(toolName) {
-    const nextTool = this.tools.get(toolName) || this.tools.get('select')
+    const nextTool = this.tools.get(toolName) || this.tools.get('pan')
     if (this.activeTool === nextTool) return
 
     if (this.activeTool) {

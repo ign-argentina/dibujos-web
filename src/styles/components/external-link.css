@@ -7,7 +7,7 @@
   background-color: var(--nbi-color-secondary);
   text-decoration: none;
   font-weight: var(--nbi-font-weight-semibold);
-  font-size: var(--nbi-font-size-sm);
+  font-size: var(--nbi-font-size-base);
   display: inline-flex;
   align-items: center;
   gap: var(--nbi-space-xs);

@@ -124,6 +124,23 @@ export class ContextMenu extends Component {
         updatePositionHandler()
       }
     })
+
+    // Permitir abrir el menú contextual con clic derecho sobre un objeto
+    this.canvas.on('mouse:down', (opt) => {
+      const e = opt.e
+      const isRightClick = e.button === 2 || e.which === 3
+      if (isRightClick) {
+        const target = this.canvas.findTarget(opt.e)
+        if (target && target !== this.canvasManager.currentMapImage && target.isMapBase !== true) {
+          opt.e.preventDefault()
+          opt.e.stopPropagation()
+          this.canvas.setActiveObject(target)
+          this.canvas.requestRenderAll()
+          this.updateTriggerPosition(target)
+          this.openPopover()
+        }
+      }
+    })
   }
 
   updateTriggerPosition(activeObj) {

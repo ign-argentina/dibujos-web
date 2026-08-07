@@ -14,8 +14,8 @@ export class ShapeFactory {
     return new Rect({
       width: options.width || 140,
       height: options.height || 100,
-      fill: options.color || '#FFF4B0',
-      stroke: options.color || '#FFF4B0',
+      fill: options.color || '#000000',
+      stroke: options.color || '#000000',
       strokeWidth: 2,
       rx: 4,
       ry: 4,
@@ -36,8 +36,8 @@ export class ShapeFactory {
   static createCircle(options = {}) {
     return new Circle({
       radius: options.radius || 60,
-      fill: options.color || '#FFF4B0',
-      stroke: options.color || '#FFF4B0',
+      fill: options.color || '#000000',
+      stroke: options.color || '#000000',
       strokeWidth: 2,
       originX: options.originX || 'center',
       originY: options.originY || 'center',
@@ -56,7 +56,7 @@ export class ShapeFactory {
    */
   static createArrow(pathString, options = {}) {
     return new Path(pathString, {
-      stroke: options.color || '#FFF4B0',
+      stroke: options.color || '#000000',
       strokeWidth: options.strokeWidth || 8,
       fill: 'transparent',
       strokeLineCap: 'round',
@@ -80,7 +80,7 @@ export class ShapeFactory {
       fontFamily: 'Fredoka',
       fontSize: 24,
       fontWeight: '500',
-      fill: options.color || '#FFF4B0',
+      fill: options.color || '#000000',
       stroke: 'transparent',
       originX: options.originX || 'center',
       originY: options.originY || 'center',
@@ -101,7 +101,7 @@ export class ShapeFactory {
     return new Path(
       'M 0 0 C -12 -13 -18 -24 -18 -34 A 18 18 0 1 1 18 -34 C 18 -24 12 -13 0 0 Z M 0 -40 A 6 6 0 1 0 0 -28 A 6 6 0 1 0 0 -40 Z',
       {
-        fill: options.color || '#FFF4B0',
+        fill: options.color || '#000000',
         stroke: '#000000',
         strokeWidth: 3,
         originX: options.originX || 'center',
@@ -123,7 +123,7 @@ export class ShapeFactory {
   static createPolyline(points = [], options = {}) {
     return new Polyline(points, {
       fill: 'transparent',
-      stroke: options.color || '#FFF4B0',
+      stroke: options.color || '#000000',
       strokeWidth: options.strokeWidth || 4,
       strokeLineCap: 'round',
       strokeLineJoin: 'round',
@@ -143,8 +143,8 @@ export class ShapeFactory {
    */
   static createPolygon(points = [], options = {}) {
     return new Polygon(points, {
-      fill: options.color || '#FFF4B0',
-      stroke: options.color || '#FFF4B0',
+      fill: options.color || '#000000',
+      stroke: options.color || '#000000',
       strokeWidth: options.strokeWidth || 4,
       strokeLineCap: 'round',
       strokeLineJoin: 'round',
@@ -157,4 +157,3 @@ export class ShapeFactory {
     })
   }
 }
-
