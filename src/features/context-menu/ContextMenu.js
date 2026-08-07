@@ -120,8 +120,6 @@ export class ContextMenu extends Component {
     this.canvas.on('mouse:move', () => {
       if (this.canvas.isDrawingMode || this.canvasManager.isDrawingShape) {
         this.hideAll()
-      } else {
-        updatePositionHandler()
       }
     })
 
@@ -149,21 +147,35 @@ export class ContextMenu extends Component {
       return
     }
 
-    const bound = activeObj.getBoundingRect()
+    // Asegurar coordenadas de controles actualizadas (incluyen zoom/pan)
+    activeObj.setCoords()
+
+    // Obtener la esquina top-right en coordenadas de pantalla relativas al canvas
+    const { tl, tr } = activeObj.oCoords
     const containerRect = this.container.getBoundingClientRect()
+    const btnSize = 42
+    const gap = 6
 
-    let left = bound.left + bound.width + 10
-    let top = bound.top - 12
+    // Posición preferida: a la derecha del borde superior del objeto
+    let left = tr.x + gap
+    let top = tr.y - gap - btnSize
 
-    if (left + 50 > containerRect.width) {
-      left = bound.left - 54
+    // Fallback horizontal: si se sale por la derecha, colocar a la izquierda del objeto
+    if (left + btnSize > containerRect.width - 10) {
+      left = tl.x - btnSize - gap
     }
+
+    // Fallback vertical: si se sale por arriba, colocar debajo de la esquina
     if (top < 10) {
-      top = bound.top + bound.height + 10
+      top = tr.y + gap
     }
 
-    this.triggerBtn.style.left = `${Math.max(10, left)}px`
-    this.triggerBtn.style.top = `${Math.max(10, top)}px`
+    // Clamp final dentro del contenedor
+    left = Math.max(10, Math.min(left, containerRect.width - btnSize - 10))
+    top = Math.max(10, Math.min(top, containerRect.height - btnSize - 10))
+
+    this.triggerBtn.style.left = `${Math.round(left)}px`
+    this.triggerBtn.style.top = `${Math.round(top)}px`
     this.triggerBtn.classList.remove('hidden')
 
     if (window.lucide) {
@@ -177,23 +189,29 @@ export class ContextMenu extends Component {
       return
     }
 
-    const bound = activeObj.getBoundingRect()
+    // Usar oCoords para posicionar el popover de forma consistente con el trigger
+    activeObj.setCoords()
+    const { tl, tr } = activeObj.oCoords
     const containerRect = this.container.getBoundingClientRect()
     const popoverRect = this.popoverMenu.getBoundingClientRect()
+    const gap = 6
 
-    let left = bound.left + bound.width + 10
-    let top = bound.top
+    // Posicionar a la derecha de la esquina superior del objeto
+    let left = tr.x + gap
+    let top = tr.y + gap
 
-    if (left + popoverRect.width > containerRect.width) {
-      left = bound.left - popoverRect.width - 10
+    // Fallback: si se sale por la derecha, colocar a la izquierda del objeto
+    if (left + popoverRect.width > containerRect.width - 10) {
+      left = tl.x - popoverRect.width - gap
     }
 
-    if (top + popoverRect.height > containerRect.height) {
+    // Fallback vertical: si se sale por abajo
+    if (top + popoverRect.height > containerRect.height - 10) {
       top = containerRect.height - popoverRect.height - 10
     }
 
-    this.popoverMenu.style.left = `${Math.max(10, left)}px`
-    this.popoverMenu.style.top = `${Math.max(10, top)}px`
+    this.popoverMenu.style.left = `${Math.max(10, Math.round(left))}px`
+    this.popoverMenu.style.top = `${Math.max(10, Math.round(top))}px`
   }
 
   togglePopover() {
