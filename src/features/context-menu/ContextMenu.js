@@ -13,21 +13,19 @@ export class ContextMenu extends Component {
     this.popoverMenu = null
     this.isOpen = false
     this.presetColors = [
-      '#82D3F8',
-      '#7ABE7D',
-      '#E5828C',
-      '#CC94D6',
-      '#FFA07A',
-      '#FFD700',
-      '#98FB98',
-      '#AFEEEE',
-      '#FFB6C1',
-      '#B0C4DE',
-      '#E6E6FA',
-      '#FFA500',
-      '#FFFFFF',
-      '#000000',
-    ]
+      "#FFFFFF", // Blanco
+      "#9E9E9E", // Gris
+      "#000000", // Negro
+      "#F44336", // Rojo
+      "#FF9800", // Naranja
+      "#FFEB3B", // Amarillo
+      "#4CAF50", // Verde
+      "#00BCD4", // Cian
+      "#2196F3", // Azul
+      "#3F51B5", // Índigo
+      "#9C27B0", // Violeta
+      "#E91E63"  // Rosa
+    ];
 
     this.mount()
   }
@@ -281,6 +279,12 @@ export class ContextMenu extends Component {
         `
       })
       contentHtml += `
+          </div>
+          <div style="display: flex; flex-direction: row; gap: 6px; margin-top: 6px; align-items: center;">
+            <label for="ctx-fill-picker" style="font-weight: var(--nbi-font-weight-semibold); font-size: var(--nbi-font-size-sm); display: flex; align-items: center; gap: 4px; cursor: pointer; margin: 0;">
+              <i data-lucide="palette" style="width: 14px; height: 14px;" aria-hidden="true"></i>
+              Más colores:
+            </label>
             <input type="color" id="ctx-fill-picker" class="nbi-color-picker" value="${currentFill}" title="Color personalizado" />
           </div>
         </div>
@@ -314,6 +318,12 @@ export class ContextMenu extends Component {
         `
       })
       contentHtml += `
+          </div>
+          <div style="display: flex; flex-direction: row; gap: 6px; margin-top: 6px; align-items: center;">
+            <label for="ctx-stroke-picker" style="font-weight: var(--nbi-font-weight-semibold); font-size: var(--nbi-font-size-sm); display: flex; align-items: center; gap: 4px; cursor: pointer; margin: 0;">
+              <i data-lucide="palette" style="width: 14px; height: 14px;" aria-hidden="true"></i>
+              Personalizar:
+            </label>
             <input type="color" id="ctx-stroke-picker" class="nbi-color-picker" value="${currentStroke}" title="Color de borde personalizado" />
           </div>
         </div>
