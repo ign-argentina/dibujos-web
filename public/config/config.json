@@ -92,11 +92,38 @@
       "isPortrait": true
     },
     {
-      "id": "santa-fe",
-      "name": "Provincia de Santa Fe",
-      "thumbnailUrl": "/maps/thumbnails/MapaEscolar014_SantaFe_2000x2500.png",
-      "imagePath": "/maps/MapaEscolar014_SantaFe_2000x2500.png",
-      "imageUrl": "https://mapasescolares.ign.gob.ar/images/mapas/MapaEscolar014_SantaFe_2000x2500.png",
+      "id": "entre-rios",
+      "name": "Provincia de Entre Ríos",
+      "thumbnailUrl": "/maps/thumbnails/MapaEscolar006_EntreRios_2000x2500.png",
+      "imagePath": "/maps/MapaEscolar006_EntreRios_2000x2500.png",
+      "imageUrl": "https://mapasescolares.ign.gob.ar/images/mapas/MapaEscolar006_EntreRios_2000x2500.png",
+      "category": "provincia",
+      "isPortrait": true
+    },
+    {
+      "id": "formosa",
+      "name": "Provincia de Formosa",
+      "thumbnailUrl": "/maps/thumbnails/MapaEscolar020_Formosa_2500x2000.png",
+      "imagePath": "/maps/MapaEscolar020_Formosa_2500x2000.png",
+      "imageUrl": "https://mapasescolares.ign.gob.ar/images/mapas/MapaEscolar020_Formosa_2500x2000.png",
+      "category": "provincia",
+      "isPortrait": false
+    },
+    {
+      "id": "la-pampa",
+      "name": "Provincia de La Pampa",
+      "thumbnailUrl": "/maps/thumbnails/MapaEscolar007_LaPampa_2000x2500.png",
+      "imagePath": "/maps/MapaEscolar007_LaPampa_2000x2500.png",
+      "imageUrl": "https://mapasescolares.ign.gob.ar/images/mapas/MapaEscolar007_LaPampa_2000x2500.png",
+      "category": "provincia",
+      "isPortrait": true
+    },
+    {
+      "id": "la-rioja",
+      "name": "Provincia de La Rioja",
+      "thumbnailUrl": "/maps/thumbnails/MapaEscolar008_LaRioja_2000x2500.png",
+      "imagePath": "/maps/MapaEscolar008_LaRioja_2000x2500.png",
+      "imageUrl": "https://mapasescolares.ign.gob.ar/images/mapas/MapaEscolar008_LaRioja_2000x2500.png",
       "category": "provincia",
       "isPortrait": true
     },
@@ -108,15 +135,6 @@
       "imageUrl": "https://mapasescolares.ign.gob.ar/images/mapas/MapaEscolar022_Jujuy_2500x2000.png",
       "category": "provincia",
       "isPortrait": true
-    },
-    {
-      "id": "salta",
-      "name": "Provincia de Salta",
-      "thumbnailUrl": "/maps/thumbnails/MapaEscolar023_Salta_2500x2000.png",
-      "imagePath": "/maps/MapaEscolar023_Salta_2500x2000.png",
-      "imageUrl": "https://mapasescolares.ign.gob.ar/images/mapas/MapaEscolar023_Salta_2500x2000.png",
-      "category": "provincia",
-      "isPortrait": false
     },
     {
       "id": "mendoza",
@@ -133,69 +151,6 @@
       "thumbnailUrl": "/maps/thumbnails/MapaEscolar010_Misiones_2000x2500.png",
       "imagePath": "/maps/MapaEscolar010_Misiones_2000x2500.png",
       "imageUrl": "https://mapasescolares.ign.gob.ar/images/mapas/MapaEscolar010_Misiones_2000x2500.png",
-      "category": "provincia",
-      "isPortrait": true
-    },
-    {
-      "id": "tierra-del-fuego",
-      "name": "Provincia de Tierra del Fuego, Antártida e Islas del Atlántico Sur",
-      "thumbnailUrl": "/maps/thumbnails/MapaEscolar000_TIerraDelFuego_2000x2500.png",
-      "imagePath": "/maps/MapaEscolar000_TIerraDelFuego_2000x2500.png",
-      "imageUrl": "https://mapasescolares.ign.gob.ar/images/mapas/MapaEscolar000_TIerraDelFuego_2000x2500.png",
-      "category": "provincia",
-      "isPortrait": false
-    },
-    {
-      "id": "formosa",
-      "name": "Provincia de Formosa",
-      "thumbnailUrl": "/maps/thumbnails/MapaEscolar020_Formosa_2500x2000.png",
-      "imagePath": "/maps/MapaEscolar020_Formosa_2500x2000.png",
-      "imageUrl": "https://mapasescolares.ign.gob.ar/images/mapas/MapaEscolar020_Formosa_2500x2000.png",
-      "category": "provincia",
-      "isPortrait": false
-    },
-    {
-      "id": "santiago-del-estero",
-      "name": "Provincia de Santiago del Estero",
-      "thumbnailUrl": "/maps/thumbnails/MapaEscolar016_SantiagoDelEstero_2000x2500.png",
-      "imagePath": "/maps/MapaEscolar016_SantiagoDelEstero_2000x2500.png",
-      "imageUrl": "https://mapasescolares.ign.gob.ar/images/mapas/MapaEscolar016_SantiagoDelEstero_2000x2500.png",
-      "category": "provincia",
-      "isPortrait": true
-    },
-    {
-      "id": "tucuman",
-      "name": "Provincia de Tucumán",
-      "thumbnailUrl": "/maps/thumbnails/MapaEscolar017_Tucuman_2000x2500.png ",
-      "imagePath": "/maps/MapaEscolar017_Tucuman_2000x2500.png",
-      "imageUrl": "https://mapasescolares.ign.gob.ar/images/mapas/MapaEscolar017_Tucuman_2000x2500.png",
-      "category": "provincia",
-      "isPortrait": true
-    },
-    {
-      "id": "la-rioja",
-      "name": "Provincia de La Rioja",
-      "thumbnailUrl": "/maps/thumbnails/MapaEscolar008_LaRioja_2000x2500.png",
-      "imagePath": "/maps/MapaEscolar008_LaRioja_2000x2500.png",
-      "imageUrl": "https://mapasescolares.ign.gob.ar/images/mapas/MapaEscolar008_LaRioja_2000x2500.png",
-      "category": "provincia",
-      "isPortrait": true
-    },
-    {
-      "id": "san-juan",
-      "name": "Provincia de San Juan",
-      "thumbnailUrl": "/maps/thumbnails/MapaEscolar012_SanJuan_2000x2500.png",
-      "imagePath": "/maps/MapaEscolar012_SanJuan_2000x2500.png",
-      "imageUrl": "https://mapasescolares.ign.gob.ar/images/mapas/MapaEscolar012_SanJuan_2000x2500.png",
-      "category": "provincia",
-      "isPortrait": true
-    },
-    {
-      "id": "san-luis",
-      "name": "Provincia de San Luis",
-      "thumbnailUrl": "/maps/thumbnails/MapaEscolar013_SanLuis_2000x2500.png",
-      "imagePath": "/maps/MapaEscolar013_SanLuis_2000x2500.png",
-      "imageUrl": "https://mapasescolares.ign.gob.ar/images/mapas/MapaEscolar013_SanLuis_2000x2500.png",
       "category": "provincia",
       "isPortrait": true
     },
@@ -218,6 +173,33 @@
       "isPortrait": false
     },
     {
+      "id": "salta",
+      "name": "Provincia de Salta",
+      "thumbnailUrl": "/maps/thumbnails/MapaEscolar023_Salta_2500x2000.png",
+      "imagePath": "/maps/MapaEscolar023_Salta_2500x2000.png",
+      "imageUrl": "https://mapasescolares.ign.gob.ar/images/mapas/MapaEscolar023_Salta_2500x2000.png",
+      "category": "provincia",
+      "isPortrait": false
+    },
+    {
+      "id": "san-juan",
+      "name": "Provincia de San Juan",
+      "thumbnailUrl": "/maps/thumbnails/MapaEscolar012_SanJuan_2000x2500.png",
+      "imagePath": "/maps/MapaEscolar012_SanJuan_2000x2500.png",
+      "imageUrl": "https://mapasescolares.ign.gob.ar/images/mapas/MapaEscolar012_SanJuan_2000x2500.png",
+      "category": "provincia",
+      "isPortrait": true
+    },
+    {
+      "id": "san-luis",
+      "name": "Provincia de San Luis",
+      "thumbnailUrl": "/maps/thumbnails/MapaEscolar013_SanLuis_2000x2500.png",
+      "imagePath": "/maps/MapaEscolar013_SanLuis_2000x2500.png",
+      "imageUrl": "https://mapasescolares.ign.gob.ar/images/mapas/MapaEscolar013_SanLuis_2000x2500.png",
+      "category": "provincia",
+      "isPortrait": true
+    },
+    {
       "id": "santa-cruz",
       "name": "Provincia de Santa Cruz",
       "thumbnailUrl": "/maps/thumbnails/MapaEscolar015_SantaCruz_2000x2500.png",
@@ -227,20 +209,38 @@
       "isPortrait": true
     },
     {
-      "id": "entre-rios",
-      "name": "Provincia de Entre Ríos",
-      "thumbnailUrl": "/maps/thumbnails/MapaEscolar006_EntreRios_2000x2500.png",
-      "imagePath": "/maps/MapaEscolar006_EntreRios_2000x2500.png",
-      "imageUrl": "https://mapasescolares.ign.gob.ar/images/mapas/MapaEscolar006_EntreRios_2000x2500.png",
+      "id": "santa-fe",
+      "name": "Provincia de Santa Fe",
+      "thumbnailUrl": "/maps/thumbnails/MapaEscolar014_SantaFe_2000x2500.png",
+      "imagePath": "/maps/MapaEscolar014_SantaFe_2000x2500.png",
+      "imageUrl": "https://mapasescolares.ign.gob.ar/images/mapas/MapaEscolar014_SantaFe_2000x2500.png",
       "category": "provincia",
       "isPortrait": true
     },
     {
-      "id": "la-pampa",
-      "name": "Provincia de La Pampa",
-      "thumbnailUrl": "/maps/thumbnails/MapaEscolar007_LaPampa_2000x2500.png",
-      "imagePath": "/maps/MapaEscolar007_LaPampa_2000x2500.png",
-      "imageUrl": "https://mapasescolares.ign.gob.ar/images/mapas/MapaEscolar007_LaPampa_2000x2500.png",
+      "id": "santiago-del-estero",
+      "name": "Provincia de Santiago del Estero",
+      "thumbnailUrl": "/maps/thumbnails/MapaEscolar016_SantiagoDelEstero_2000x2500.png",
+      "imagePath": "/maps/MapaEscolar016_SantiagoDelEstero_2000x2500.png",
+      "imageUrl": "https://mapasescolares.ign.gob.ar/images/mapas/MapaEscolar016_SantiagoDelEstero_2000x2500.png",
+      "category": "provincia",
+      "isPortrait": true
+    },
+    {
+      "id": "tierra-del-fuego",
+      "name": "Provincia de Tierra del Fuego, Antártida e Islas del Atlántico Sur",
+      "thumbnailUrl": "/maps/thumbnails/MapaEscolar000_TIerraDelFuego_2000x2500.png",
+      "imagePath": "/maps/MapaEscolar000_TIerraDelFuego_2000x2500.png",
+      "imageUrl": "https://mapasescolares.ign.gob.ar/images/mapas/MapaEscolar000_TIerraDelFuego_2000x2500.png",
+      "category": "provincia",
+      "isPortrait": false
+    },
+    {
+      "id": "tucuman",
+      "name": "Provincia de Tucumán",
+      "thumbnailUrl": "/maps/thumbnails/MapaEscolar017_Tucuman_2000x2500.png ",
+      "imagePath": "/maps/MapaEscolar017_Tucuman_2000x2500.png",
+      "imageUrl": "https://mapasescolares.ign.gob.ar/images/mapas/MapaEscolar017_Tucuman_2000x2500.png",
       "category": "provincia",
       "isPortrait": true
     },
