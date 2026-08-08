@@ -12,6 +12,8 @@ import { SendToBackCommand } from './canvas/commands/SendToBackCommand.js'
 import { ClearCommand } from './canvas/commands/ClearCommand.js'
 import { ResizeManager } from './utils/ResizeManager.js'
 import { compressImage } from './utils/imageCompressor.js'
+import { HistoryManager } from './canvas/history/HistoryManager.js'
+import { Memento } from './canvas/history/Memento.js'
 
 export class CanvasManager {
   constructor(container, options = {}) {
@@ -26,6 +28,8 @@ export class CanvasManager {
     this.canvasEl = null
     this.resizeManager = null
     this.commandHistory = new CommandHistory()
+    this.historyManager = new HistoryManager(this)
+    this.isRestoringHistory = false
 
     // Dimensiones en caché para evitar bucles de redimensionamiento
     this.canvasWidth = 0
@@ -64,6 +68,18 @@ export class CanvasManager {
 
     this.toolService = new ToolService(this)
     this.toolService.setTool(this.activeTool)
+
+    // Configurar listeners de eventos para el historial
+    this.canvas.on('object:modified', () => {
+      if (!this.isRestoringHistory) {
+        this.historyManager.capture()
+      }
+    })
+    this.canvas.on('path:created', () => {
+      if (!this.isRestoringHistory) {
+        this.historyManager.capture()
+      }
+    })
 
     this.configureDrawingBrush()
     this.observeZoomAndPan()
@@ -470,7 +486,7 @@ export class CanvasManager {
     }
   }
 
-  setActiveStrokeWidth(width) {
+  setActiveStrokeWidth(width, fireEvent = true) {
     this.activeStrokeWidth = parseInt(width, 10)
     this.configureDrawingBrush()
 
@@ -479,7 +495,9 @@ export class CanvasManager {
       if (activeObject && activeObject.type !== 'textbox') {
         activeObject.set({ strokeWidth: this.activeStrokeWidth })
         this.adapter.requestRenderAll()
-        this.adapter.fire('object:modified')
+        if (fireEvent) {
+          this.adapter.fire('object:modified')
+        }
       }
     }
   }
@@ -662,7 +680,9 @@ export class CanvasManager {
   }
 
   async deserialize(jsonString) {
-    if (!this.canvas || !jsonString) return
+    if (!this.canvas) return
+    this.clearAllObjects()
+    if (!jsonString) return
 
     try {
       const jsonObjects = JSON.parse(jsonString)
@@ -672,6 +692,10 @@ export class CanvasManager {
 
       this.canvas.renderOnAddRemove = false
       objects.forEach((obj) => {
+        obj.set({
+          selectable: true,
+          evented: true,
+        })
         this.adapter.addObject(obj)
       })
       this.canvas.renderOnAddRemove = true
@@ -866,10 +890,43 @@ export class CanvasManager {
   }
 
   undo() {
-    this.commandHistory.undo()
+    this.historyManager.undo()
   }
 
   redo() {
-    this.commandHistory.redo()
+    this.historyManager.redo()
+  }
+
+  createMemento() {
+    const stateStr = this.serialize()
+    return new Memento(stateStr)
+  }
+
+  async restoreMemento(memento) {
+    if (!memento) return
+    this.isRestoringHistory = true
+    try {
+      await this.deserialize(memento.getState())
+      this.adapter.discardActiveObject()
+      this.adapter.requestRenderAll()
+      this.announceA11y('Estado restaurado')
+      this.adapter.fire('history:restored')
+    } catch (error) {
+      console.error('Error restaurando el memento:', error)
+    } finally {
+      this.isRestoringHistory = false
+    }
+  }
+
+  clearAllObjects() {
+    if (!this.canvas) return
+    const objects = [...this.adapter.getObjects()]
+    objects.forEach((obj) => {
+      if (obj !== this.currentMapImage && obj.isMapBase !== true) {
+        this.adapter.removeObject(obj)
+      }
+    })
+    this.adapter.discardActiveObject()
+    this.adapter.requestRenderAll()
   }
 }

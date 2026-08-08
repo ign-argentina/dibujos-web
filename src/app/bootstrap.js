@@ -104,9 +104,11 @@ export async function bootstrap() {
 
         // 4. Cargar dibujos guardados de la provincia activa (si existen)
         const savedJson = persistenceService.load(`drawing_${state.activeMapId}`)
-        if (savedJson) {
-          await canvasManager.deserialize(savedJson)
-        }
+        await canvasManager.deserialize(savedJson)
+
+        // Inicializar el historial para el nuevo mapa
+        canvasManager.historyManager.clear()
+        canvasManager.historyManager.capture()
       } catch (err) {
         console.error('Error cargando el mapa en el lienzo:', err)
       } finally {
@@ -119,9 +121,18 @@ export async function bootstrap() {
 
   // Suscribirse a eventos del canvas para autoguardado en tiempo real
   if (canvasManager.canvas) {
-    canvasManager.canvas.on('object:added', () => saveDrawingState(false))
-    canvasManager.canvas.on('object:modified', () => saveDrawingState(false))
-    canvasManager.canvas.on('object:removed', () => saveDrawingState(false))
+    canvasManager.canvas.on('object:added', () => {
+      if (!canvasManager.isRestoringHistory) saveDrawingState(false)
+    })
+    canvasManager.canvas.on('object:modified', () => {
+      if (!canvasManager.isRestoringHistory) saveDrawingState(false)
+    })
+    canvasManager.canvas.on('object:removed', () => {
+      if (!canvasManager.isRestoringHistory) saveDrawingState(false)
+    })
+    canvasManager.canvas.on('history:restored', () => {
+      saveDrawingState(true)
+    })
   }
 
   // --- ACCIONES DEL SISTEMA (IMPORTACIÓN DE IMAGEN) ---

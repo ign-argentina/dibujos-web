@@ -195,6 +195,33 @@
             <input class="nbi-slider" id="stroke-slider" type="range" min="2" max="24" value="4"
               aria-label="Grosor del lápiz en píxeles" />
           </div>
+          <div class="nbi-history-controls" style="display: flex; gap: 8px; margin-top: 12px; width: 100%;">
+            <button class="nbi-btn" id="action-undo" title="Deshacer (Ctrl+Z)" aria-label="Deshacer"
+              style="flex: 1; justify-content: center; gap: 8px; font-size: 0.85rem; min-height: 40px; padding: 6px 12px;"
+              disabled>
+              <i data-lucide="undo-2"></i>
+              Deshacer
+            </button>
+            <button class="nbi-btn" id="action-redo" title="Rehacer (Ctrl+Y)" aria-label="Rehacer"
+              style="flex: 1; justify-content: center; gap: 8px; font-size: 0.85rem; min-height: 40px; padding: 6px 12px;"
+              disabled>
+              <i data-lucide="redo-2"></i>
+              Rehacer
+            </button>
+          </div>
+          <div class="nbi-zoom-controls-container" id="zoom-controls" role="toolbar"
+            aria-label="Controles de zoom del mapa">
+            <button class="nbi-btn" id="action-zoom-in" title="Acercar (Zoom In)" aria-label="Acercar vista del mapa">
+              <i data-lucide="zoom-in"></i>
+            </button>
+            <button class="nbi-btn" id="action-zoom-home" title="Restablecer Vista (Zoom Home)"
+              aria-label="Restablecer vista original del mapa">
+              <i data-lucide="home"></i>
+            </button>
+            <button class="nbi-btn" id="action-zoom-out" title="Alejar (Zoom Out)" aria-label="Alejar vista del mapa">
+              <i data-lucide="zoom-out"></i>
+            </button>
+          </div>
           <button class="nbi-btn nbi-btn--danger" id="tool-clear" title="Borrar todo el dibujo"
             aria-label="Borrar todo el dibujo del mapa"
             style="width: 100%; margin-top: 12px; justify-content: center; gap: 8px;">
@@ -227,20 +254,6 @@
         style="display: none;" aria-label="Seleccionar archivo de imagen local" />
     </aside>
 
-    <!-- CONTROLES DE ZOOM FLOTANTES INDEPENDIENTES -->
-    <div class="nbi-zoom-controls" id="zoom-controls" role="toolbar" aria-label="Controles de zoom del mapa"
-      aria-orientation="vertical">
-      <button class="nbi-btn" id="action-zoom-in" title="Acercar (Zoom In)" aria-label="Acercar vista del mapa">
-        <i data-lucide="zoom-in"></i>
-      </button>
-      <button class="nbi-btn" id="action-zoom-out" title="Alejar (Zoom Out)" aria-label="Alejar vista del mapa">
-        <i data-lucide="zoom-out"></i>
-      </button>
-      <button class="nbi-btn" id="action-zoom-home" title="Restablecer Vista (Zoom Home)"
-        aria-label="Restablecer vista original del mapa">
-        <i data-lucide="home"></i>
-      </button>
-    </div>
 
     <!-- PANEL DE STICKERS (OCULTABLE COMPLETAMENTE) -->
     <aside class="nbi-window-floating nbi-stickers hidden" id="stickers-panel"

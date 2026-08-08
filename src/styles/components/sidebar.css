@@ -111,12 +111,17 @@
   width: 100%;
   height: auto;
   flex: 1;
-  min-height: 50px;
+  min-height: 40px;
   object-fit: cover;
   border-bottom: var(--nbi-border-width-md) solid var(--nbi-color-black);
   background-color: var(--nbi-color-bg-main);
   flex-shrink: 1;
   filter: contrast(0.9);
+  transition: min-height var(--nbi-transition-fast);
+}
+
+.nbi-map-card:hover .nbi-map-card__image {
+  min-height: 45px;
 }
 
 .nbi-map-card__info {
@@ -132,8 +137,12 @@
   word-break: normal;
   overflow-wrap: anywhere;
   background-color: var(--nbi-color-white);
-  transition: background-color var(--nbi-transition-fast);
+  transition: background-color var(--nbi-transition-fast), font-size var(--nbi-transition-fast);
   flex-shrink: 0;
+}
+
+.nbi-map-card:hover .nbi-map-card__info {
+  font-size: var(--nbi-font-size-base);
 }
 
 .nbi-map-card.is-active .nbi-map-card__info {
