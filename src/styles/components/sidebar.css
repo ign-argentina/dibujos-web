@@ -32,9 +32,10 @@
 .nbi-sidebar__scroll {
   flex: 1;
   overflow-y: auto;
-  padding-right: var(--nbi-space-xs);
+  padding: 12px 16px 16px 16px;
+  margin: 0 -16px -16px -16px;
   display: grid;
-  grid-template-columns: repeat(2, 100px);
+  grid-template-columns: repeat(2, 110px);
   gap: var(--nbi-space-lg);
   justify-content: center;
   align-content: start;

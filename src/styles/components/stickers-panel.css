@@ -36,7 +36,8 @@
   display: flex;
   flex-direction: column;
   gap: var(--nbi-space-md);
-  padding-right: var(--nbi-space-xs);
+  padding: 8px 12px 12px 8px;
+  margin: -8px -12px -12px -8px;
 }
 
 .nbi-stickers__category {

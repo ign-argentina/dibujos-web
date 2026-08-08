@@ -574,20 +574,20 @@ export class ContextMenu extends Component {
       </div>
       <div class="nbi-context__body">
         ${contentHtml}
-        <div class="nbi-context__actions">
-          <button class="nbi-btn nbi-btn--sm" id="ctx-act-duplicate" title="Clonar objeto">
-            <i data-lucide="copy"></i> Clonar
-          </button>
-          <button class="nbi-btn nbi-btn--sm" id="ctx-act-front" title="Traer al frente">
-            <i data-lucide="arrow-up"></i> Frente
-          </button>
-          <button class="nbi-btn nbi-btn--sm" id="ctx-act-back" title="Enviar al fondo">
-            <i data-lucide="arrow-down"></i> Fondo
-          </button>
-          <button class="nbi-btn nbi-btn--sm nbi-btn--danger" id="ctx-act-delete" title="Eliminar figura">
-            <i data-lucide="trash-2"></i>
-          </button>
-        </div>
+      </div>
+      <div class="nbi-context__actions">
+        <button class="nbi-btn nbi-btn--sm" id="ctx-act-duplicate" title="Clonar objeto">
+          <i data-lucide="copy"></i> Clonar
+        </button>
+        <button class="nbi-btn nbi-btn--sm" id="ctx-act-front" title="Traer al frente">
+          <i data-lucide="arrow-up"></i> Frente
+        </button>
+        <button class="nbi-btn nbi-btn--sm" id="ctx-act-back" title="Enviar al fondo">
+          <i data-lucide="arrow-down"></i> Fondo
+        </button>
+        <button class="nbi-btn nbi-btn--sm nbi-btn--danger" id="ctx-act-delete" title="Eliminar figura">
+          <i data-lucide="trash-2"></i>
+        </button>
       </div>
     `
 

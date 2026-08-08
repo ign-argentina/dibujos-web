@@ -3,8 +3,8 @@
   top: 80px;
   right: 20px;
   width: 260px;
-  height: calc(100vh - 240px);
-  max-height: 430px;
+  /*   height: calc(100vh - 240px);
+  max-height: 430px; */
   background-color: var(--nbi-color-panel-bg);
   display: flex;
   flex-direction: column;
@@ -31,7 +31,7 @@
   flex-direction: column;
   gap: var(--nbi-space-lg);
   flex: 1;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .nbi-properties__actions {

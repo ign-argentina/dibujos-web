@@ -43,7 +43,10 @@
   flex-direction: column;
   gap: var(--nbi-space-md);
   overflow-y: auto;
-  padding-right: 2px;
+  padding: 8px 12px;
+  margin: -8px -12px;
+  flex: 1;
+  min-height: 0;
 }
 
 .nbi-context__section {
