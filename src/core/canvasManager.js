@@ -212,11 +212,11 @@ export class CanvasManager {
     window.addEventListener('keydown', (e) => {
       const activeElement = document.activeElement
       const isInputFocused = activeElement && (
-        activeElement.tagName === 'INPUT' || 
-        activeElement.tagName === 'TEXTAREA' || 
+        activeElement.tagName === 'INPUT' ||
+        activeElement.tagName === 'TEXTAREA' ||
         activeElement.isContentEditable
       )
-      
+
       const activeObject = this.canvas?.getActiveObject()
       const isEditingText = activeObject && activeObject.type === 'textbox' && activeObject.isEditing
 
@@ -701,11 +701,19 @@ export class CanvasManager {
       const { objects, options } = await this.adapter.loadSVG(url)
       const stickerGroup = this.adapter.groupSVGElements(objects, options)
 
+      // Escalar el sticker para que tenga un tamaño inicial adecuado (250px)
+      const targetSize = 100
+      const width = stickerGroup.width || targetSize
+      const height = stickerGroup.height || targetSize
+      const scale = Math.min(targetSize / width, targetSize / height)
+
       stickerGroup.set({
         left: center.left,
         top: center.top,
         originX: 'center',
         originY: 'center',
+        scaleX: scale,
+        scaleY: scale,
         cornerColor: '#000000',
         transparentCorners: false,
         cornerSize: 10,
@@ -713,10 +721,6 @@ export class CanvasManager {
         borderScaleFactor: 2,
         hasRotatingPoint: true,
       })
-
-      // Escalar el sticker para que tenga un tamaño inicial óptimo de 100px max
-      const scale = Math.min(100 / stickerGroup.width, 100 / stickerGroup.height, 1)
-      stickerGroup.scale(scale)
 
       // Colorear el sticker con el color activo
       this.colorSVGGroup(stickerGroup, this.activeColor)
