@@ -103,3 +103,11 @@
     transform: scale(1);
   }
 }
+
+/* --- ESTADO DESHABILITADO --- */
+.nbi-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: var(--nbi-shadow-sm) !important;
+}

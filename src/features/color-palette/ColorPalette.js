@@ -10,7 +10,7 @@ export class ColorPalette extends Component {
     super(container, props)
     this.canvasManager = props.canvasManager
     this.customColors = []
-    this.lastUsedColors = ['#555', '#82d3f8', '#7abe7d']
+    this.lastUsedColors = ['#FFA07A', '#82d3f8', '#7abe7d']
   }
 
   render() {
@@ -93,25 +93,33 @@ export class ColorPalette extends Component {
     this.addEvent(this.strokeSlider, 'input', (e) => {
       const width = e.target.value
       this.strokeValueDisplay.textContent = `${width}px`
-      this.canvasManager.setActiveStrokeWidth(width)
+      this.canvasManager.setActiveStrokeWidth(width, false)
+    })
+
+    this.addEvent(this.strokeSlider, 'change', () => {
+      if (this.canvasManager.canvas) {
+        const activeObject = this.canvasManager.adapter.getActiveObject()
+        if (activeObject && activeObject.type !== 'textbox') {
+          this.canvasManager.adapter.fire('object:modified')
+        }
+      }
     })
 
     this.addEvent(this.togglePropertiesBtn, 'click', () => {
       const isCollapsed = this.propertiesPanel.classList.toggle('is-collapsed')
-      const icon = this.togglePropertiesBtn.querySelector('i')
 
       if (isCollapsed) {
         this.togglePropertiesBtn.setAttribute('title', 'Expandir Panel')
         this.togglePropertiesBtn.setAttribute('aria-label', 'Expandir panel de color')
         this.togglePropertiesBtn.setAttribute('aria-expanded', 'false')
-        if (icon) icon.setAttribute('data-lucide', 'chevron-left')
+        this.togglePropertiesBtn.innerHTML = '<i data-lucide="chevron-left"></i>'
         this.recentColorsContainer.classList.remove('hidden')
         this.renderRecentColors()
       } else {
         this.togglePropertiesBtn.setAttribute('title', 'Colapsar Panel')
         this.togglePropertiesBtn.setAttribute('aria-label', 'Colapsar panel de color')
         this.togglePropertiesBtn.setAttribute('aria-expanded', 'true')
-        if (icon) icon.setAttribute('data-lucide', 'chevron-right')
+        this.togglePropertiesBtn.innerHTML = '<i data-lucide="chevron-right"></i>'
         this.recentColorsContainer.classList.add('hidden')
       }
 

@@ -1,10 +1,32 @@
-/* --- CONTROLES DE ZOOM FLOTANTES INDEPENDIENTES --- */
-.nbi-zoom-controls {
-  position: absolute;
-  top: 530px;
-  right: 20px;
-  z-index: var(--nbi-z-floating);
+/* --- CONTROLES DE ZOOM EN PANEL DE PROPIEDADES --- */
+#zoom-controls {
   display: flex;
+  flex-direction: row; /* Horizontal por defecto */
+  gap: 8px;
+  margin-top: 12px;
+  width: 100%;
+}
+
+#zoom-controls .nbi-btn {
+  flex: 1;
+  justify-content: center;
+  gap: 6px;
+  min-height: 40px;
+  padding: 6px 12px;
+}
+
+/* --- ESTADO COLAPSADO --- */
+.nbi-properties.is-collapsed #zoom-controls {
   flex-direction: column;
-  gap: var(--nbi-space-md);
+  gap: 6px;
+  margin-top: 0;
+  width: auto;
+}
+
+.nbi-properties.is-collapsed #zoom-controls .nbi-btn {
+  width: 42px;
+  height: 42px;
+  min-width: 42px;
+  min-height: 42px;
+  padding: 6px;
 }

@@ -195,6 +195,33 @@
             <input class="nbi-slider" id="stroke-slider" type="range" min="2" max="24" value="4"
               aria-label="Grosor del lápiz en píxeles" />
           </div>
+          <div class="nbi-history-controls" style="display: flex; gap: 8px; margin-top: 12px; width: 100%;">
+            <button class="nbi-btn" id="action-undo" title="Deshacer (Ctrl+Z)" aria-label="Deshacer"
+              style="flex: 1; justify-content: center; gap: 8px; font-size: 0.85rem; min-height: 40px; padding: 6px 12px;"
+              disabled>
+              <i data-lucide="undo-2"></i>
+              Deshacer
+            </button>
+            <button class="nbi-btn" id="action-redo" title="Rehacer (Ctrl+Y)" aria-label="Rehacer"
+              style="flex: 1; justify-content: center; gap: 8px; font-size: 0.85rem; min-height: 40px; padding: 6px 12px;"
+              disabled>
+              <i data-lucide="redo-2"></i>
+              Rehacer
+            </button>
+          </div>
+          <div class="nbi-zoom-controls-container" id="zoom-controls" role="toolbar"
+            aria-label="Controles de zoom del mapa">
+            <button class="nbi-btn" id="action-zoom-in" title="Acercar (Zoom In)" aria-label="Acercar vista del mapa">
+              <i data-lucide="zoom-in"></i>
+            </button>
+            <button class="nbi-btn" id="action-zoom-home" title="Restablecer Vista (Zoom Home)"
+              aria-label="Restablecer vista original del mapa">
+              <i data-lucide="home"></i>
+            </button>
+            <button class="nbi-btn" id="action-zoom-out" title="Alejar (Zoom Out)" aria-label="Alejar vista del mapa">
+              <i data-lucide="zoom-out"></i>
+            </button>
+          </div>
           <button class="nbi-btn nbi-btn--danger" id="tool-clear" title="Borrar todo el dibujo"
             aria-label="Borrar todo el dibujo del mapa"
             style="width: 100%; margin-top: 12px; justify-content: center; gap: 8px;">
@@ -227,20 +254,6 @@
         style="display: none;" aria-label="Seleccionar archivo de imagen local" />
     </aside>
 
-    <!-- CONTROLES DE ZOOM FLOTANTES INDEPENDIENTES -->
-    <div class="nbi-zoom-controls" id="zoom-controls" role="toolbar" aria-label="Controles de zoom del mapa"
-      aria-orientation="vertical">
-      <button class="nbi-btn" id="action-zoom-in" title="Acercar (Zoom In)" aria-label="Acercar vista del mapa">
-        <i data-lucide="zoom-in"></i>
-      </button>
-      <button class="nbi-btn" id="action-zoom-out" title="Alejar (Zoom Out)" aria-label="Alejar vista del mapa">
-        <i data-lucide="zoom-out"></i>
-      </button>
-      <button class="nbi-btn" id="action-zoom-home" title="Restablecer Vista (Zoom Home)"
-        aria-label="Restablecer vista original del mapa">
-        <i data-lucide="home"></i>
-      </button>
-    </div>
 
     <!-- PANEL DE STICKERS (OCULTABLE COMPLETAMENTE) -->
     <aside class="nbi-window-floating nbi-stickers hidden" id="stickers-panel"
@@ -375,8 +388,7 @@
     <!-- MODAL DE CONFIRMACIÓN PARA BORRAR TODO -->
     <div id="clear-confirm-modal" class="nbi-export-modal-overlay hidden" role="dialog" aria-modal="true"
       aria-labelledby="clear-confirm-title">
-      <div class="nbi-window-floating"
-        style="max-width: 400px; width: 90%; background-color: var(--nbi-color-white); padding: var(--nbi-space-md); display: flex; flex-direction: column; gap: var(--nbi-space-md); border: var(--nbi-border-width-md) solid var(--nbi-color-black); box-shadow: var(--nbi-shadow-lg); border-radius: var(--nbi-radius-teen);">
+      <div class="nbi-window-floating">
         <div
           style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--nbi-color-black); padding-bottom: 8px;">
           <h2 id="clear-confirm-title" style="font-weight: 800; font-size: 1.25rem; margin: 0;">¿Borrar todos los
@@ -402,7 +414,9 @@
 
     <!-- PANTALLA ANIMADA DE CARGA -->
     <div id="loader-overlay" class="nbi-loader-overlay hidden" aria-live="polite" aria-busy="true">
-      <div class="nbi-loader"></div>
+      <div class="nbi-loader">
+        <img src="/logo-ign-blanco.svg" alt="Logo IGN">
+      </div>
       <div class="nbi-loader__text">¡Preparando tu mapa...!</div>
     </div>
 

@@ -27,6 +27,8 @@ export class Toolbar extends Component {
 
     this.deleteBtn = document.getElementById('tool-delete')
     this.clearBtn = document.getElementById('tool-clear')
+    this.undoBtn = document.getElementById('action-undo')
+    this.redoBtn = document.getElementById('action-redo')
     this.zoomInBtn = document.getElementById('action-zoom-in')
     this.zoomOutBtn = document.getElementById('action-zoom-out')
     this.zoomHomeBtn = document.getElementById('action-zoom-home')
@@ -65,6 +67,18 @@ export class Toolbar extends Component {
         } else {
           this.canvasManager.clearCanvas()
         }
+      })
+    }
+
+    if (this.undoBtn) {
+      this.addEvent(this.undoBtn, 'click', () => {
+        this.canvasManager.undo()
+      })
+    }
+
+    if (this.redoBtn) {
+      this.addEvent(this.redoBtn, 'click', () => {
+        this.canvasManager.redo()
       })
     }
 
