@@ -4,12 +4,6 @@ import { ShapeFactory } from './canvas/ShapeFactory.js'
 import { ExportService } from './export/ExportService.js'
 import { ToolService } from './canvas/tools/ToolService.js'
 
-import { CommandHistory } from './canvas/commands/CommandHistory.js'
-import { DeleteCommand } from './canvas/commands/DeleteCommand.js'
-import { DuplicateCommand } from './canvas/commands/DuplicateCommand.js'
-import { BringToFrontCommand } from './canvas/commands/BringToFrontCommand.js'
-import { SendToBackCommand } from './canvas/commands/SendToBackCommand.js'
-import { ClearCommand } from './canvas/commands/ClearCommand.js'
 import { ResizeManager } from './utils/ResizeManager.js'
 import { compressImage } from './utils/imageCompressor.js'
 import { HistoryManager } from './canvas/history/HistoryManager.js'
@@ -27,7 +21,6 @@ export class CanvasManager {
     this.canvas = null
     this.canvasEl = null
     this.resizeManager = null
-    this.commandHistory = new CommandHistory()
     this.historyManager = new HistoryManager(this)
     this.isRestoringHistory = false
 
@@ -631,8 +624,10 @@ export class CanvasManager {
     if (!this.canvas) return
     const activeObject = this.adapter.getActiveObject()
     if (activeObject && activeObject !== this.currentMapImage) {
-      const cmd = new DeleteCommand(this, activeObject)
-      this.commandHistory.execute(cmd)
+      this.adapter.removeObject(activeObject)
+      this.adapter.discardActiveObject()
+      this.adapter.requestRenderAll()
+      this.adapter.fire('object:modified')
     }
   }
 
@@ -641,32 +636,61 @@ export class CanvasManager {
     const activeObject = this.adapter.getActiveObject()
     if (!activeObject || activeObject === this.currentMapImage) return
 
-    const cmd = new DuplicateCommand(this, activeObject)
-    await this.commandHistory.execute(cmd)
+    try {
+      const cloned = await activeObject.clone()
+      cloned.set({
+        left: activeObject.left + 20,
+        top: activeObject.top + 20,
+        evented: true,
+        selectable: true,
+      })
+
+      if (cloned.type === 'activeSelection') {
+        cloned.canvas = this.canvas
+        cloned.forEachObject((obj) => {
+          this.adapter.addObject(obj)
+        })
+        cloned.setCoordinates()
+      } else {
+        this.adapter.addObject(cloned)
+      }
+
+      this.adapter.setActiveObject(cloned)
+      this.adapter.requestRenderAll()
+      this.adapter.fire('object:modified')
+    } catch (err) {
+      console.error('CanvasManager: Error clonando objeto:', err)
+    }
   }
 
   bringToFront() {
     if (!this.canvas) return
     const activeObject = this.adapter.getActiveObject()
     if (activeObject && activeObject !== this.currentMapImage) {
-      const cmd = new BringToFrontCommand(this, activeObject)
-      this.commandHistory.execute(cmd)
+      this.adapter.bringObjectToFront(activeObject)
+      this.adapter.requestRenderAll()
+      this.adapter.fire('object:modified')
     }
   }
 
   sendToBack() {
     if (!this.canvas) return
     const activeObject = this.adapter.getActiveObject()
-    if (activeObject && activeObject !== this.currentMapImage) {
-      const cmd = new SendToBackCommand(this, activeObject)
-      this.commandHistory.execute(cmd)
+    if (activeObject && activeObject !== this.currentMapImage && activeObject.isMapBase !== true) {
+      this.adapter.sendObjectToBack(activeObject)
+      const mapBaseObj = this.currentMapImage || this.adapter.getObjects().find((obj) => obj.isMapBase === true)
+      if (mapBaseObj) {
+        this.adapter.sendObjectToBack(mapBaseObj)
+      }
+      this.adapter.requestRenderAll()
+      this.adapter.fire('object:modified')
     }
   }
 
   clearCanvas() {
     if (!this.canvas) return
-    const cmd = new ClearCommand(this)
-    this.commandHistory.execute(cmd)
+    this.clearAllObjects()
+    this.adapter.fire('object:modified')
   }
 
   serialize() {

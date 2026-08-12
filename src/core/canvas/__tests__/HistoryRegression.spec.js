@@ -287,6 +287,29 @@ describe('Historial Undo/Redo - Caracterización e Integración', () => {
     expect(canvasManager.canvas.getObjects().length).toBe(0)
   })
 
+  it('debería mantener el mapa base al fondo al enviar un objeto al fondo con sendToBack', () => {
+    // 1. Crear mapa base (índice 0)
+    const mapBase = { isMapBase: true, type: 'image' }
+    canvasManager.canvas.add(mapBase)
+    canvasManager.currentMapImage = mapBase
+
+    // 2. Agregar objeto de usuario
+    const rect = { type: 'rect', toObject: () => ({ type: 'rect' }), set: vi.fn() }
+    canvasManager.canvas.add(rect)
+    canvasManager.canvas.setActiveObject(rect)
+
+    // Los objetos iniciales deben estar [mapBase, rect]
+    expect(canvasManager.canvas.getObjects()[0]).toBe(mapBase)
+    expect(canvasManager.canvas.getObjects()[1]).toBe(rect)
+
+    // 3. Enviar objeto al fondo (sendToBack)
+    canvasManager.sendToBack()
+
+    // 4. El mapa base debe seguir estando en la posición 0 y el objeto en la 1 sobre el mapa
+    expect(canvasManager.canvas.getObjects()[0]).toBe(mapBase)
+    expect(canvasManager.canvas.getObjects()[1]).toBe(rect)
+  })
+
   it('debería deshacer y rehacer la modificación de propiedades de un objeto', async () => {
     // 1. Crear e insertar objeto
     const rect = {
