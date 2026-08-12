@@ -1,6 +1,6 @@
 import { appStore } from '../state/AppStore.js'
 import { CanvasManager } from '../core/canvasManager.js'
-import { persistenceService } from '../core/persistence/PersistenceService.js'
+import { persistenceService, isQuotaExceededError } from '../core/persistence/PersistenceService.js'
 import { MapSelector } from '../components/MapSelector.js'
 import { ContextMenu } from '../features/context-menu/ContextMenu.js'
 import { ExportModal } from '../features/export-modal/ExportModal.js'
@@ -134,6 +134,26 @@ export async function bootstrap() {
       saveDrawingState(true)
     })
   }
+
+  // Escuchar errores de persistencia (como exceder la cuota de LocalStorage) para alertar al usuario sin spam
+  let hasShownQuotaError = false
+  persistenceService.on('error', (error) => {
+    if (isQuotaExceededError(error)) {
+      if (!hasShownQuotaError) {
+        hasShownQuotaError = true
+        alert(
+          'El dibujo actual no pudo guardarse en el navegador porque el espacio de almacenamiento disponible está lleno.\n\nExiste riesgo de perder tus cambios si cerrás o recargás la página. Te recomendamos exportar o descargar tu trabajo para no perderlo.'
+        )
+      }
+    } else {
+      console.error('Error de persistencia no crítico para el usuario:', error)
+    }
+  })
+
+  persistenceService.on('success', () => {
+    // Si se guarda con éxito, restablecer el flag para poder alertar de nuevo en el futuro
+    hasShownQuotaError = false
+  })
 
   // --- ACCIONES DEL SISTEMA (IMPORTACIÓN DE IMAGEN) ---
   const importImageBtn = document.getElementById('action-import-image')

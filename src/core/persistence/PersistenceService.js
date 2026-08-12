@@ -1,4 +1,19 @@
 /**
+ * Determina de forma robusta si un error es debido a haber excedido la cuota de almacenamiento.
+ * @param {Error|DOMException} err
+ * @returns {boolean}
+ */
+export function isQuotaExceededError(err) {
+  return !!(
+    err &&
+    (err.name === 'QuotaExceededError' ||
+      err.name === 'NS_ERROR_DOM_QUOTA_REACHED' ||
+      err.code === 22 ||
+      err.code === 1014)
+  )
+}
+
+/**
  * Servicio encargado del almacenamiento y recuperación del estado del lienzo.
  * Incorpora un mecanismo de "debounce" para optimizar las escrituras a LocalStorage.
  */
@@ -9,6 +24,49 @@ export class PersistenceService {
   constructor(storage = window.localStorage) {
     this.storage = storage
     this.timeouts = new Map()
+    this.listeners = {
+      error: [],
+      success: [],
+    }
+  }
+
+  /**
+   * Registra un listener de eventos.
+   * @param {string} event - 'success' o 'error'
+   * @param {Function} listener
+   */
+  on(event, listener) {
+    if (this.listeners[event]) {
+      this.listeners[event].push(listener)
+    }
+  }
+
+  /**
+   * Remueve un listener de eventos.
+   * @param {string} event - 'success' o 'error'
+   * @param {Function} listener
+   */
+  off(event, listener) {
+    if (this.listeners[event]) {
+      this.listeners[event] = this.listeners[event].filter((l) => l !== listener)
+    }
+  }
+
+  /**
+   * Notifica a los listeners de un evento.
+   * @param {string} event - 'success' o 'error'
+   * @param {...any} args
+   */
+  notify(event, ...args) {
+    if (this.listeners[event]) {
+      this.listeners[event].forEach((listener) => {
+        try {
+          listener(...args)
+        } catch (e) {
+          console.error(`PersistenceService: Error en el listener de "${event}":`, e)
+        }
+      })
+    }
   }
 
   /**
@@ -19,8 +77,10 @@ export class PersistenceService {
   save(key, value) {
     try {
       this.storage.setItem(key, value)
+      this.notify('success', key)
     } catch (e) {
       console.error(`PersistenceService: Error guardando datos para "${key}":`, e)
+      this.notify('error', e, key, value)
     }
   }
 
@@ -45,8 +105,10 @@ export class PersistenceService {
   remove(key) {
     try {
       this.storage.removeItem(key)
+      this.notify('success', key)
     } catch (e) {
       console.error(`PersistenceService: Error removiendo datos para "${key}":`, e)
+      this.notify('error', e, key, null)
     }
   }
 

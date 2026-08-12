@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { PersistenceService } from '../PersistenceService.js'
+import { PersistenceService, isQuotaExceededError } from '../PersistenceService.js'
 
 describe('PersistenceService', () => {
   let mockStorage
@@ -44,5 +44,61 @@ describe('PersistenceService', () => {
     expect(mockStorage.setItem).toHaveBeenCalledWith('debounce-key', 'val-2')
 
     vi.useRealTimers()
+  })
+
+  describe('Eventos y Manejo de Errores', () => {
+    it('debería clasificar correctamente los errores de cuota', () => {
+      const quotaErr1 = new DOMException('Quota exceeded', 'QuotaExceededError')
+      const quotaErr2 = { name: 'NS_ERROR_DOM_QUOTA_REACHED', code: 1014 }
+      const quotaErr3 = { code: 22 }
+      const genericErr = new Error('Generic storage error')
+
+      expect(isQuotaExceededError(quotaErr1)).toBe(true)
+      expect(isQuotaExceededError(quotaErr2)).toBe(true)
+      expect(isQuotaExceededError(quotaErr3)).toBe(true)
+      expect(isQuotaExceededError(genericErr)).toBe(false)
+      expect(isQuotaExceededError(null)).toBe(false)
+      expect(isQuotaExceededError(undefined)).toBe(false)
+    })
+
+    it('debería emitir el evento "success" cuando el guardado es exitoso', () => {
+      const listener = vi.fn()
+      service.on('success', listener)
+
+      service.save('key', 'value')
+      expect(listener).toHaveBeenCalledWith('key')
+    })
+
+    it('debería emitir el evento "success" cuando la remoción es exitosa', () => {
+      const listener = vi.fn()
+      service.on('success', listener)
+
+      service.remove('key')
+      expect(listener).toHaveBeenCalledWith('key')
+    })
+
+    it('debería emitir el evento "error" con los detalles cuando setItem lanza un error', () => {
+      const quotaErr = new DOMException('Quota exceeded', 'QuotaExceededError')
+      mockStorage.setItem.mockImplementation(() => {
+        throw quotaErr
+      })
+
+      const errorListener = vi.fn()
+      service.on('error', errorListener)
+
+      service.save('key', 'value')
+
+      expect(errorListener).toHaveBeenCalledTimes(1)
+      expect(errorListener).toHaveBeenCalledWith(quotaErr, 'key', 'value')
+    })
+
+    it('debería permitir desuscribir listeners usando "off"', () => {
+      const listener = vi.fn()
+      service.on('success', listener)
+      service.off('success', listener)
+
+      service.save('key', 'value')
+      expect(listener).not.toHaveBeenCalled()
+    })
   })
 })
