@@ -33,7 +33,7 @@ export function compressImage(file, { maxWidth = 1024, maxHeight = 1024, quality
 
     try {
       objectUrl = URL.createObjectURL(file)
-    } catch (err) {
+    } catch {
       // Fallback si no se puede crear ObjectURL (entornos virtuales / jsdom sin implementación)
       const reader = new FileReader()
       reader.onload = (e) => {
@@ -52,9 +52,7 @@ export function compressImage(file, { maxWidth = 1024, maxHeight = 1024, quality
       let height = img.naturalHeight || img.height
 
       // Determinar si es necesario redimensionar
-      let needsResize = false
       if (width > maxWidth || height > maxHeight) {
-        needsResize = true
         if (width > height) {
           if (width > maxWidth) {
             height = Math.round((height * maxWidth) / width)
@@ -88,7 +86,7 @@ export function compressImage(file, { maxWidth = 1024, maxHeight = 1024, quality
         const dataUrl = canvas.toDataURL(format, quality)
 
         resolve({ dataUrl, width, height })
-      } catch (err) {
+      } catch {
         // Fallback en caso de error de canvas: resolver con el archivo original en base64
         const reader = new FileReader()
         reader.onload = (e) => {
