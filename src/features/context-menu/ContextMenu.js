@@ -460,7 +460,6 @@ export class ContextMenu extends Component {
 
     // 5. SECCIÓN DE TEXTO AVANZADA
     if (isText) {
-      const currentText = obj.text || ''
       const currentFont = obj.fontFamily || 'Fredoka'
       const currentSize = obj.fontSize || 24
       const isBold = obj.fontWeight === 'bold'
@@ -471,7 +470,7 @@ export class ContextMenu extends Component {
       contentHtml += `
         <div class="nbi-context__section">
           <label class="nbi-context__label">Contenido</label>
-          <textarea class="nbi-context__textarea" id="ctx-text-content" rows="2">${currentText}</textarea>
+          <textarea class="nbi-context__textarea" id="ctx-text-content" rows="2"></textarea>
         </div>
         <div class="nbi-context__section">
           <label class="nbi-context__label">Familia de Fuente</label>
@@ -592,6 +591,15 @@ export class ContextMenu extends Component {
     `
 
     this.popoverMenu.innerHTML = html
+
+    // Asignar el valor del texto de forma segura para evitar inyecciones XSS
+    if (isText) {
+      const textContentEl = this.popoverMenu.querySelector('#ctx-text-content')
+      if (textContentEl) {
+        textContentEl.value = obj.text || ''
+      }
+    }
+
     this.attachInspectorEvents(obj)
     this.setupDraggable()
   }
