@@ -57,25 +57,36 @@ export class PolygonTool extends BaseTool {
   }
 
   updatePreview(currentMousePos) {
-    if (this.previewShape) {
-      this.canvasManager.adapter.removeObject(this.previewShape)
-      this.previewShape = null
-    }
-
     const pointsToRender = [...this.points]
     if (currentMousePos) {
       pointsToRender.push(currentMousePos)
     }
-
     if (pointsToRender.length >= 2) {
-      this.previewShape = ShapeFactory.createPolygon(pointsToRender, {
-        color: this.canvasManager.activeColor,
-        strokeWidth: this.canvasManager.activeStrokeWidth,
-        selectable: false,
-        evented: false,
-      })
-      this.canvasManager.adapter.addObject(this.previewShape)
+      if (this.previewShape) {
+        this.previewShape.points = pointsToRender
+        this.previewShape.dirty = true
+        if (typeof this.previewShape.setBoundingBox === 'function') {
+          this.previewShape.setBoundingBox(true)
+        }
+        if (typeof this.previewShape.setCoords === 'function') {
+          this.previewShape.setCoords()
+        }
+      } else {
+        this.previewShape = ShapeFactory.createPolygon(pointsToRender, {
+          color: this.canvasManager.activeColor,
+          strokeWidth: this.canvasManager.activeStrokeWidth,
+          selectable: false,
+          evented: false,
+        })
+        this.canvasManager.adapter.addObject(this.previewShape)
+      }
       this.canvasManager.adapter.requestRenderAll()
+    } else {
+      if (this.previewShape) {
+        this.canvasManager.adapter.removeObject(this.previewShape)
+        this.previewShape = null
+        this.canvasManager.adapter.requestRenderAll()
+      }
     }
   }
 

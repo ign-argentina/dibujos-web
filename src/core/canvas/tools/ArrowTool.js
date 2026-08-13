@@ -1,5 +1,6 @@
 import { BaseTool } from './BaseTool.js'
 import { ShapeFactory } from '../ShapeFactory.js'
+import { util } from 'fabric'
 
 /**
  * Herramienta para el trazado interactivo de flechas de flujo.
@@ -51,17 +52,17 @@ export class ArrowTool extends BaseTool {
     const currentX = pointer.x
     const currentY = pointer.y
 
-    this.canvasManager.adapter.removeObject(this.previewShape)
-    this.previewShape = ShapeFactory.createArrow(
-      this.canvasManager.createArrowPath(this.startX, this.startY, currentX, currentY),
-      {
-        color: this.canvasManager.activeColor,
-        strokeWidth: this.canvasManager.activeStrokeWidth,
-        selectable: false,
-        evented: false,
-      }
-    )
-    this.canvasManager.adapter.addObject(this.previewShape)
+    const pathStr = this.canvasManager.createArrowPath(this.startX, this.startY, currentX, currentY)
+    const parsedPath = util.parsePath(pathStr)
+    
+    // Reutilizar el preview existente mutando su path
+    this.previewShape.set({ path: parsedPath, dirty: true })
+
+    if (typeof this.previewShape.setBoundingBox === 'function') {
+      this.previewShape.setBoundingBox(true)
+    }
+
+    this.previewShape.setCoords()
     this.canvasManager.adapter.requestRenderAll()
   }
 
