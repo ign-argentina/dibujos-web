@@ -76,6 +76,16 @@ export class ColorPalette extends Component {
       }
     })
 
+    if (this.recentColorsContainer) {
+      this.addEvent(this.recentColorsContainer, 'click', (e) => {
+        const chip = e.target.closest('.nbi-color-chip')
+        if (chip) {
+          const color = chip.getAttribute('data-color')
+          this.selectColor(color, chip)
+        }
+      })
+    }
+
     this.addEvent(this.customColorPicker, 'change', (e) => {
       const hexColor = e.target.value.toUpperCase()
       this.customColors = this.customColors.filter((c) => c !== hexColor)
@@ -167,10 +177,6 @@ export class ColorPalette extends Component {
       chip.setAttribute('data-color', color)
       chip.setAttribute('title', `Color reciente: ${color}`)
       chip.setAttribute('aria-label', `Color reciente ${color}`)
-
-      chip.addEventListener('click', () => {
-        this.selectColor(color, chip)
-      })
 
       this.recentColorsContainer.appendChild(chip)
     })

@@ -1,6 +1,7 @@
+import { Component } from '../features/Component.js'
 import { appStore } from '../state/AppStore.js'
 
-export class MapSelector {
+export class MapSelector extends Component {
   constructor(sidebarContainer, cardsContainer, mapRepository) {
     if (!(sidebarContainer instanceof HTMLElement)) {
       throw new TypeError('MapSelector espera un contenedor lateral HTML válido')
@@ -12,10 +13,12 @@ export class MapSelector {
       throw new TypeError('MapSelector requiere una instancia de MapRepository')
     }
 
+    super(sidebarContainer, { cardsContainer, mapRepository })
+
     this.sidebarContainer = sidebarContainer
     this.cardsContainer = cardsContainer
     this.mapRepository = mapRepository
-    this.currentFilter = 'todos' // 'todos', 'provincia', 'otros'
+    this.currentFilter = 'todos'
     this.searchQuery = ''
     this.filteredMaps = []
   }
@@ -23,7 +26,7 @@ export class MapSelector {
   async init() {
     this.createControls()
     await this.filterAndRender()
-    this.setupListeners()
+    this.bindEvents()
   }
 
   createControls() {
@@ -48,6 +51,7 @@ export class MapSelector {
     `
     // Insertar los controles antes del contenedor de tarjetas en la barra lateral
     this.cardsContainer.parentNode.insertBefore(controlsDiv, this.cardsContainer)
+    this.element = controlsDiv
 
     this.searchInput = controlsDiv.querySelector('#map-search-input')
     this.clearBtn = controlsDiv.querySelector('#map-search-clear')
@@ -59,10 +63,10 @@ export class MapSelector {
     }
   }
 
-  setupListeners() {
-    // Eventos de los botones de filtro
+  bindEvents() {
+    // 1. Eventos de los botones de filtro
     this.filterButtons.forEach((btn) => {
-      btn.addEventListener('click', async () => {
+      this.addEvent(btn, 'click', async () => {
         this.filterButtons.forEach((b) => {
           b.classList.remove('is-active')
           b.setAttribute('aria-pressed', 'false')
@@ -74,15 +78,15 @@ export class MapSelector {
       })
     })
 
-    // Evento de escritura en la barra de búsqueda
-    this.searchInput.addEventListener('input', async (e) => {
+    // 2. Evento de escritura en la barra de búsqueda
+    this.addEvent(this.searchInput, 'input', async (e) => {
       this.searchQuery = e.target.value.toLowerCase().trim()
       this.toggleClearButton()
       await this.filterAndRender()
     })
 
-    // Evento de clic en el botón de reiniciar búsqueda
-    this.clearBtn.addEventListener('click', async () => {
+    // 3. Evento de clic en el botón de reiniciar búsqueda
+    this.addEvent(this.clearBtn, 'click', async () => {
       this.searchInput.value = ''
       this.searchQuery = ''
       this.toggleClearButton()
@@ -90,17 +94,52 @@ export class MapSelector {
       this.searchInput.focus()
     })
 
-    // Evento de teclado en la barra de búsqueda (Enter para seleccionar)
-    this.searchInput.addEventListener('keydown', (e) => {
+    // 4. Evento de teclado en la barra de búsqueda (Enter para seleccionar)
+    this.addEvent(this.searchInput, 'keydown', (e) => {
       if (e.key === 'Enter') {
         this.selectFirstMatched()
       }
     })
 
-    // Suscribirse a cambios en el estado global para sincronizar la clase activa
-    appStore.subscribe((state) => {
+    // 5. Eventos delegados de clic en tarjetas de mapa
+    this.addEvent(this.cardsContainer, 'click', (e) => {
+      const card = e.target.closest('.nbi-map-card')
+      if (card) {
+        const mapId = card.id.replace('card-', '')
+        appStore.dispatch({ type: 'SET_ACTIVE_MAP_ID', payload: mapId })
+      }
+    })
+
+    // 6. Eventos delegados de teclado en tarjetas de mapa (Enter y Espacio)
+    this.addEvent(this.cardsContainer, 'keydown', (e) => {
+      const card = e.target.closest('.nbi-map-card')
+      if (card && (e.key === 'Enter' || e.key === ' ')) {
+        e.preventDefault()
+        const mapId = card.id.replace('card-', '')
+        appStore.dispatch({ type: 'SET_ACTIVE_MAP_ID', payload: mapId })
+      }
+    })
+
+    // 7. Suscribirse a cambios en el estado global para sincronizar la clase activa
+    const unsubscribe = appStore.subscribe((state) => {
       this.updateActiveCardUI(state.activeMapId)
     })
+    this.unsubscribeStore = unsubscribe
+  }
+
+  unbindEvents() {
+    super.unbindEvents()
+    if (this.unsubscribeStore) {
+      this.unsubscribeStore()
+      this.unsubscribeStore = null
+    }
+  }
+
+  unmount() {
+    super.unmount()
+    if (this.cardsContainer) {
+      this.cardsContainer.innerHTML = ''
+    }
   }
 
   toggleClearButton() {
@@ -166,18 +205,6 @@ export class MapSelector {
         <div class="nbi-map-card__info">${map.name}</div>
       `
 
-      card.addEventListener('click', () => {
-        appStore.dispatch({ type: 'SET_ACTIVE_MAP_ID', payload: map.id })
-      })
-
-      // Evento de teclado para accesibilidad (Enter y Espacio)
-      card.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault()
-          appStore.dispatch({ type: 'SET_ACTIVE_MAP_ID', payload: map.id })
-        }
-      })
-
       this.cardsContainer.appendChild(card)
     })
   }
@@ -198,7 +225,9 @@ export class MapSelector {
     if (activeCard) {
       activeCard.classList.add('is-active')
       // Desplazar suavemente la tarjeta activa para que sea visible en el scroll
-      activeCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+      if (typeof activeCard.scrollIntoView === 'function') {
+        activeCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+      }
     }
   }
 }

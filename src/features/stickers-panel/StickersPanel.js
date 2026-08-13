@@ -47,10 +47,7 @@ export class StickersPanel extends Component {
           img.setAttribute('loading', 'lazy')
 
           item.appendChild(img)
-
-          item.addEventListener('click', () => {
-            this.canvasManager.addSticker(`${import.meta.env.BASE_URL}stickers/${name}.svg`)
-          })
+          item.setAttribute('data-src', `${import.meta.env.BASE_URL}stickers/${name}.svg`)
 
           itemsContainer.appendChild(item)
         })
@@ -75,6 +72,18 @@ export class StickersPanel extends Component {
     if (this.toggleStickersBtn) {
       this.addEvent(this.toggleStickersBtn, 'click', () => {
         this.closeStickersPanel()
+      })
+    }
+
+    if (this.stickersContainer) {
+      this.addEvent(this.stickersContainer, 'click', (e) => {
+        const item = e.target.closest('.nbi-stickers__item')
+        if (item) {
+          const src = item.getAttribute('data-src')
+          if (src) {
+            this.canvasManager.addSticker(src)
+          }
+        }
       })
     }
   }

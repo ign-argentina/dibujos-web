@@ -77,4 +77,11 @@ export class Component {
     })
     this.events = []
   }
+
+  /**
+   * Destruye el componente desmontándolo e invalidando eventos.
+   */
+  destroy() {
+    this.unmount()
+  }
 }
