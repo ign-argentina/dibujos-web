@@ -1,4 +1,7 @@
 import { jsPDF } from 'jspdf'
+import { appStore } from '../../state/AppStore.js'
+import { configRepository } from '../repositories/ConfigRepository.js'
+import { mapRepository } from '../repositories/MapRepository.js'
 
 /**
  * Servicio encargado de la exportación de documentos (PNG, PDF) y de la impresión física.
@@ -97,38 +100,107 @@ export class ExportService {
   }
 
   /**
+   * Exporta el canvas actual a una imagen descargable (PNG o JPG).
+   * @param {CanvasManager} canvasManager
+   * @param {Object} options - format, scale, quality.
+   * @returns {Promise<void>}
+   */
+  static async exportToImage(canvasManager, options = {}) {
+    const {
+      format = 'png',
+      scale = 100,
+      quality = 2,
+    } = options
+
+    try {
+      const currentMapId = appStore.getState().activeMapId
+      const mapData = await mapRepository.getById(currentMapId)
+      const isPortrait = mapData ? mapData.isPortrait : true
+
+      const mapWidthMm = isPortrait ? 190 : 240
+      const mapHeightMm = isPortrait ? 240 : 190
+
+      const DPI = quality === 1 ? 72 : quality === 3 ? 300 : 150
+      const mmToInches = 1 / 25.4
+      const targetWidthPx = Math.round(mapWidthMm * mmToInches * DPI * (scale / 100))
+      const targetHeightPx = Math.round(mapHeightMm * mmToInches * DPI * (scale / 100))
+
+      const dataUrl = await this.getExportDataURL(canvasManager, {
+        format: format,
+        quality: 0.95,
+        targetWidth: targetWidthPx,
+        targetHeight: targetHeightPx,
+      })
+
+      const prefix = configRepository.getExportFilenamePrefix()
+      const mapName = mapData ? mapData.name.replace(/\s+/g, '_') : 'mapa'
+      const fileName = `${prefix}${mapName}.${format}`
+
+      const link = document.createElement('a')
+      link.download = fileName
+      link.href = dataUrl
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+    } catch (error) {
+      console.error('ExportService: Error al exportar a imagen:', error)
+    }
+  }
+
+  /**
    * Exporta el canvas a un documento PDF descargable utilizando jsPDF.
    * @param {CanvasManager} canvasManager
-   * @param {Object} options - orientation, width, height, fileName, marginPct.
+   * @param {Object} options - orientation, paperWidth, paperHeight, scale, quality.
    * @returns {Promise<void>}
    */
   static async exportToPDF(canvasManager, options = {}) {
     const {
-      fileName = 'mapa.pdf',
+      paperWidth = 210,
+      paperHeight = 297,
       orientation = 'portrait',
-      width = 210,
-      height = 297,
-      marginPct = 5,
+      scale = 100,
+      quality = 2,
     } = options
 
     try {
+      const currentMapId = appStore.getState().activeMapId
+      const mapData = await mapRepository.getById(currentMapId)
+      const isPortrait = mapData ? mapData.isPortrait : true
+
+      const mapWidthMm = isPortrait ? 190 : 240
+      const mapHeightMm = isPortrait ? 240 : 190
+
+      const DPI = quality === 1 ? 72 : quality === 3 ? 300 : 150
+      const mmToInches = 1 / 25.4
+      const targetWidthPx = Math.round(mapWidthMm * mmToInches * DPI)
+      const targetHeightPx = Math.round(mapHeightMm * mmToInches * DPI)
+
       const dataUrl = await this.getExportDataURL(canvasManager, {
         format: 'png',
         quality: 1.0,
-        targetWidth: 1600,
+        targetWidth: targetWidthPx,
+        targetHeight: targetHeightPx,
       })
 
       const doc = new jsPDF({
         orientation: orientation,
         unit: 'mm',
-        format: [width, height],
+        format: [paperWidth, paperHeight],
       })
 
-      const margin = (width * marginPct) / 100
-      const contentWidth = width - margin * 2
-      const contentHeight = height - margin * 2
+      const scaleFactor = scale / 100
+      const finalW = mapWidthMm * scaleFactor
+      const finalH = mapHeightMm * scaleFactor
 
-      doc.addImage(dataUrl, 'PNG', margin, margin, contentWidth, contentHeight)
+      const offsetX = (paperWidth - finalW) / 2
+      const offsetY = (paperHeight - finalH) / 2
+
+      doc.addImage(dataUrl, 'PNG', offsetX, offsetY, finalW, finalH)
+      
+      const prefix = configRepository.getExportFilenamePrefix()
+      const mapName = mapData ? mapData.name.replace(/\s+/g, '_') : 'mapa'
+      const fileName = `${prefix}${mapName}.pdf`
+      
       doc.save(fileName)
     } catch (error) {
       console.error('ExportService: Error al exportar a PDF:', error)
@@ -138,18 +210,42 @@ export class ExportService {
   /**
    * Abre la ventana de impresión física del navegador.
    * @param {CanvasManager} canvasManager
-   * @param {Object} options
+   * @param {Object} options - paperWidth, paperHeight, orientation, scale, quality.
    * @returns {Promise<void>}
    */
   static async print(canvasManager, options = {}) {
-    const { orientation = 'portrait' } = options
+    const {
+      paperWidth = 210,
+      paperHeight = 297,
+      scale = 100,
+    } = options
 
     try {
+      const currentMapId = appStore.getState().activeMapId
+      const mapData = await mapRepository.getById(currentMapId)
+      const isPortrait = mapData ? mapData.isPortrait : true
+
+      const mapWidthMm = isPortrait ? 190 : 240
+      const mapHeightMm = isPortrait ? 240 : 190
+
+      const DPI = 150
+      const mmToInches = 1 / 25.4
+      const targetWidthPx = Math.round(mapWidthMm * mmToInches * DPI)
+      const targetHeightPx = Math.round(mapHeightMm * mmToInches * DPI)
+
       const dataUrl = await this.getExportDataURL(canvasManager, {
         format: 'png',
         quality: 1.0,
-        targetWidth: 1200,
+        targetWidth: targetWidthPx,
+        targetHeight: targetHeightPx,
       })
+
+      const scaleFactor = scale / 100
+      const finalW = mapWidthMm * scaleFactor
+      const finalH = mapHeightMm * scaleFactor
+
+      const offsetX = (paperWidth - finalW) / 2
+      const offsetY = (paperHeight - finalH) / 2
 
       const printWindow = window.open('', '_blank')
       if (printWindow) {
@@ -159,26 +255,19 @@ export class ExportService {
               <title>Imprimir Mapa</title>
               <style>
                 @page {
-                  size: ${orientation === 'portrait' ? 'portrait' : 'landscape'};
+                  size: ${paperWidth}mm ${paperHeight}mm;
                   margin: 0;
                 }
                 body {
                   margin: 0;
-                  display: flex;
-                  justify-content: center;
-                  align-items: center;
-                  height: 100vh;
                   background-color: white;
-                }
-                img {
-                  max-width: 90%;
-                  max-height: 90%;
-                  object-fit: contain;
                 }
               </style>
             </head>
             <body>
-              <img src="${dataUrl}" onload="window.print(); window.close();" />
+              <div style="width: ${paperWidth}mm; height: ${paperHeight}mm; position: relative; overflow: hidden;">
+                <img src="${dataUrl}" style="position: absolute; left: ${offsetX}mm; top: ${offsetY}mm; width: ${finalW}mm; height: ${finalH}mm; object-fit: contain;" onload="window.print(); window.close();" alt="Mapa impreso" />
+              </div>
             </body>
           </html>
         `)
