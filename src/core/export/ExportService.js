@@ -247,31 +247,67 @@ export class ExportService {
       const offsetX = (paperWidth - finalW) / 2
       const offsetY = (paperHeight - finalH) / 2
 
-      const printWindow = window.open('', '_blank')
-      if (printWindow) {
-        printWindow.document.write(`
-          <html>
-            <head>
-              <title>Imprimir Mapa</title>
-              <style>
-                @page {
-                  size: ${paperWidth}mm ${paperHeight}mm;
-                  margin: 0;
-                }
-                body {
-                  margin: 0;
-                  background-color: white;
-                }
-              </style>
-            </head>
-            <body>
-              <div style="width: ${paperWidth}mm; height: ${paperHeight}mm; position: relative; overflow: hidden;">
-                <img src="${dataUrl}" style="position: absolute; left: ${offsetX}mm; top: ${offsetY}mm; width: ${finalW}mm; height: ${finalH}mm; object-fit: contain;" onload="window.print(); window.close();" alt="Mapa impreso" />
-              </div>
-            </body>
-          </html>
-        `)
-        printWindow.document.close()
+      const iframe = document.createElement('iframe')
+      iframe.style.position = 'fixed'
+      iframe.style.top = '-9999px'
+      iframe.style.left = '-9999px'
+      iframe.style.width = '1px'
+      iframe.style.height = '1px'
+      iframe.style.border = 'none'
+
+      document.body.appendChild(iframe)
+
+      const iframeDoc = iframe.contentWindow.document
+      iframeDoc.open()
+      iframeDoc.write(`
+        <html>
+          <head>
+            <title>Imprimir Mapa</title>
+            <style>
+              @page {
+                size: ${paperWidth}mm ${paperHeight}mm;
+                margin: 0;
+              }
+              body {
+                margin: 0;
+                background-color: white;
+              }
+            </style>
+          </head>
+          <body>
+            <div style="width: ${paperWidth}mm; height: ${paperHeight}mm; position: relative; overflow: hidden;">
+              <img src="${dataUrl}" style="position: absolute; left: ${offsetX}mm; top: ${offsetY}mm; width: ${finalW}mm; height: ${finalH}mm; object-fit: contain;" alt="Mapa impreso" />
+            </div>
+          </body>
+        </html>
+      `)
+      iframeDoc.close()
+
+      const img = iframeDoc.querySelector('img')
+
+      const executePrint = () => {
+        iframe.contentWindow.focus()
+        iframe.contentWindow.print()
+      }
+
+      const cleanup = () => {
+        if (iframe.parentNode) {
+          document.body.removeChild(iframe)
+        }
+      }
+
+      iframe.contentWindow.onafterprint = () => {
+        setTimeout(cleanup, 1000)
+      }
+
+      img.onerror = () => {
+        cleanup()
+      }
+
+      if (img.complete) {
+        executePrint()
+      } else {
+        img.onload = executePrint
       }
     } catch (error) {
       console.error('ExportService: Error al imprimir:', error)

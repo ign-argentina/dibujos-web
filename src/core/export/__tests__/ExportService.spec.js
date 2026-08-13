@@ -123,14 +123,27 @@ describe('ExportService', () => {
     expect(saveMock).toHaveBeenCalledWith('IGN_Escolar_Mapa_de_Salta.pdf')
   })
 
-  it('debería ejecutar print abriendo un printWindow y escribiendo el documento', async () => {
-    const mockPrintWindow = {
-      document: {
-        write: vi.fn(),
-        close: vi.fn(),
+  it('debería ejecutar print creando un iframe invisible, escribiendo el documento y llamando a print', async () => {
+    const mockIframe = {
+      style: {},
+      contentWindow: {
+        document: {
+          open: vi.fn(),
+          write: vi.fn(),
+          close: vi.fn(),
+          querySelector: vi.fn().mockReturnValue({
+            complete: true,
+          }),
+        },
+        focus: vi.fn(),
+        print: vi.fn(),
+        onafterprint: null,
       },
     }
-    const openSpy = vi.spyOn(window, 'open').mockReturnValue(mockPrintWindow)
+
+    const createElementSpy = vi.spyOn(document, 'createElement').mockReturnValue(mockIframe)
+    vi.spyOn(document.body, 'appendChild').mockImplementation(() => {})
+    const removeSpy = vi.spyOn(document.body, 'removeChild').mockImplementation(() => {})
 
     await ExportService.print(mockCanvasManager, {
       paperWidth: 210,
@@ -138,8 +151,59 @@ describe('ExportService', () => {
       scale: 100,
     })
 
-    expect(openSpy).toHaveBeenCalledWith('', '_blank')
-    expect(mockPrintWindow.document.write).toHaveBeenCalled()
-    expect(mockPrintWindow.document.close).toHaveBeenCalled()
+    expect(createElementSpy).toHaveBeenCalledWith('iframe')
+    expect(mockIframe.style.position).toBe('fixed')
+    expect(mockIframe.style.top).toBe('-9999px')
+    expect(mockIframe.contentWindow.document.write).toHaveBeenCalled()
+    expect(mockIframe.contentWindow.print).toHaveBeenCalled()
+
+    // Simular el evento onafterprint para el cleanup
+    expect(mockIframe.contentWindow.onafterprint).toBeTypeOf('function')
+    
+    // Configurar parentNode mock para simular la existencia del iframe en el DOM
+    mockIframe.parentNode = document.body
+    
+    // Ejecutar cleanup y avanzar timers
+    vi.useFakeTimers()
+    mockIframe.contentWindow.onafterprint()
+    vi.advanceTimersByTime(1000)
+    expect(removeSpy).toHaveBeenCalledWith(mockIframe)
+    vi.useRealTimers()
+  })
+
+  it('debería ejecutar print y esperar a onload si la imagen no está cargada (complete = false)', async () => {
+    const mockImg = {
+      complete: false,
+      onload: null,
+    }
+    const mockIframe = {
+      style: {},
+      contentWindow: {
+        document: {
+          open: vi.fn(),
+          write: vi.fn(),
+          close: vi.fn(),
+          querySelector: vi.fn().mockReturnValue(mockImg),
+        },
+        focus: vi.fn(),
+        print: vi.fn(),
+      },
+    }
+
+    vi.spyOn(document, 'createElement').mockReturnValue(mockIframe)
+    vi.spyOn(document.body, 'appendChild').mockImplementation(() => {})
+
+    await ExportService.print(mockCanvasManager, {
+      paperWidth: 210,
+      paperHeight: 297,
+      scale: 100,
+    })
+
+    expect(mockIframe.contentWindow.print).not.toHaveBeenCalled()
+    expect(mockImg.onload).toBeTypeOf('function')
+
+    // Disparar la carga de la imagen
+    mockImg.onload()
+    expect(mockIframe.contentWindow.print).toHaveBeenCalled()
   })
 })
