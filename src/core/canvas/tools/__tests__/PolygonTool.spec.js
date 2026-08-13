@@ -86,7 +86,9 @@ describe('PolygonTool', () => {
   })
 
   it('debería finalizar dibujo con doble click y limpiar duplicados', () => {
+    vi.useFakeTimers()
     tool.onActivate()
+    vi.advanceTimersByTime(500)
     tool.onMouseDown({ e: { clientX: 10, clientY: 20 } })
     tool.onMouseDown({ e: { clientX: 50, clientY: 20 } })
     tool.onMouseDown({ e: { clientX: 50, clientY: 60 } })
@@ -98,6 +100,7 @@ describe('PolygonTool', () => {
     expect(mockCanvasManager.finishCreatedObject).toHaveBeenCalled()
     expect(mockCanvasManager.finishCreatedObject.mock.calls[0][0].type).toBe('polygon')
     expect(mockCanvasManager.finishCreatedObject.mock.calls[0][0].points.length).toBe(3)
+    vi.useRealTimers()
   })
 
   it('debería finalizar dibujo al presionar Enter', () => {

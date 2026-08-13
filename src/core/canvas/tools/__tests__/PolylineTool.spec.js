@@ -68,7 +68,9 @@ describe('PolylineTool', () => {
   })
 
   it('debería finalizar dibujo con doble click y limpiar duplicados', () => {
+    vi.useFakeTimers()
     tool.onActivate()
+    vi.advanceTimersByTime(500)
     tool.onMouseDown({ e: { clientX: 10, clientY: 20 } })
     tool.onMouseDown({ e: { clientX: 30, clientY: 40 } })
     // Double click añade un punto y luego dispara onMouseDblClick
@@ -82,6 +84,7 @@ describe('PolylineTool', () => {
       { x: 10, y: 20 },
       { x: 30, y: 40 },
     ])
+    vi.useRealTimers()
   })
 
   it('debería finalizar dibujo al presionar Enter', () => {

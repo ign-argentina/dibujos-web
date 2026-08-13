@@ -14,6 +14,7 @@ export class PolygonTool extends BaseTool {
   onActivate() {
     this.points = []
     this.previewShape = null
+    this._activatedAt = Date.now()
     this.canvasManager.adapter.setDrawingMode(false)
     this.canvasManager.adapter.setSelectionEnabled(false)
     this.canvasManager.adapter.setDefaultCursor('crosshair')
@@ -91,6 +92,11 @@ export class PolygonTool extends BaseTool {
   }
 
   onMouseDblClick(_opt) {
+    // Ignorar doble clics residuales que el navegador dispara inmediatamente
+    // después de activar la herramienta (< 400ms) o sin puntos suficientes
+    if (Date.now() - this._activatedAt < 400) return
+    if (this.points.length < 3) return
+
     // Al hacer doble clic, se suele añadir un punto extra duplicado.
     // Quitamos el último punto antes de finalizar.
     if (this.points.length > 0) {

@@ -1,6 +1,6 @@
 {
   "name": "dibujos-web",
-  "version": "0.45.0",
+  "version": "0.70.0",
   "private": true,
   "type": "module",
   "scripts": {
