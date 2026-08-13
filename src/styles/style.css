@@ -15,6 +15,7 @@
 @import './components/loader.css';
 @import './components/external-link.css';
 @import './components/zoom-controls.css';
+@import './components/accessibility-panel.css';
 @import './themes/accessibility.css';
 @import './utilities/helpers.css';
 

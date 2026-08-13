@@ -2,6 +2,9 @@ import { appStore } from '../state/AppStore.js'
 import { CanvasManager } from '../core/canvasManager.js'
 import { persistenceService, isQuotaExceededError } from '../core/persistence/PersistenceService.js'
 import { MapSelector } from '../components/MapSelector.js'
+import { Sidebar } from '../components/Sidebar.js'
+import { AccessibilityPanel } from '../components/AccessibilityPanel.js'
+import { AccessibilityManager } from '../core/accessibility/AccessibilityManager.js'
 import { ContextMenu } from '../features/context-menu/ContextMenu.js'
 import { ExportModal } from '../features/export-modal/ExportModal.js'
 import { Toolbar } from '../features/toolbar/Toolbar.js'
@@ -15,15 +18,17 @@ import { mapRepository } from '../core/repositories/MapRepository.js'
  * Realiza la inyección de dependencias y personalizaciones dinámicas desde config.json.
  */
 export async function bootstrap() {
+  // Inicializar AccessibilityManager para aplicar preferencias inmediatamente en el arranque
+  const accessibilityManager = new AccessibilityManager(appStore)
+  accessibilityManager.init()
+
   if (window.lucide) {
     window.lucide.createIcons()
   }
 
   // Obtener elementos fundamentales de la UI
   const editorContainer = document.getElementById('editor-container')
-  const sidebar = document.getElementById('sidebar-catalog')
-  const closeSidebarBtn = document.getElementById('close-sidebar-btn')
-  const toggleSidebarBtn = document.getElementById('toggle-sidebar-btn')
+  const sidebarContainer = document.getElementById('sidebar-catalog')
   const cardsContainer = document.getElementById('map-cards-container')
   const loaderOverlay = document.getElementById('loader-overlay')
 
@@ -35,20 +40,7 @@ export async function bootstrap() {
   const canvasManager = new CanvasManager(editorContainer)
   canvasManager.init()
 
-  // --- INTERACTIVIDAD DEL PANEL LATERAL COLAPSABLE ---
-  closeSidebarBtn.addEventListener('click', () => {
-    sidebar.classList.add('is-collapsed')
-    toggleSidebarBtn.classList.remove('hidden')
-    toggleSidebarBtn.setAttribute('aria-expanded', 'false')
-    toggleSidebarBtn.focus()
-  })
 
-  toggleSidebarBtn.addEventListener('click', () => {
-    sidebar.classList.remove('is-collapsed')
-    toggleSidebarBtn.classList.add('hidden')
-    toggleSidebarBtn.setAttribute('aria-expanded', 'true')
-    closeSidebarBtn.focus()
-  })
 
   // --- ESCUCHAR CAMBIOS EN EL ESTADO GLOBAL (REACTIVIDAD Y PERSISTENCIA) ---
   let previousMapId = null
@@ -284,9 +276,36 @@ export async function bootstrap() {
       exportModal.open()
     })
 
-    // 4. Inicializar selector de mapas modularizado
-    const mapSelector = new MapSelector(sidebar, cardsContainer, mapRepository)
+    // 4. Inicializar panel lateral dinámico y selector de mapas
+    const sidebar = new Sidebar(sidebarContainer, {
+      views: [
+        {
+          id: 'maps',
+          label: 'Mapas',
+          title: 'Elegí tu Mapa',
+          icon: 'map'
+        },
+        {
+          id: 'accessibility',
+          label: 'Accesibilidad',
+          title: 'Accesibilidad',
+          icon: 'accessibility'
+        }
+      ]
+    })
+    sidebar.mount()
+
+    const mapSelector = new MapSelector(
+      sidebarContainer.querySelector('#view-maps'),
+      cardsContainer,
+      mapRepository
+    )
     await mapSelector.init()
+
+    const accessibilityPanel = new AccessibilityPanel(
+      sidebarContainer.querySelector('#view-accessibility')
+    )
+    accessibilityPanel.mount()
 
     if (window.lucide) {
       window.lucide.createIcons()

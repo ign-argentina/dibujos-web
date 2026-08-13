@@ -19,6 +19,12 @@
   font-weight: var(--nbi-font-weight-bold);
 }
 
+.nbi-btn:focus-visible {
+  outline: var(--nbi-border-width-md) solid var(--color-border) !important;
+  outline-offset: var(--nbi-border-width-md) !important;
+  box-shadow: 0 0 0 5px var(--color-focus) !important;
+}
+
 .nbi-btn svg,
 .nbi-btn__icon {
   width: 24px;

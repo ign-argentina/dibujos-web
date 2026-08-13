@@ -42,7 +42,16 @@ import {
   Search,
   Image,
   ChevronDown,
-  RotateCcw
+  RotateCcw,
+  Map,
+  Accessibility,
+  Contrast,
+  Activity,
+  MousePointer,
+  AlignJustify,
+  Space,
+  RefreshCw,
+  CircleDot
 } from 'lucide'
 
 // Expose lucide globally to maintain vanilla JS components compatibility
@@ -91,7 +100,16 @@ window.lucide = {
         Search,
         Image,
         ChevronDown,
-        RotateCcw
+        RotateCcw,
+        Map,
+        Accessibility,
+        Contrast,
+        Activity,
+        MousePointer,
+        AlignJustify,
+        Space,
+        RefreshCw,
+        CircleDot
       }
     })
 }

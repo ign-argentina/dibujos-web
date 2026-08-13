@@ -11,7 +11,7 @@
 }
 
 .nbi-sidebar.is-collapsed {
-  transform: translateX(-340px);
+  transform: translateX(-320px);
 }
 
 .nbi-sidebar__header {
@@ -232,4 +232,74 @@
   color: var(--nbi-color-muted);
   padding: var(--nbi-space-xxl) 0;
   font-size: var(--nbi-font-size-base);
+}
+
+/* --- SOLAPAS DE LA BARRA LATERAL --- */
+.nbi-sidebar__tabs {
+  position: absolute;
+  top: 16px;
+  left: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--nbi-space-sm);
+  z-index: var(--nbi-z-sidebar-btn);
+}
+
+.nbi-sidebar__tab {
+  background-color: var(--nbi-color-white);
+  border: var(--nbi-border-width-md) solid var(--nbi-color-black);
+  border-left: none;
+  border-radius: 0 var(--nbi-radius-button) var(--nbi-radius-button) 0;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 2px 2px 0px 0px var(--nbi-color-black);
+  transition: transform var(--nbi-transition-fast), background-color var(--nbi-transition-fast);
+}
+
+.nbi-sidebar__tab:hover {
+  background-color: var(--nbi-color-accent);
+  transform: translateX(2px);
+}
+
+.nbi-sidebar__tab:focus-visible {
+  outline: var(--nbi-border-width-md) solid var(--color-border) !important;
+  outline-offset: 2px !important;
+}
+
+.nbi-sidebar__tab.is-active {
+  background-color: var(--nbi-color-accent);
+  transform: translateX(4px);
+  box-shadow: 1px 1px 0px 0px var(--nbi-color-black);
+}
+
+.nbi-sidebar__tab svg {
+  width: 20px;
+  height: 20px;
+  stroke: var(--nbi-color-black);
+  stroke-width: 2.5px;
+}
+
+/* --- CONTENEDORES DE VISTAS --- */
+.nbi-sidebar__window {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  height: 100%;
+}
+
+.nbi-sidebar__view {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow: hidden;
+  height: 100%;
+}
+
+.nbi-sidebar__view.hidden {
+  display: none !important;
 }

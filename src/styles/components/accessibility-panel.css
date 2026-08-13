@@ -1,0 +1,188 @@
+/* ==========================================================================
+   ESTILOS PARA EL PANEL DE ACCESIBILIDAD (CONTROLES BRUTALISTAS Y ACCESIBLES)
+   ========================================================================== */
+
+.nbi-accessibility-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--nbi-space-lg);
+  height: 100%;
+  overflow-y: auto;
+}
+
+.nbi-accessibility-group {
+  border: var(--nbi-border-width-md) solid var(--nbi-color-black);
+  border-radius: 12px;
+  padding: var(--nbi-space-md);
+  background-color: var(--nbi-color-white);
+  box-shadow: var(--nbi-shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: var(--nbi-space-md);
+}
+
+.nbi-accessibility-group__title {
+  font-size: var(--nbi-font-size-base);
+  font-weight: var(--nbi-font-weight-bold);
+  color: var(--nbi-color-black);
+  margin: 0 0 var(--nbi-space-xs) 0;
+  display: flex;
+  align-items: center;
+  gap: var(--nbi-space-sm);
+  border-bottom: 2px solid var(--nbi-color-black);
+  padding-bottom: 6px;
+}
+
+.nbi-accessibility-group__title svg {
+  width: 20px;
+  height: 20px;
+  stroke-width: 2.5px;
+}
+
+.nbi-control-row {
+  display: flex;
+  flex-direction: column;
+  gap: var(--nbi-space-xs);
+}
+
+.nbi-control-row--inline {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--nbi-space-md);
+}
+
+.nbi-control-label {
+  font-size: var(--nbi-font-size-sm);
+  font-weight: var(--nbi-font-weight-bold);
+  color: var(--nbi-color-black);
+}
+
+/* --- INTERRUPTOR ACCESIBLE (SWITCH ROLE="SWITCH") --- */
+.nbi-switch {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  display: inline-flex;
+  outline: none;
+}
+
+.nbi-switch__track {
+  width: 52px;
+  height: 28px;
+  border: var(--nbi-border-width-md) solid var(--nbi-color-black);
+  border-radius: 14px;
+  background-color: var(--nbi-color-white);
+  position: relative;
+  display: block;
+  box-shadow: 2px 2px 0px 0px var(--nbi-color-black);
+  transition: background-color var(--nbi-transition-fast);
+}
+
+.nbi-switch[aria-checked="true"] .nbi-switch__track {
+  background-color: var(--nbi-color-accent);
+}
+
+.nbi-switch[disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.nbi-switch__thumb {
+  width: 16px;
+  height: 16px;
+  border: var(--nbi-border-width-md) solid var(--nbi-color-black);
+  border-radius: 50%;
+  background-color: var(--nbi-color-white);
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  transition: transform var(--nbi-transition-fast);
+}
+
+.nbi-switch[aria-checked="true"] .nbi-switch__thumb {
+  transform: translateX(24px);
+}
+
+.nbi-switch:focus-visible .nbi-switch__track {
+  outline: var(--nbi-border-width-md) solid var(--color-border) !important;
+  outline-offset: 3px !important;
+  box-shadow: 0 0 0 5px var(--color-focus) !important;
+}
+
+/* --- CONTROL SEGMENTADO (RADIO BUTTONS AGRUPADOS) --- */
+.nbi-segmented-control {
+  display: flex;
+  border: var(--nbi-border-width-md) solid var(--nbi-color-black);
+  border-radius: 8px;
+  background-color: var(--nbi-color-white);
+  overflow: hidden;
+  box-shadow: 2px 2px 0px 0px var(--nbi-color-black);
+  width: 100%;
+}
+
+.nbi-segmented-control__option {
+  position: relative;
+  cursor: pointer;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--nbi-font-size-sm);
+  font-weight: var(--nbi-font-weight-bold);
+  border-right: var(--nbi-border-width-md) solid var(--nbi-color-black);
+  user-select: none;
+  text-align: center;
+}
+
+.nbi-segmented-control__option:last-child {
+  border-right: none;
+}
+
+.nbi-segmented-control__option input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.nbi-segmented-control__option span {
+  display: block;
+  width: 100%;
+  padding: 8px var(--nbi-space-xs);
+  transition: background-color var(--nbi-transition-fast);
+  background-color: var(--nbi-color-white);
+  color: var(--nbi-color-black);
+}
+
+.nbi-segmented-control__option input:checked + span {
+  background-color: var(--nbi-color-accent);
+}
+
+.nbi-segmented-control__option input:disabled + span {
+  opacity: 0.5;
+  background-color: #f0f0f0;
+  cursor: not-allowed;
+}
+
+.nbi-segmented-control__option input:focus-visible + span {
+  outline: var(--nbi-border-width-md) solid var(--color-border) !important;
+  outline-offset: -3px !important;
+}
+
+/* --- BOTÓN DE RESET --- */
+.nbi-btn--reset {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--nbi-space-sm);
+  margin-top: var(--nbi-space-md);
+  margin-bottom: var(--nbi-space-lg);
+}
+
+.nbi-btn--reset svg {
+  width: 18px;
+  height: 18px;
+}

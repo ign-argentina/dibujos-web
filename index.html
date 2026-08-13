@@ -33,24 +33,36 @@
       <span class="btn-text">Descargar Mapas Oficiales</span>
     </a>
 
-    <!-- BOTÓN FLOTANTE PARA EXPANDIR EL CATÁLOGO -->
-    <button class="nbi-btn nbi-sidebar__toggle-btn hidden" id="toggle-sidebar-btn" title="Mostrar Mapas"
-      aria-label="Mostrar catálogo de mapas" aria-expanded="false">
-      <img src="/icono-mapa-mapas-escolares-01.svg" alt="Icono Mapa" class="nbi-btn__icon" />
-      <span class="btn-text">Mapas</span>
-    </button>
-
-    <!-- CATÁLOGO DE MAPAS DE PROVINCIAS (PANEL LATERAL) -->
-    <aside class="nbi-window-floating nbi-sidebar" id="sidebar-catalog" aria-label="Catálogo de mapas de Argentina">
-      <div class="nbi-sidebar__header">
-        <h2 class="nbi-sidebar__title">Elegí tu Mapa</h2>
-        <button class="nbi-btn" id="close-sidebar-btn" style="min-width: 40px; min-height: 40px; padding: 6px;"
-          title="Cerrar Menú" aria-label="Cerrar catálogo de mapas">
-          <i data-lucide="chevron-left"></i>
-        </button>
+    <!-- PANEL LATERAL DE HERRAMIENTAS (CATÁLOGO Y ACCESIBILIDAD) -->
+    <aside class="nbi-window-floating nbi-sidebar" id="sidebar-catalog" aria-label="Panel lateral de herramientas">
+      <!-- Pestañas verticales en el lado derecho -->
+      <div class="nbi-sidebar__tabs" role="tablist" aria-label="Secciones del panel lateral">
+        <!-- Se generarán dinámicamente desde JS -->
       </div>
-      <div class="nbi-sidebar__scroll" id="map-cards-container" role="region" aria-label="Listado de mapas disponibles">
-        <!-- Las tarjetas se generarán dinámicamente desde JS -->
+
+      <!-- Contenedor del panel de vista activa -->
+      <div class="nbi-sidebar__window" style="display: flex; flex-direction: column; height: 100%; width: 100%;">
+        <div class="nbi-sidebar__header">
+          <h2 class="nbi-sidebar__title" id="sidebar-title">Elegí tu Mapa</h2>
+          <button class="nbi-btn" id="close-sidebar-btn" style="min-width: 40px; min-height: 40px; padding: 6px;"
+            title="Cerrar Menú" aria-label="Cerrar panel lateral">
+            <i data-lucide="chevron-left"></i>
+          </button>
+        </div>
+
+        <!-- Vista del selector de mapas -->
+        <div class="nbi-sidebar__view" id="view-maps" role="tabpanel" aria-labelledby="tab-maps" style="display: flex; flex-direction: column; flex: 1; overflow: hidden;">
+          <div class="nbi-sidebar__scroll" id="map-cards-container" role="region" aria-label="Listado de mapas disponibles">
+            <!-- Las tarjetas se generarán dinámicamente desde JS -->
+          </div>
+        </div>
+
+        <!-- Vista de accesibilidad (placeholder para esta fase) -->
+        <div class="nbi-sidebar__view hidden" id="view-accessibility" role="tabpanel" aria-labelledby="tab-accessibility" style="display: flex; flex-direction: column; flex: 1; overflow: hidden; padding: 16px;">
+          <div class="nbi-sidebar__scroll" style="display: flex; flex-direction: column; gap: var(--nbi-space-md); grid-template-columns: 1fr; width: 100%;">
+            <p style="font-weight: 500;">Próximamente: Panel de Accesibilidad</p>
+          </div>
+        </div>
       </div>
     </aside>
 
@@ -420,6 +432,24 @@
 
     <!-- REGIÓN ACCESIBLE EN TIEMPO REAL PARA LECTORES DE PANTALLA -->
     <div id="canvas-a11y-status" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+
+    <!-- DEFINICIÓN DE FILTROS SVG PARA DALTONISMO -->
+    <svg style="position: absolute; width: 0; height: 0; overflow: hidden;" version="1.1" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="none">
+      <defs>
+        <!-- Protanopia -->
+        <filter id="protanopia-filter">
+          <feColorMatrix type="matrix" values="0.567 0.433 0 0 0 0.558 0.442 0 0 0 0 0.242 0.758 0 0 0 0 0 1 0" />
+        </filter>
+        <!-- Deuteranopia -->
+        <filter id="deuteranopia-filter">
+          <feColorMatrix type="matrix" values="0.625 0.375 0 0 0 0.7 0.3 0 0 0 0 0.3 0.7 0 0 0 0 0 1 0" />
+        </filter>
+        <!-- Tritanopia -->
+        <filter id="tritanopia-filter">
+          <feColorMatrix type="matrix" values="0.95 0.05 0 0 0 0 0.433 0.567 0 0 0 0.475 0.525 0 0 0 0 0 1 0" />
+        </filter>
+      </defs>
+    </svg>
   </div>
   <script type="module" src="./src/main.js"></script>
 </body>

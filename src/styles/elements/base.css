@@ -13,9 +13,9 @@ body {
 
 /* --- REGLA GLOBAL DE FOCO ACCESIBLE (WCAG 2.4.7 / 2.4.13) --- */
 :focus-visible {
-  outline: var(--nbi-border-width-md) solid var(--nbi-color-black) !important;
+  outline: var(--nbi-border-width-md) solid var(--color-border) !important;
   outline-offset: var(--nbi-border-width-md) !important;
-  box-shadow: 0 0 0 5px var(--nbi-color-primary) !important;
+  box-shadow: 0 0 0 5px var(--color-focus) !important;
 }
 
 /* --- VENTANAS FLOTANTES BRUTALISTAS --- */

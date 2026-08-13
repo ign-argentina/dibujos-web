@@ -24,6 +24,17 @@
   --nbi-color-success: var(--nbi-success-color);
   --nbi-color-danger: var(--nbi-danger-color);
 
+  /* --- TOKENS SEMÁNTICOS DE ACCESIBILIDAD (FASE 1) --- */
+  --color-bg-primary: var(--nbi-color-bg-main);
+  --color-bg-panel: var(--nbi-color-panel-bg);
+  --color-text-primary: var(--nbi-color-black);
+  --color-text-secondary: var(--nbi-color-muted);
+  --color-border: var(--nbi-color-black);
+  --color-action-primary: var(--nbi-color-primary);
+  --color-action-secondary: var(--nbi-color-secondary);
+  --color-focus: var(--nbi-color-primary);
+  --color-danger: var(--nbi-color-danger);
+
   /* --- RADIOS DE BORDES --- */
   --nbi-radius-infant: 16px;
   --nbi-radius-teen: 4px;

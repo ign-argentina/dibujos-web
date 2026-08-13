@@ -1,6 +1,33 @@
 import { Component } from '../Component.js'
 import { configRepository } from '../../core/repositories/ConfigRepository.js'
 
+const COLOR_NAMES = {
+  '#FFA2A2': 'Rojo pastel',
+  '#82D3F8': 'Celeste',
+  '#7ABE7D': 'Verde',
+  '#E289F2': 'Violeta',
+  '#A5A5A5': 'Gris',
+  '#000000': 'Negro',
+  '#FFA07A': 'Salmón',
+  '#FFF4B0': 'Amarillo',
+  '#E5828C': 'Rosa pastel',
+  '#CC94D6': 'Violeta pastel',
+  '#FFD700': 'Amarillo oro',
+  '#98FB98': 'Verde pálido',
+  '#AFEEEE': 'Turquesa',
+  '#FFB6C1': 'Rosa claro',
+  '#B0C4DE': 'Azul acero',
+  '#E6E6FA': 'Lavanda',
+  '#FFA500': 'Naranja',
+  '#FFFFFF': 'Blanco'
+}
+
+function getColorName(hex) {
+  if (!hex) return ''
+  const upper = hex.toUpperCase()
+  return COLOR_NAMES[upper] || hex
+}
+
 /**
  * Componente que renderiza y gestiona la paleta de colores predefinida, personalizada y reciente.
  * También controla el tamaño del pincel de dibujo.
@@ -51,8 +78,8 @@ export class ColorPalette extends Component {
         }
         chip.style.backgroundColor = color
         chip.setAttribute('data-color', color)
-        chip.setAttribute('title', `Color: ${color}`)
-        chip.setAttribute('aria-label', `Color ${color}`)
+        chip.setAttribute('title', `Color: ${getColorName(color)}`)
+        chip.setAttribute('aria-label', `Color ${getColorName(color)}`)
         this.colorChipsContainer.appendChild(chip)
       })
     }
@@ -175,8 +202,8 @@ export class ColorPalette extends Component {
       chip.setAttribute('aria-checked', isSelected ? 'true' : 'false')
       chip.style.backgroundColor = color
       chip.setAttribute('data-color', color)
-      chip.setAttribute('title', `Color reciente: ${color}`)
-      chip.setAttribute('aria-label', `Color reciente ${color}`)
+      chip.setAttribute('title', `Color reciente: ${getColorName(color)}`)
+      chip.setAttribute('aria-label', `Color reciente ${getColorName(color)}`)
 
       this.recentColorsContainer.appendChild(chip)
     })
@@ -198,8 +225,8 @@ export class ColorPalette extends Component {
       chip.className = 'nbi-color-chip is-custom-chip'
       chip.style.backgroundColor = color
       chip.setAttribute('data-color', color)
-      chip.setAttribute('title', `Personalizado: ${color}`)
-      chip.setAttribute('aria-label', `Color personalizado ${color}`)
+      chip.setAttribute('title', `Personalizado: ${getColorName(color)}`)
+      chip.setAttribute('aria-label', `Color personalizado ${getColorName(color)}`)
 
       if (blackChip) {
         this.colorChipsContainer.insertBefore(chip, blackChip)
