@@ -246,7 +246,7 @@
 }
 
 .nbi-sidebar__tab {
-  background-color: var(--nbi-color-white);
+  background-color: var(--nbi-color-primary);
   border: var(--nbi-border-width-md) solid var(--nbi-color-black);
   border-left: none;
   border-radius: 0 var(--nbi-radius-button) var(--nbi-radius-button) 0;
@@ -258,11 +258,12 @@
   cursor: pointer;
   box-shadow: 2px 2px 0px 0px var(--nbi-color-black);
   transition: transform var(--nbi-transition-fast), background-color var(--nbi-transition-fast);
+  transform: translateX(2px);
 }
 
 .nbi-sidebar__tab:hover {
-  background-color: var(--nbi-color-accent);
-  transform: translateX(2px);
+  background-color: var(--nbi-color-secondary);
+  transform: translateX(4px);
 }
 
 .nbi-sidebar__tab:focus-visible {
@@ -272,7 +273,7 @@
 
 .nbi-sidebar__tab.is-active {
   background-color: var(--nbi-color-accent);
-  transform: translateX(4px);
+  transform: translateX(2px);
   box-shadow: 1px 1px 0px 0px var(--nbi-color-black);
 }
 

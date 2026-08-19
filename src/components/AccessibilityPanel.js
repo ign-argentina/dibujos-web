@@ -195,7 +195,7 @@ export class AccessibilityPanel extends Component {
 
           <!-- Reducir movimiento -->
           <div class="nbi-control-row">
-            <span class="nbi-control-label" id="lbl-reduced-motion">Reducir movimiento</span>
+            <span class="nbi-control-label" id="lbl-reduced-motion">Reducir animaciones</span>
             <div class="nbi-segmented-control" role="radiogroup" aria-labelledby="lbl-reduced-motion">
               <label class="nbi-segmented-control__option" title="Preferencia de Sistema">
                 <input type="radio" name="reducedMotion" value="system" />
@@ -271,7 +271,7 @@ export class AccessibilityPanel extends Component {
             // Castear booleanos textuales si los hubiera en el futuro
             if (val === 'true') val = true
             if (val === 'false') val = false
-            
+
             appStore.dispatch({
               type: 'SET_ACCESSIBILITY_PREFERENCE',
               payload: { key, value: val }

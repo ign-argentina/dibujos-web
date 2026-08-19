@@ -30,7 +30,7 @@
   align-items: center;
   gap: var(--nbi-space-sm);
   border-bottom: 2px solid var(--nbi-color-black);
-  padding-bottom: 6px;
+  padding: 0 6px 6px 6px;
 }
 
 .nbi-accessibility-group__title svg {
@@ -156,17 +156,17 @@
   color: var(--nbi-color-black);
 }
 
-.nbi-segmented-control__option input:checked + span {
+.nbi-segmented-control__option input:checked+span {
   background-color: var(--nbi-color-accent);
 }
 
-.nbi-segmented-control__option input:disabled + span {
+.nbi-segmented-control__option input:disabled+span {
   opacity: 0.5;
   background-color: #f0f0f0;
   cursor: not-allowed;
 }
 
-.nbi-segmented-control__option input:focus-visible + span {
+.nbi-segmented-control__option input:focus-visible+span {
   outline: var(--nbi-border-width-md) solid var(--color-border) !important;
   outline-offset: -3px !important;
 }

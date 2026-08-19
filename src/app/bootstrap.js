@@ -289,7 +289,7 @@ export async function bootstrap() {
           id: 'accessibility',
           label: 'Accesibilidad',
           title: 'Accesibilidad',
-          icon: 'accessibility'
+          icon: 'person-standing'
         }
       ]
     })

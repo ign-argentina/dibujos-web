@@ -10,7 +10,7 @@ html[data-theme="hc-dark"] {
   --nbi-color-white: #000000;
   --nbi-color-black: #ffffff;
   --nbi-color-muted: #e0e0e0;
-  
+
   --nbi-color-primary: #ffff00;
   --nbi-color-secondary: #00ffff;
   --nbi-color-accent: #ffff00;
@@ -33,9 +33,9 @@ html[data-theme="hc-dark"] {
   --nbi-border-width-md: 4px;
   --nbi-border-width-lg: 5px;
 
-  --nbi-shadow-sm: 3px 3px 0px 0px #ffffff;
-  --nbi-shadow-md: 5px 5px 0px 0px #ffffff;
-  --nbi-shadow-lg: 7px 7px 0px 0px #ffffff;
+  --nbi-shadow-sm: 3px 3px 0px 0px #000000;
+  --nbi-shadow-md: 5px 5px 0px 0px #000000;
+  --nbi-shadow-lg: 7px 7px 0px 0px #000000;
 }
 
 /* Indicador de foco reforzado en Alto Contraste Oscuro */
@@ -50,6 +50,42 @@ html[data-theme="hc-dark"] .nbi-stickers__img {
   filter: none !important;
 }
 
+html[data-theme="hc-dark"] .nbi-btn.is-active {
+  color: var(--nbi-color-white) !important;
+}
+
+html[data-theme="hc-dark"] .nbi-btn {
+  color: var(--nbi-color-white) !important;
+}
+
+html[data-theme="hc-dark"] .nbi-segmented-control__option input:checked+span {
+  color: var(--nbi-color-white) !important;
+}
+
+html[data-theme="hc-dark"] .nbi-map-card.is-active .nbi-map-card__info {
+  color: var(--nbi-color-white) !important;
+}
+
+html[data-theme="hc-dark"] .nbi-filter-group__btn.is-active {
+  color: var(--nbi-color-white) !important;
+}
+
+html[data-theme="hc-dark"] .nbi-map-card {
+  box-shadow: var(--nbi-shadow-md) !important;
+}
+
+html[data-theme="hc-dark"] .nbi-external-link:hover,
+html[data-theme="hc-dark"] .nbi-external-link:focus-visible,
+html[data-theme="hc-dark"] .nbi-external-link:focus,
+html[data-theme="hc-dark"] .nbi-external-link:active {
+  color: var(--nbi-color-secondary) !important;
+}
+
+html[data-theme="hc-dark"] .nbi-sidebar__tab svg,
+html[data-theme="hc-dark"] .nbi-btn svg {
+  stroke: var(--nbi-color-white) !important;
+}
+
 /* --- 2. MODO ALTO CONTRASTE CLARO --- */
 html[data-theme="hc-light"] {
   /* Forzar colores de alto contraste claro en variables del sistema */
@@ -58,7 +94,7 @@ html[data-theme="hc-light"] {
   --nbi-color-white: #ffffff;
   --nbi-color-black: #000000;
   --nbi-color-muted: #333333;
-  
+
   --nbi-color-primary: #0000ff;
   --nbi-color-secondary: #ff00ff;
   --nbi-color-accent: #ffff00;
@@ -86,6 +122,30 @@ html[data-theme="hc-light"] {
   --nbi-shadow-lg: 7px 7px 0px 0px #000000;
 }
 
+html[data-theme="hc-light"] .nbi-btn {
+  color: var(--nbi-color-white) !important;
+}
+
+html[data-theme="hc-light"] .nbi-btn--danger {
+  color: var(--nbi-color-black) !important;
+}
+
+html[data-theme="hc-light"] .nbi-btn--success {
+  color: var(--nbi-color-black) !important;
+}
+
+html[data-theme="hc-light"] .nbi-btn--action {
+  color: var(--nbi-color-black) !important;
+}
+
+html[data-theme="hc-light"] .nbi-btn.is-active {
+  color: var(--nbi-color-black) !important;
+}
+
+html[data-theme="hc-light"] .nbi-context-trigger {
+  color: var(--nbi-color-black) !important;
+}
+
 /* Indicador de foco reforzado en Alto Contraste Claro */
 html[data-theme="hc-light"] *:focus-visible {
   outline: 4px solid #0000ff !important;
@@ -96,6 +156,8 @@ html[data-theme="hc-light"] *:focus-visible {
 html[data-theme="hc-light"] .nbi-stickers__img {
   filter: none !important;
 }
+
+
 
 /* --- 3. ESCALA DE TEXTO AGRANDADO --- */
 html[data-text-scale="large"] {
@@ -145,7 +207,20 @@ html[data-accessible-font="true"] {
   --nbi-line-height: inherit;
 }
 
-body, p, span, h1, h2, h3, button, input, select, textarea, .nbi-navbar__title, .nbi-sidebar__title, .nbi-map-card__info, .nbi-btn {
+body,
+p,
+span,
+h1,
+h2,
+h3,
+button,
+input,
+select,
+textarea,
+.nbi-navbar__title,
+.nbi-sidebar__title,
+.nbi-map-card__info,
+.nbi-btn {
   line-height: var(--nbi-line-height);
 }
 
@@ -171,6 +246,7 @@ html[data-horizontal-spacing="large"] {
 /* --- 7. REDUCIR MOVIMIENTO --- */
 /* Preferencia del sistema operativo (solo si el usuario no forzó 'false' de forma manual) */
 @media (prefers-reduced-motion: reduce) {
+
   html:not([data-reduced-motion="false"]) *,
   html:not([data-reduced-motion="false"]) *::before,
   html:not([data-reduced-motion="false"]) *::after {
@@ -200,7 +276,9 @@ html[data-reduced-motion="true"] *::after {
 /* --- 8. CURSOR GRANDE SEMÁNTICO --- */
 /* Cursores de la UI en alta resolución e invertidos (blancos con borde negro) */
 html[data-large-cursor="true"] {
-  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Cpath d='M2,2 L14,24 L19,16 L27,19 Z' fill='white' stroke='black' stroke-width='3' stroke-linejoin='round'/%3E%3C/svg%3E") 2 2, auto !important;
+  cursor:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 24 24' fill='white' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4.037 4.688a.495.495 0 0 1 .651-.651l16 6.5a.5.5 0 0 1-.063.947l-6.124 1.58a2 2 0 0 0-1.438 1.435l-1.579 6.126a.5.5 0 0 1-.947.063z'/%3E%3C/svg%3E") 5 5,
+    pointer !important;
 }
 
 html[data-large-cursor="true"] *,
@@ -211,16 +289,22 @@ html[data-large-cursor="true"] .nbi-color-chip,
 html[data-large-cursor="true"] .nbi-map-card,
 html[data-large-cursor="true"] [style*="cursor: pointer"],
 html[data-large-cursor="true"] [style*="cursor:pointer"] {
-  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Cpath d='M8,12 C8,9.79 9.79,8 12,8 C14.21,8 16,9.79 16,12 L16,16 C16.5,16 17,15.5 17,15 C17,13.9 17.9,13 19,13 C20.1,13 21,13.9 21,15 L21,17 C21.5,17 22,16.5 22,16 C22,14.9 22.9,14 24,14 C25.1,14 26,14.9 26,16 L26,22 C26,26.42 22.42,30 18,30 C13.58,30 10,26.42 10,22 L10,12 Z' fill='white' stroke='black' stroke-width='2.5'/%3E%3Cpath d='M10,12 L10,4 C10,2.9 10.9,2 12,2 C13.1,2 14,2.9 14,4 L14,12 Z' fill='white' stroke='black' stroke-width='2.5'/%3E%3C/svg%3E") 12 2, pointer !important;
+  cursor:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 24 24' fill='white' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M22 14a8 8 0 0 1-8 8'/%3E%3Cpath d='M18 11v-1a2 2 0 0 0-2-2a2 2 0 0 0-2 2'/%3E%3Cpath d='M14 10V9a2 2 0 0 0-2-2a2 2 0 0 0-2 2v1'/%3E%3Cpath d='M10 9.5V4a2 2 0 0 0-2-2a2 2 0 0 0-2 2v10'/%3E%3Cpath d='M18 11a2 2 0 1 1 4 0v3a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15'/%3E%3C/svg%3E") 16 16,
+    pointer !important;
 }
 
 /* Overrides para punteros semánticos interactivos sobre el Canvas de Fabric.js */
 html[data-large-cursor="true"] .upper-canvas[style*="cursor: default"] {
-  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Cpath d='M2,2 L14,24 L19,16 L27,19 Z' fill='white' stroke='black' stroke-width='3' stroke-linejoin='round'/%3E%3C/svg%3E") 2 2, default !important;
+  cursor:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 24 24' fill='white' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4.037 4.688a.495.495 0 0 1 .651-.651l16 6.5a.5.5 0 0 1-.063.947l-6.124 1.58a2 2 0 0 0-1.438 1.435l-1.579 6.126a.5.5 0 0 1-.947.063z'/%3E%3C/svg%3E") 5 5,
+    pointer !important;
 }
 
 html[data-large-cursor="true"] .upper-canvas[style*="cursor: pointer"] {
-  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Cpath d='M8,12 C8,9.79 9.79,8 12,8 C14.21,8 16,9.79 16,12 L16,16 C16.5,16 17,15.5 17,15 C17,13.9 17.9,13 19,13 C20.1,13 21,13.9 21,15 L21,17 C21.5,17 22,16.5 22,16 C22,14.9 22.9,14 24,14 C25.1,14 26,14.9 26,16 L26,22 C26,26.42 22.42,30 18,30 C13.58,30 10,26.42 10,22 L10,12 Z' fill='white' stroke='black' stroke-width='2.5'/%3E%3Cpath d='M10,12 L10,4 C10,2.9 10.9,2 12,2 C13.1,2 14,2.9 14,4 L14,12 Z' fill='white' stroke='black' stroke-width='2.5'/%3E%3C/svg%3E") 12 2, pointer !important;
+  cursor:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 24 24' fill='white' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M22 14a8 8 0 0 1-8 8'/%3E%3Cpath d='M18 11v-1a2 2 0 0 0-2-2a2 2 0 0 0-2 2'/%3E%3Cpath d='M14 10V9a2 2 0 0 0-2-2a2 2 0 0 0-2 2v1'/%3E%3Cpath d='M10 9.5V4a2 2 0 0 0-2-2a2 2 0 0 0-2 2v10'/%3E%3Cpath d='M18 11a2 2 0 1 1 4 0v3a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15'/%3E%3C/svg%3E") 16 16,
+    pointer !important;
 }
 
 html[data-large-cursor="true"] .upper-canvas[style*="cursor: crosshair"] {
@@ -228,17 +312,23 @@ html[data-large-cursor="true"] .upper-canvas[style*="cursor: crosshair"] {
 }
 
 html[data-large-cursor="true"] .upper-canvas[style*="cursor: text"] {
-  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Cpath d='M10,4 L22,4 M16,4 L16,28 M10,28 L22,28' stroke='white' stroke-width='4' stroke-linecap='round'/%3E%3Cpath d='M10,4 L22,4 M16,4 L16,28 M10,28 L22,28' stroke='black' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E") 16 16, text !important;
+  cursor:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 24 24' fill='none' stroke-linecap='round' stroke-linejoin='round'%3E%3Cg stroke='black' stroke-width='4'%3E%3Cpath d='M17 22h-1a4 4 0 0 1-4-4V6a4 4 0 0 1 4-4h1'/%3E%3Cpath d='M7 22h1a4 4 0 0 0 4-4'/%3E%3Cpath d='M7 2h1a4 4 0 0 1 4 4'/%3E%3C/g%3E%3Cg stroke='white' stroke-width='2'%3E%3Cpath d='M17 22h-1a4 4 0 0 1-4-4V6a4 4 0 0 1 4-4h1'/%3E%3Cpath d='M7 22h1a4 4 0 0 0 4-4'/%3E%3Cpath d='M7 2h1a4 4 0 0 1 4 4'/%3E%3C/g%3E%3C/svg%3E") 16 16,
+    text !important;
 }
 
 html[data-large-cursor="true"] .upper-canvas[style*="cursor: grab"],
 html[data-large-cursor="true"] [style*="cursor: grab"] {
-  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Cpath d='M16,4 C16,2.9 15.1,2 14,2 C12.9,2 12,2.9 12,4 L12,12 C12,12.5 11.5,13 11,13 C10.5,13 10,12.5 10,12 L10,6 C10,4.9 9.1,4 8,4 C6.9,4 6,4.9 6,6 L6,14 C6,14.5 5.5,15 5,15 C4.5,15 4,14.5 4,14 L4,9 C4,7.9 3.1,7 2,7 C0.9,7 0,7.9 0,9 L0,18 C0,24.63 5.37,30 12,30 C18.63,30 24,24.63 24,18 L24,10 C24,8.9 23.1,8 22,8 C20.9,8 20,8.9 20,10 L20,13 C19.5,13 19,12.5 19,12 C19,10.9 18.1,10 17,10 C15.9,10 15,10.9 15,12 L15,13 C14.5,13 14,12.5 14,12 L14,4 C14,2.9 14.9,2 16,2 C17.1,2 18,2.9 18,4 Z' fill='white' stroke='black' stroke-width='2.5'/%3E%3C/svg%3E") 12 12, grab !important;
+  cursor:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 24 24' fill='white' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M18 11V6a2 2 0 0 0-2-2a2 2 0 0 0-2 2'/%3E%3Cpath d='M14 10V4a2 2 0 0 0-2-2a2 2 0 0 0-2 2v2'/%3E%3Cpath d='M10 10.5V6a2 2 0 0 0-2-2a2 2 0 0 0-2 2v8'/%3E%3Cpath d='M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15'/%3E%3C/svg%3E") 16 16,
+    grab !important;
 }
 
 html[data-large-cursor="true"] .upper-canvas[style*="cursor: grabbing"],
 html[data-large-cursor="true"] [style*="cursor: grabbing"] {
-  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Cpath d='M8,14 C8,12.9 8.9,12 10,12 L10,15 C9.5,15 9,14.5 9,14 C9,12.9 9.9,12 11,12 L11,15 C10.5,15 10,14.5 10,14 C10,12.9 10.9,12 12,12 L12,16 C11.5,16 11,15.5 11,15 L11,13 M12,13 L12,6 C12,4.9 12.9,4 14,4 C15.1,4 16,4.9 16,6 L16,14 C16,20.63 10.63,26 4,26 C2,26 0,24 0,22 L0,18 C0,16.9 0.9,16 2,16 C3.1,16 4,16.9 4,18 L4,20 C4.5,20 5,19.5 5,19 C5,17.9 5.9,17 7,17 L7,20 C7.5,20 8,19.5 8,19 Z' fill='white' stroke='black' stroke-width='2.5'/%3E%3C/svg%3E") 12 12, grabbing !important;
+  cursor:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 24 24' fill='white' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M18 11.5V9a2 2 0 0 0-2-2a2 2 0 0 0-2 2v1.4'/%3E%3Cpath d='M14 10V8a2 2 0 0 0-2-2a2 2 0 0 0-2 2v2'/%3E%3Cpath d='M10 9.9V9a2 2 0 0 0-2-2a2 2 0 0 0-2 2v5'/%3E%3Cpath d='M6 14a2 2 0 0 0-2-2a2 2 0 0 0-2 2'/%3E%3Cpath d='M18 11a2 2 0 1 1 4 0v3a8 8 0 0 1-8 8h-4a8 8 0 0 1-8-8 2 2 0 1 1 4 0'/%3E%3C/svg%3E") 16 16,
+    grabbing !important;
 }
 
 /* --- 9. FILTROS VISUALES CROMÁTICOS --- */
