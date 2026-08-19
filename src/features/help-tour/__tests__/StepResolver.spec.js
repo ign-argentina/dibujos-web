@@ -58,6 +58,38 @@ describe('StepResolver', () => {
     expect(result.element).toBe(el)
   })
 
+  it('debería usar el contenedor del canvas si la superficie interna tiene altura cero', () => {
+    const canvas = document.createElement('canvas')
+    canvas.className = 'fabric-canvas'
+    canvas.getBoundingClientRect = () => ({
+      left: 0,
+      top: 0,
+      width: 900,
+      height: 0,
+      right: 900,
+      bottom: 0
+    })
+
+    const canvasRoot = document.createElement('div')
+    canvasRoot.className = 'canvas-root'
+    canvasRoot.getBoundingClientRect = () => ({
+      left: 0,
+      top: 0,
+      width: 900,
+      height: 600,
+      right: 900,
+      bottom: 600
+    })
+
+    root.append(canvas, canvasRoot)
+
+    const result = StepResolver.resolveTarget('[data-tour="canvas-area"]', { root })
+
+    expect(result.found).toBe(true)
+    expect(result.element).toBe(canvasRoot)
+    expect(result.rect.height).toBe(600)
+  })
+
   it('debería reportar not_found si el elemento no existe en el DOM', () => {
     const result = StepResolver.resolveTarget('[data-tour="non-existent"]', { root })
 

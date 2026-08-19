@@ -294,11 +294,8 @@ export class TourOverlay extends Component {
 
       if (e.key === 'ArrowLeft') {
         if (this.stepIndex > 0) {
-          const active = document.activeElement
-          if (active !== this.closeBtn && active !== this.nextBtn) {
-            e.preventDefault()
-            if (typeof this.onPrev === 'function') this.onPrev()
-          }
+          e.preventDefault()
+          if (typeof this.onPrev === 'function') this.onPrev()
         }
         return
       }

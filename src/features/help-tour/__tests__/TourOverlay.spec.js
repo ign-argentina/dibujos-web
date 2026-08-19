@@ -179,6 +179,25 @@ describe('TourOverlay', () => {
     overlay.destroy()
   })
 
+  it('debería volver al paso anterior con ArrowLeft aunque el foco esté en Siguiente', () => {
+    const onPrevMock = vi.fn()
+    const overlay = new TourOverlay(container, {
+      step: { id: 's2', title: 'Paso 2', text: 'Texto 2', placement: 'bottom' },
+      stepIndex: 1,
+      totalSteps: 3,
+      onPrev: onPrevMock
+    })
+    overlay.mount()
+
+    const nextBtn = container.querySelector('#tour-btn-next')
+    nextBtn.focus()
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowLeft', cancelable: true }))
+
+    expect(onPrevMock).toHaveBeenCalledTimes(1)
+
+    overlay.destroy()
+  })
+
   it('debería ciclar el foco dentro del tooltip con Tab y Shift+Tab (Focus Trap)', () => {
     const overlay = new TourOverlay(container, {
       step: { id: 's2', title: 'Paso 2', text: 'Texto 2', placement: 'bottom' },
