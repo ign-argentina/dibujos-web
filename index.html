@@ -26,12 +26,12 @@
     </nav>
 
     <!-- BOTÓN DE ENLACE EXTERNO (ESQUINA SUPERIOR DERECHA) -->
-    <a href="https://www.ign.gob.ar/AreaServicios/Descargas/MapasEscolares" target="_blank" rel="noopener noreferrer"
+<!--     <a href="https://www.ign.gob.ar/AreaServicios/Descargas/MapasEscolares" target="_blank" rel="noopener noreferrer"
       class="nbi-btn nbi-external-link" id="ign-link-btn" title="Ir a Mapas Escolares IGN (abre en nueva pestaña)"
       aria-label="Ir a Descargas de Mapas Escolares del Instituto Geográfico Nacional (abre en nueva pestaña)">
       <i data-lucide="link-2"></i>
       <span class="btn-text">Descargar Mapas Oficiales</span>
-    </a>
+    </a> -->
 
     <!-- PANEL LATERAL DE HERRAMIENTAS (CATÁLOGO Y ACCESIBILIDAD) -->
     <aside class="nbi-window-floating nbi-sidebar" id="sidebar-catalog" aria-label="Panel lateral de herramientas">
@@ -153,42 +153,6 @@
           <div class="nbi-color-selector" id="color-chips-container" role="radiogroup"
             aria-labelledby="color-section-label">
             <button type="button" role="radio" aria-checked="false" class="nbi-color-chip"
-              style="background-color: #82d3f8;" data-color="#82d3f8" title="Azul Pastel"
-              aria-label="Color Azul Pastel"></button>
-            <button type="button" role="radio" aria-checked="false" class="nbi-color-chip"
-              style="background-color: #7abe7d;" data-color="#7abe7d" title="Verde Pastel"
-              aria-label="Color Verde Pastel"></button>
-            <button type="button" role="radio" aria-checked="false" class="nbi-color-chip"
-              style="background-color: #e5828c;" data-color="#e5828c" title="Rosa Pastel"
-              aria-label="Color Rosa Pastel"></button>
-            <button type="button" role="radio" aria-checked="false" class="nbi-color-chip"
-              style="background-color: #cc94d6;" data-color="#cc94d6" title="Violeta Pastel"
-              aria-label="Color Violeta Pastel"></button>
-            <button type="button" role="radio" aria-checked="false" class="nbi-color-chip"
-              style="background-color: #FFA07A;" data-color="#FFA07A" title="Salmón Claro"
-              aria-label="Color Salmón Claro"></button>
-            <button type="button" role="radio" aria-checked="false" class="nbi-color-chip"
-              style="background-color: #FFD700;" data-color="#FFD700" title="Oro Amarillo"
-              aria-label="Color Oro Amarillo"></button>
-            <button type="button" role="radio" aria-checked="false" class="nbi-color-chip"
-              style="background-color: #98FB98;" data-color="#98FB98" title="Verde Pálido"
-              aria-label="Color Verde Pálido"></button>
-            <button type="button" role="radio" aria-checked="false" class="nbi-color-chip"
-              style="background-color: #AFEEEE;" data-color="#AFEEEE" title="Turquesa Pálido"
-              aria-label="Color Turquesa Pálido"></button>
-            <button type="button" role="radio" aria-checked="false" class="nbi-color-chip"
-              style="background-color: #FFB6C1;" data-color="#FFB6C1" title="Rosa Claro"
-              aria-label="Color Rosa Claro"></button>
-            <button type="button" role="radio" aria-checked="false" class="nbi-color-chip"
-              style="background-color: #B0C4DE;" data-color="#B0C4DE" title="Azul Acero"
-              aria-label="Color Azul Acero"></button>
-            <button type="button" role="radio" aria-checked="false" class="nbi-color-chip"
-              style="background-color: #E6E6FA;" data-color="#E6E6FA" title="Lavanda"
-              aria-label="Color Lavanda"></button>
-            <button type="button" role="radio" aria-checked="false" class="nbi-color-chip"
-              style="background-color: #FFA500;" data-color="#FFA500" title="Naranja Neo-Brutalista"
-              aria-label="Color Naranja Neo-Brutalista"></button>
-            <button type="button" role="radio" aria-checked="false" class="nbi-color-chip"
               style="background-color: #FFFFFF;" data-color="#FFFFFF" title="Blanco Nítido"
               aria-label="Color Blanco Nítido"></button>
             <button type="button" role="radio" aria-checked="false" class="nbi-color-chip"
@@ -216,8 +180,7 @@
             <input class="nbi-slider" id="stroke-slider" type="range" min="2" max="24" value="4"
               aria-label="Grosor del lápiz en píxeles" />
           </div>
-          <div class="nbi-history-zoom-group" data-tour="history-zoom-controls">
-            <div class="nbi-history-controls" style="display: flex; gap: 8px; margin-top: 12px; width: 100%;">
+            <div class="nbi-history-controls" style="display: flex; gap: 8px; margin-top: 12px; width: 100%;" data-tour="history-controls">
               <button class="nbi-btn" id="action-undo" title="Deshacer (Ctrl+Z)" aria-label="Deshacer"
                 style="flex: 1; justify-content: center; gap: 8px; font-size: 0.85rem; min-height: 40px; padding: 6px 12px;"
                 disabled>
@@ -244,7 +207,6 @@
                 <i data-lucide="zoom-out"></i>
               </button>
             </div>
-          </div>
           <button class="nbi-btn nbi-btn--danger" id="tool-clear" title="Borrar todo el dibujo"
             aria-label="Borrar todo el dibujo del mapa"
             style="width: 100%; margin-top: 12px; justify-content: center; gap: 8px;">
@@ -317,9 +279,9 @@
               <span class="nbi-export-modal__label">Destino:</span>
               <div class="nbi-filter-group" role="radiogroup" aria-label="Destino de la exportación">
                 <button type="button" class="nbi-filter-group__btn is-active" id="exp-dest-save" data-dest="save"
-                  aria-pressed="true">Guardar archivo</button>
+                  aria-pressed="true">Guardado de archivo</button>
                 <button type="button" class="nbi-filter-group__btn" id="exp-dest-print" data-dest="print"
-                  aria-pressed="false">Imprimir</button>
+                  aria-pressed="false">Impresión</button>
               </div>
             </div>
 

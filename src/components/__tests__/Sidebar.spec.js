@@ -52,6 +52,23 @@ describe('Sidebar', () => {
     sidebar.destroy()
   })
 
+  it('debería renderizar rutas SVG del repositorio como iconos de solapa', () => {
+    const svgPath = 'public/icono-mapa-mapas-escolares-01.svg'
+    const sidebar = new Sidebar(container, {
+      views: [{ id: 'maps', label: 'Mapas', title: 'Elegí tu Mapa', icon: svgPath }]
+    })
+    sidebar.mount()
+
+    const icon = container.querySelector('#tab-maps img')
+    expect(icon).not.toBeNull()
+    expect(icon.getAttribute('src')).toContain('icono-mapa-mapas-escolares-01.svg')
+    expect(icon.getAttribute('src')).not.toContain('/public/')
+    expect(icon.getAttribute('aria-hidden')).toBe('true')
+    expect(container.querySelector('#tab-maps i')).toBeNull()
+
+    sidebar.destroy()
+  })
+
   it('debería abrir el panel y marcar la pestaña correspondiente al hacer clic en una solapa estando cerrado', () => {
     const sidebar = new Sidebar(container, { views })
     sidebar.mount()

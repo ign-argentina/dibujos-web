@@ -288,7 +288,7 @@ export async function bootstrap() {
           id: 'maps',
           label: 'Mapas',
           title: 'Elegí tu Mapa',
-          icon: 'map'
+          icon: 'public/icono-mapa-mapas-escolares-01.svg'
         },
         {
           id: 'accessibility',

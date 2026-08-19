@@ -288,6 +288,12 @@
   stroke-width: 2.5px;
 }
 
+.nbi-sidebar__tab img {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+}
+
 /* --- CONTENEDORES DE VISTAS --- */
 .nbi-sidebar__window {
   flex: 1;

@@ -32,8 +32,17 @@ export class Sidebar extends Component {
         tabButton.setAttribute('title', view.label)
         tabButton.setAttribute('aria-label', view.label)
 
-        const icon = document.createElement('i')
-        icon.setAttribute('data-lucide', view.icon)
+        const isSvgIcon = typeof view.icon === 'string' && /\.svg(?:[?#].*)?$/i.test(view.icon)
+        const icon = document.createElement(isSvgIcon ? 'img' : 'i')
+
+        if (isSvgIcon) {
+          const iconPath = view.icon.replace(/^\/+/, '').replace(/^public\//i, '')
+          icon.src = `${import.meta.env.BASE_URL}${iconPath}`
+          icon.alt = ''
+          icon.setAttribute('aria-hidden', 'true')
+        } else {
+          icon.setAttribute('data-lucide', view.icon)
+        }
 
         tabButton.appendChild(icon)
         this.tabsContainer.appendChild(tabButton)

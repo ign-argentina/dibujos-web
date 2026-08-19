@@ -72,9 +72,9 @@ export const generalTour = {
     },
     {
       id: 'history-zoom-controls',
-      target: '[data-tour="history-zoom-controls"]',
-      title: 'Historial y zoom',
-      text: 'Los botones de Deshacer y Rehacer permiten corregir cambios en el dibujo, mientras que los controles de lupa acercan, alejan o restablecen la vista del mapa.',
+      target: '[data-tour="history-controls"]',
+      title: 'Historial',
+      text: 'Los botones de Deshacer y Rehacer permiten corregir cambios en el dibujo.',
       placement: 'left'
     },
     {
