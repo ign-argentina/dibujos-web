@@ -2,20 +2,26 @@
   "mapImageSource": "imagePath",
   "maps": [
     {
-      "id": "planisferio",
-      "name": "Planisferio",
+      "id": "planisferio-mercator",
+      "name": "Planisferio Mercator",
       "thumbnailUrl": "/maps/thumbnails/MapaEscolar000_Planisferio_2000x2500.png",
-      "imagePath": "/maps/MapaEscolar000_Planisferio_2000x2500.png",
-      "imageUrl": "https://mapasescolares.ign.gob.ar/images/mapas/MapaEscolar000_Planisferio_2000x2500.png",
+      "imagePath": "/maps/PLANISFERIO-MERCATOR-Nº3-2023.webp",
+      "category": "otros",
+      "isPortrait": false
+    },
+    {
+      "id": "planisferio-aitoff",
+      "name": "Planisferio Aitoff",
+      "thumbnailUrl": "/maps/PLANISFERIO-AITOFF-Nº3_2023.webp",
+      "imagePath": "/maps/PLANISFERIO-AITOFF-Nº3_2023.webp",
       "category": "otros",
       "isPortrait": false
     },
     {
       "id": "america",
       "name": "Mapa de América",
-      "thumbnailUrl": "/maps/thumbnails/MapaEscolar000_America_2000x2500.png",
-      "imagePath": "/maps/MapaEscolar000_America_2000x2500.png",
-      "imageUrl": "https://mapasescolares.ign.gob.ar/images/mapas/MapaEscolar000_America_2000x2500.png",
+      "thumbnailUrl": "/maps/CONTINENTE-AMERICANO-POL-MUDO-Nº3_2023.webp",
+      "imagePath": "/maps/CONTINENTE-AMERICANO-POL-MUDO-Nº3_2023.webp",
       "category": "otros",
       "isPortrait": true
     },
@@ -25,6 +31,14 @@
       "thumbnailUrl": "/maps/thumbnails/MapaEscolar000_ArgentinaBicontinental_2000x2500.png",
       "imagePath": "/maps/MapaEscolar000_ArgentinaBicontinental_2000x2500.png",
       "imageUrl": "https://mapasescolares.ign.gob.ar/images/mapas/MapaEscolar000_ArgentinaBicontinental_2000x2500.png",
+      "category": "otros",
+      "isPortrait": true
+    },
+    {
+      "id": "argentina-pca",
+      "name": "Mapa de Argentina Parte Continental Americana",
+      "thumbnailUrl": "/maps/ARG-PCA-Nº3-mudo-2023.webp",
+      "imagePath": "/maps/ARG-PCA-Nº3-mudo-2023.webp",
       "category": "otros",
       "isPortrait": true
     },
