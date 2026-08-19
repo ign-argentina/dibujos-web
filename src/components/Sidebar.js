@@ -25,6 +25,7 @@ export class Sidebar extends Component {
         tabButton.type = 'button'
         tabButton.className = 'nbi-sidebar__tab'
         tabButton.id = `tab-${view.id}`
+        tabButton.setAttribute('data-tour', `sidebar-${view.id}`)
         tabButton.role = 'tab'
         tabButton.setAttribute('aria-selected', 'false')
         tabButton.setAttribute('aria-controls', `view-${view.id}`)

@@ -22,13 +22,15 @@ describe('Sidebar', () => {
           <div id="map-cards-container"></div>
         </div>
         <div class="nbi-sidebar__view hidden" id="view-accessibility"></div>
+        <div class="nbi-sidebar__view hidden" id="view-help"></div>
       </div>
     `
     document.body.appendChild(container)
 
     views = [
       { id: 'maps', label: 'Mapas', title: 'Elegí tu Mapa', icon: 'map' },
-      { id: 'accessibility', label: 'Accesibilidad', title: 'Accesibilidad', icon: 'accessibility' }
+      { id: 'accessibility', label: 'Accesibilidad', title: 'Accesibilidad', icon: 'accessibility' },
+      { id: 'help', label: 'Ayuda', title: 'Ayuda', icon: 'circle-question-mark' }
     ]
   })
 
@@ -42,9 +44,10 @@ describe('Sidebar', () => {
     sidebar.mount()
 
     const tabs = container.querySelectorAll('.nbi-sidebar__tab')
-    expect(tabs.length).toBe(2)
+    expect(tabs.length).toBe(3)
     expect(tabs[0].getAttribute('aria-label')).toBe('Mapas')
     expect(tabs[1].getAttribute('aria-label')).toBe('Accesibilidad')
+    expect(tabs[2].getAttribute('aria-label')).toBe('Ayuda')
 
     sidebar.destroy()
   })
@@ -71,18 +74,31 @@ describe('Sidebar', () => {
 
     const tabMaps = container.querySelector('#tab-maps')
     const tabAccess = container.querySelector('#tab-accessibility')
+    const tabHelp = container.querySelector('#tab-help')
 
     // Abrir con Maps
     tabMaps.click()
     expect(sidebar.activeViewId).toBe('maps')
     expect(container.querySelector('#view-maps').classList.contains('hidden')).toBe(false)
     expect(container.querySelector('#view-accessibility').classList.contains('hidden')).toBe(true)
+    expect(container.querySelector('#view-help').classList.contains('hidden')).toBe(true)
+    expect(container.querySelector('#sidebar-title').textContent).toBe('Elegí tu Mapa')
 
     // Cambiar a Accesibilidad
     tabAccess.click()
     expect(sidebar.activeViewId).toBe('accessibility')
     expect(container.querySelector('#view-maps').classList.contains('hidden')).toBe(true)
     expect(container.querySelector('#view-accessibility').classList.contains('hidden')).toBe(false)
+    expect(container.querySelector('#view-help').classList.contains('hidden')).toBe(true)
+    expect(container.querySelector('#sidebar-title').textContent).toBe('Accesibilidad')
+
+    // Cambiar a Ayuda
+    tabHelp.click()
+    expect(sidebar.activeViewId).toBe('help')
+    expect(container.querySelector('#view-maps').classList.contains('hidden')).toBe(true)
+    expect(container.querySelector('#view-accessibility').classList.contains('hidden')).toBe(true)
+    expect(container.querySelector('#view-help').classList.contains('hidden')).toBe(false)
+    expect(container.querySelector('#sidebar-title').textContent).toBe('Ayuda')
     expect(container.classList.contains('is-collapsed')).toBe(false)
 
     sidebar.destroy()
@@ -137,21 +153,32 @@ describe('Sidebar', () => {
     sidebar.destroy()
   })
 
-  it('debería admitir navegación por teclado (flechas) entre solapas', () => {
+  it('debería admitir navegación por teclado (flechas) entre las 3 solapas con ciclo continuo', () => {
     const sidebar = new Sidebar(container, { views })
     sidebar.mount()
 
     const tabMaps = container.querySelector('#tab-maps')
     const tabAccess = container.querySelector('#tab-accessibility')
+    const tabHelp = container.querySelector('#tab-help')
 
     tabMaps.focus()
     expect(document.activeElement).toBe(tabMaps)
 
     // Flecha abajo -> enfoca accesibilidad
-    const arrowDownEvent = new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true })
-    tabMaps.dispatchEvent(arrowDownEvent)
-
+    tabMaps.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true }))
     expect(document.activeElement).toBe(tabAccess)
+
+    // Flecha abajo -> enfoca ayuda
+    tabAccess.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true }))
+    expect(document.activeElement).toBe(tabHelp)
+
+    // Flecha abajo -> cicla y vuelve a maps
+    tabHelp.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true }))
+    expect(document.activeElement).toBe(tabMaps)
+
+    // Flecha arriba -> cicla hacia atrás a ayuda
+    tabMaps.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowUp', bubbles: true }))
+    expect(document.activeElement).toBe(tabHelp)
 
     sidebar.destroy()
   })

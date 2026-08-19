@@ -1,0 +1,93 @@
+/* ==========================================================================
+   ESTILOS PARA EL PANEL DE AYUDA (DESIGN SYSTEM NEO-BRUTALISTA)
+   ========================================================================== */
+
+.nbi-help-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--nbi-space-lg);
+  height: 100%;
+  overflow-y: auto;
+  padding: 16px 16px 24px 16px;
+}
+
+.nbi-help-card {
+  border: var(--nbi-border-width-md) solid var(--nbi-color-black);
+  border-radius: 12px;
+  padding: var(--nbi-space-md);
+  background-color: var(--nbi-color-white);
+  box-shadow: var(--nbi-shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: var(--nbi-space-md);
+}
+
+.nbi-help-card__header {
+  display: flex;
+  align-items: center;
+  gap: var(--nbi-space-sm);
+  border-bottom: 2px solid var(--nbi-color-black);
+  padding-bottom: var(--nbi-space-xs);
+}
+
+.nbi-help-card__icon {
+  width: 20px;
+  height: 20px;
+  stroke-width: 2.5px;
+  color: var(--nbi-color-black);
+}
+
+.nbi-help-card__title {
+  font-size: var(--nbi-font-size-base);
+  font-weight: var(--nbi-font-weight-bold);
+  color: var(--nbi-color-black);
+  margin: 0;
+}
+
+.nbi-help-card__description {
+  font-size: var(--nbi-font-size-base);
+  line-height: 1.45;
+  color: var(--nbi-color-black);
+  margin: 0;
+}
+
+.nbi-help-card__note {
+  font-size: var(--nbi-font-size-sm);
+  line-height: 1.4;
+  color: var(--nbi-color-muted);
+  font-weight: var(--nbi-font-weight-semibold);
+  margin: 0;
+}
+
+.nbi-help-panel__start-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--nbi-space-sm);
+  margin-top: var(--nbi-space-xs);
+  min-height: 48px;
+}
+
+.nbi-help-panel__start-btn svg {
+  width: 20px;
+  height: 20px;
+  stroke-width: 2.5px;
+}
+
+/* Custom scrollbar coherente con el sidebar */
+.nbi-help-panel::-webkit-scrollbar {
+  width: 12px;
+}
+
+.nbi-help-panel::-webkit-scrollbar-track {
+  background: var(--nbi-color-white);
+  border-left: var(--nbi-border-width-md) solid var(--nbi-color-black);
+  border-radius: 6px;
+}
+
+.nbi-help-panel::-webkit-scrollbar-thumb {
+  background: var(--nbi-color-black);
+  border: 2px solid var(--nbi-color-white);
+  border-radius: 6px;
+}

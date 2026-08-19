@@ -4,6 +4,7 @@ import {
   Link2,
   ChevronLeft,
   ChevronRight,
+  Check,
   Hand,
   SquareDashedMousePointer,
   Pencil,
@@ -52,7 +53,8 @@ import {
   AlignJustify,
   Space,
   RefreshCw,
-  CircleDot
+  CircleDot,
+  CircleQuestionMark
 } from 'lucide'
 
 // Expose lucide globally to maintain vanilla JS components compatibility
@@ -63,6 +65,7 @@ window.lucide = {
         Link2,
         ChevronLeft,
         ChevronRight,
+        Check,
         Hand,
         SquareDashedMousePointer,
         Pencil,
@@ -111,7 +114,8 @@ window.lucide = {
         AlignJustify,
         Space,
         RefreshCw,
-        CircleDot
+        CircleDot,
+        CircleQuestionMark
       }
     })
 }

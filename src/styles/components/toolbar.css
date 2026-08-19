@@ -27,3 +27,9 @@
   border-radius: 2px;
   flex-shrink: 0;
 }
+
+.nbi-toolbar__group {
+  display: flex;
+  align-items: center;
+  gap: var(--nbi-space-sm);
+}

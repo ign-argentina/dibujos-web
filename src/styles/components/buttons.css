@@ -52,6 +52,7 @@
 }
 
 /* Modificadores de Color */
+.nbi-btn--secondary,
 .nbi-btn--action {
   background-color: var(--nbi-color-secondary);
 }

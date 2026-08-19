@@ -4,6 +4,7 @@ import { persistenceService, isQuotaExceededError } from '../core/persistence/Pe
 import { MapSelector } from '../components/MapSelector.js'
 import { Sidebar } from '../components/Sidebar.js'
 import { AccessibilityPanel } from '../components/AccessibilityPanel.js'
+import { HelpPanel } from '../components/HelpPanel.js'
 import { AccessibilityManager } from '../core/accessibility/AccessibilityManager.js'
 import { ContextMenu } from '../features/context-menu/ContextMenu.js'
 import { ExportModal } from '../features/export-modal/ExportModal.js'
@@ -12,6 +13,10 @@ import { ColorPalette } from '../features/color-palette/ColorPalette.js'
 import { StickersPanel } from '../features/stickers-panel/StickersPanel.js'
 import { configRepository } from '../core/repositories/ConfigRepository.js'
 import { mapRepository } from '../core/repositories/MapRepository.js'
+import { TourController } from '../features/help-tour/TourController.js'
+import { generalTour } from '../features/help-tour/tours/generalTour.js'
+import { TourWelcomeModal } from '../features/help-tour/TourWelcomeModal.js'
+import { TourStorage } from '../features/help-tour/TourStorage.js'
 
 /**
  * Inicializa y configura todas las capas y componentes de la aplicación.
@@ -290,6 +295,12 @@ export async function bootstrap() {
           label: 'Accesibilidad',
           title: 'Accesibilidad',
           icon: 'person-standing'
+        },
+        {
+          id: 'help',
+          label: 'Ayuda',
+          title: 'Ayuda',
+          icon: 'circle-question-mark'
         }
       ]
     })
@@ -307,14 +318,54 @@ export async function bootstrap() {
     )
     accessibilityPanel.mount()
 
+    // 5. Inicializar controlador y modal de bienvenida del recorrido guiado
+    const tourController = new TourController({
+      canvasManager,
+      sidebar,
+      appStore
+    })
+
+    const welcomeModal = new TourWelcomeModal(document.body, {
+      onStart: ({ dontShowAgain }) => {
+        if (dontShowAgain) {
+          TourStorage.setTourAutoPromptDismissed(generalTour.id, generalTour.version)
+        }
+        tourController.start(generalTour)
+      },
+      onDismiss: ({ dontShowAgain }) => {
+        if (dontShowAgain) {
+          TourStorage.setTourAutoPromptDismissed(generalTour.id, generalTour.version)
+        }
+      }
+    })
+    welcomeModal.mount()
+
+    const helpViewContainer = sidebarContainer.querySelector('#view-help')
+    if (helpViewContainer) {
+      const helpPanel = new HelpPanel(helpViewContainer, {
+        onStartTour: (e) => {
+          const triggerEl = e && e.currentTarget ? e.currentTarget : null
+          tourController.start(generalTour, triggerEl)
+        }
+      })
+      helpPanel.mount()
+    }
+
     if (window.lucide) {
       window.lucide.createIcons()
     }
 
-    // 5. Activar por defecto la primera provincia del catálogo
+    // 6. Activar por defecto la primera provincia del catálogo
     const maps = await mapRepository.getAll()
     if (maps.length > 0) {
       appStore.dispatch({ type: 'SET_ACTIVE_MAP_ID', payload: maps[0].id })
+    }
+
+    // 7. Mostrar invitación automática en el primer arranque si corresponde
+    if (TourStorage.shouldShowAutoPrompt(generalTour.id, generalTour.version)) {
+      setTimeout(() => {
+        welcomeModal.open()
+      }, 700)
     }
   } catch (err) {
     console.error('Error al inicializar la aplicación:', err)

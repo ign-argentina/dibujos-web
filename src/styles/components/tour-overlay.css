@@ -1,0 +1,189 @@
+/* ==========================================================================
+   ESTILOS PARA EL OVERLAY DEL TOUR GUIADO (DESIGN SYSTEM NEO-BRUTALISTA)
+   ========================================================================== */
+
+.nbi-tour-overlay {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: var(--nbi-z-modal);
+  pointer-events: auto;
+  overflow: hidden;
+  user-select: none;
+}
+
+/* Máscara SVG de oscurecimiento y recorte del spotlight */
+.nbi-tour-mask {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: auto;
+  cursor: default;
+}
+
+/* Marco visual Neo-Brutalista sobre el elemento resaltado */
+.nbi-tour-spotlight-frame {
+  position: absolute;
+  pointer-events: none;
+  border: var(--nbi-border-width-md) solid var(--nbi-color-accent);
+  border-radius: var(--nbi-radius-button);
+  box-shadow: 0 0 0 2px var(--nbi-color-black);
+  transition: top var(--nbi-transition-fast), left var(--nbi-transition-fast),
+              width var(--nbi-transition-fast), height var(--nbi-transition-fast);
+  box-sizing: border-box;
+}
+
+/* Ventana flotante del tooltip */
+.nbi-tour-tooltip {
+  position: absolute;
+  width: 340px;
+  max-width: calc(100vw - 24px);
+  background-color: var(--nbi-color-white);
+  border: var(--nbi-border-width-md) solid var(--nbi-color-black);
+  border-radius: var(--nbi-radius-panel);
+  box-shadow: var(--nbi-shadow-lg);
+  padding: var(--nbi-space-md);
+  z-index: calc(var(--nbi-z-modal) + 2);
+  display: flex;
+  flex-direction: column;
+  gap: var(--nbi-space-sm);
+  pointer-events: auto;
+  box-sizing: border-box;
+  outline: none;
+  transition: transform var(--nbi-transition-fast), opacity var(--nbi-transition-fast);
+}
+
+/* Encabezado del tooltip */
+.nbi-tour-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--nbi-space-sm);
+  border-bottom: 2px solid var(--nbi-color-black);
+  padding-bottom: var(--nbi-space-xs);
+}
+
+/* Badge de progreso "Paso X de N" */
+.nbi-tour-badge {
+  display: inline-flex;
+  align-items: center;
+  background-color: var(--nbi-color-accent);
+  border: 2px solid var(--nbi-color-black);
+  border-radius: 6px;
+  padding: 2px 8px;
+  font-size: var(--nbi-font-size-xs);
+  font-weight: var(--nbi-font-weight-bold);
+  color: var(--nbi-color-black);
+  box-shadow: 1px 1px 0px 0px var(--nbi-color-black);
+  letter-spacing: 0.2px;
+}
+
+/* Título y descripción del paso */
+.nbi-tour-title {
+  font-size: var(--nbi-font-size-md);
+  font-weight: var(--nbi-font-weight-bold);
+  color: var(--nbi-color-black);
+  margin: 0;
+  line-height: 1.25;
+}
+
+.nbi-tour-desc {
+  font-size: var(--nbi-font-size-base);
+  line-height: 1.45;
+  color: var(--nbi-color-black);
+  margin: 0;
+}
+
+/* Pie y botones de navegación */
+.nbi-tour-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--nbi-space-sm);
+  margin-top: var(--nbi-space-xs);
+  padding-top: var(--nbi-space-xs);
+}
+
+.nbi-tour-footer__controls {
+  display: flex;
+  align-items: center;
+  gap: var(--nbi-space-sm);
+}
+
+/* Flecha indicadora del tooltip */
+.nbi-tour-arrow {
+  position: absolute;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+  z-index: calc(var(--nbi-z-modal) + 3);
+}
+
+/* Orientaciones de flecha */
+.nbi-tour-arrow[data-placement="bottom"] {
+  top: -10px;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-bottom: 10px solid var(--nbi-color-black);
+  transform: translateX(-50%);
+}
+
+.nbi-tour-arrow[data-placement="top"] {
+  bottom: -10px;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-top: 10px solid var(--nbi-color-black);
+  transform: translateX(-50%);
+}
+
+.nbi-tour-arrow[data-placement="right"] {
+  left: -10px;
+  border-top: 10px solid transparent;
+  border-bottom: 10px solid transparent;
+  border-right: 10px solid var(--nbi-color-black);
+  transform: translateY(-50%);
+}
+
+.nbi-tour-arrow[data-placement="left"] {
+  right: -10px;
+  border-top: 10px solid transparent;
+  border-bottom: 10px solid transparent;
+  border-left: 10px solid var(--nbi-color-black);
+  transform: translateY(-50%);
+}
+
+/* --- INTEGRACIÓN CON REDUCED MOTION --- */
+@media (prefers-reduced-motion: reduce) {
+  .nbi-tour-spotlight-frame,
+  .nbi-tour-tooltip {
+    transition: none !important;
+  }
+}
+
+html[data-reduced-motion="true"] .nbi-tour-spotlight-frame,
+html[data-reduced-motion="true"] .nbi-tour-tooltip {
+  transition: none !important;
+}
+
+/* --- ADAPTACIÓN RESPONSIVE --- */
+@media (max-width: 480px) {
+  .nbi-tour-tooltip {
+    width: calc(100vw - 20px);
+    max-width: calc(100vw - 20px);
+    padding: var(--nbi-space-sm);
+  }
+
+  .nbi-tour-title {
+    font-size: var(--nbi-font-size-base);
+  }
+
+  .nbi-tour-desc {
+    font-size: var(--nbi-font-size-sm);
+  }
+
+  .nbi-tour-footer {
+    flex-wrap: wrap;
+  }
+}

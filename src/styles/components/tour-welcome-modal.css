@@ -1,0 +1,94 @@
+/* ==========================================================================
+   ESTILOS PARA EL MODAL DE BIENVENIDA / INVITACIÓN DEL TOUR GUIADO
+   ========================================================================== */
+
+.nbi-tour-welcome-dialog {
+  width: 520px;
+  max-width: 92vw;
+  display: flex;
+  flex-direction: column;
+  gap: var(--nbi-space-md);
+  box-sizing: border-box;
+}
+
+.nbi-tour-welcome-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: var(--nbi-border-width-md) solid var(--nbi-color-black);
+  padding-bottom: var(--nbi-space-sm);
+}
+
+.nbi-tour-welcome-title-group {
+  display: flex;
+  align-items: center;
+  gap: var(--nbi-space-sm);
+}
+
+.nbi-tour-welcome-icon {
+  width: 28px;
+  height: 28px;
+  color: var(--nbi-secondary-color);
+  flex-shrink: 0;
+}
+
+.nbi-tour-welcome-title {
+  font-size: var(--nbi-font-size-lg);
+  font-weight: var(--nbi-font-weight-bold);
+  color: var(--nbi-color-black);
+  margin: 0;
+  line-height: 1.25;
+}
+
+.nbi-tour-welcome-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--nbi-space-sm);
+}
+
+.nbi-tour-welcome-desc {
+  font-size: var(--nbi-font-size-base);
+  line-height: 1.5;
+  color: var(--nbi-color-black);
+  margin: 0;
+}
+
+.nbi-tour-welcome-note {
+  font-size: var(--nbi-font-size-sm);
+  line-height: 1.45;
+  color: var(--nbi-color-black);
+  margin: 0;
+  background-color: var(--nbi-color-panel-bg);
+  border: 1px solid var(--nbi-color-black);
+  border-radius: var(--nbi-radius-button);
+  padding: 8px 12px;
+}
+
+.nbi-tour-welcome-checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: var(--nbi-space-sm);
+  font-size: var(--nbi-font-size-sm);
+  font-weight: var(--nbi-font-weight-bold);
+  color: var(--nbi-color-black);
+  cursor: pointer;
+  margin-top: var(--nbi-space-xs);
+  user-select: none;
+}
+
+.nbi-tour-welcome-checkbox-label input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  accent-color: var(--nbi-secondary-color);
+}
+
+.nbi-tour-welcome-footer {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: var(--nbi-space-sm);
+  margin-top: var(--nbi-space-xs);
+  border-top: 1px solid var(--nbi-color-black);
+  padding-top: var(--nbi-space-sm);
+}
