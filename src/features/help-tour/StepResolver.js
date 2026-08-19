@@ -14,6 +14,7 @@ export const DEFAULT_FALLBACK_MAP = {
 
 const CANVAS_TARGET_SELECTOR = '[data-tour="canvas-area"]'
 const CANVAS_ALTERNATIVE_SELECTORS = [
+  '#editor-container',
   '.canvas-root',
   '.fabric-canvas-wrapper',
   '.canvas-container',
@@ -64,23 +65,34 @@ export class StepResolver {
       return null
     }
 
-    const hasDimensions = (candidate, rect) => (
+    const hasDimensions = (candidate, rect) => Boolean(candidate) && (
       rect
         ? rect.width > 0 || rect.height > 0
         : (candidate.offsetWidth || 0) > 0 || (candidate.offsetHeight || 0) > 0
+    )
+
+    const hasCanvasDimensions = (candidate, rect) => Boolean(candidate) && (
+      rect
+        ? rect.width > 0 && rect.height > 0
+        : (candidate.offsetWidth || 0) > 0 && (candidate.offsetHeight || 0) > 0
     )
 
     let rect = element ? getRect(element) : null
 
     // El canvas interno de Fabric puede tener altura cero; en ese caso se
     // busca su contenedor visual, que sí representa toda el área de trabajo.
-    if (!element || (targetSelector === CANVAS_TARGET_SELECTOR && !hasDimensions(element, rect))) {
+    if (!element || (targetSelector === CANVAS_TARGET_SELECTOR && !hasCanvasDimensions(element, rect))) {
       for (const selector of selectors) {
         if (!selector) continue
+        if (selector === targetSelector) continue
         const candidate = root.querySelector(selector)
         const candidateRect = candidate ? getRect(candidate) : null
 
-        if (candidate && hasDimensions(candidate, candidateRect)) {
+        const candidateHasDimensions = targetSelector === CANVAS_TARGET_SELECTOR
+          ? hasCanvasDimensions(candidate, candidateRect)
+          : hasDimensions(candidate, candidateRect)
+
+        if (candidate && candidateHasDimensions) {
           element = candidate
           rect = candidateRect
           break
@@ -92,7 +104,11 @@ export class StepResolver {
       return { found: false, element: null, rect: null, status: 'not_found' }
     }
 
-    if (!hasDimensions(element, rect)) {
+    const resolvedHasDimensions = targetSelector === CANVAS_TARGET_SELECTOR
+      ? hasCanvasDimensions(element, rect)
+      : hasDimensions(element, rect)
+
+    if (!resolvedHasDimensions) {
       return { found: false, element, rect, status: 'zero_dimension' }
     }
 

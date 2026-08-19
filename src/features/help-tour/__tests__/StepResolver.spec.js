@@ -90,6 +90,39 @@ describe('StepResolver', () => {
     expect(result.rect.height).toBe(600)
   })
 
+  it('debería preferir el contenedor real del editor cuando el main no tiene altura', () => {
+    const main = document.createElement('main')
+    main.id = 'main-content'
+    main.setAttribute('data-tour', 'canvas-area')
+    main.getBoundingClientRect = () => ({
+      left: 0,
+      top: 0,
+      width: 900,
+      height: 0,
+      right: 900,
+      bottom: 0
+    })
+
+    const editor = document.createElement('div')
+    editor.id = 'editor-container'
+    editor.className = 'canvas-root'
+    editor.getBoundingClientRect = () => ({
+      left: 0,
+      top: 0,
+      width: 900,
+      height: 600,
+      right: 900,
+      bottom: 600
+    })
+
+    root.append(main, editor)
+
+    const result = StepResolver.resolveTarget('[data-tour="canvas-area"]', { root })
+
+    expect(result.element).toBe(editor)
+    expect(result.rect.height).toBe(600)
+  })
+
   it('debería reportar not_found si el elemento no existe en el DOM', () => {
     const result = StepResolver.resolveTarget('[data-tour="non-existent"]', { root })
 
