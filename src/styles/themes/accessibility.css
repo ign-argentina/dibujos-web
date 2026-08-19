@@ -38,35 +38,23 @@ html[data-theme="hc-dark"] {
   --nbi-shadow-lg: 7px 7px 0px 0px #000000;
 }
 
-/* Indicador de foco reforzado en Alto Contraste Oscuro */
-html[data-theme="hc-dark"] *:focus-visible {
-  outline: 4px solid #ffff00 !important;
+/* Indicador de foco reforzado en Alto Contraste (Oscuro y Claro) */
+html:is([data-theme="hc-dark"], [data-theme="hc-light"]) *:focus-visible {
+  outline: 4px solid var(--nbi-color-primary) !important;
   outline-offset: 4px !important;
-  box-shadow: 0 0 0 6px #000000 !important;
+  box-shadow: 0 0 0 6px var(--nbi-color-bg-main) !important;
 }
 
 /* Filtros en Alto Contraste para SVGs/Stickers (remueve la opacidad baja y gris) */
-html[data-theme="hc-dark"] .nbi-stickers__img {
+html[data-theme^="hc-"] .nbi-stickers__img {
   filter: none !important;
 }
 
-html[data-theme="hc-dark"] .nbi-btn.is-active {
-  color: var(--nbi-color-white) !important;
-}
-
-html[data-theme="hc-dark"] .nbi-btn {
-  color: var(--nbi-color-white) !important;
-}
-
-html[data-theme="hc-dark"] .nbi-segmented-control__option input:checked+span {
-  color: var(--nbi-color-white) !important;
-}
-
-html[data-theme="hc-dark"] .nbi-map-card.is-active .nbi-map-card__info {
-  color: var(--nbi-color-white) !important;
-}
-
-html[data-theme="hc-dark"] .nbi-filter-group__btn.is-active {
+/* Colores de texto/fondo de elementos y botones en Alto Contraste Oscuro y Claro */
+html[data-theme="hc-dark"] :is(.nbi-segmented-control__option input:checked + span,
+  .nbi-map-card.is-active .nbi-map-card__info,
+  .nbi-filter-group__btn.is-active),
+html[data-theme^="hc-"] .nbi-btn {
   color: var(--nbi-color-white) !important;
 }
 
@@ -74,14 +62,12 @@ html[data-theme="hc-dark"] .nbi-map-card {
   box-shadow: var(--nbi-shadow-md) !important;
 }
 
-html[data-theme="hc-dark"] .nbi-external-link:hover,
-html[data-theme="hc-dark"] .nbi-external-link:focus-visible,
-html[data-theme="hc-dark"] .nbi-external-link:focus,
-html[data-theme="hc-dark"] .nbi-external-link:active {
+html[data-theme="hc-dark"] .nbi-external-link:is(:hover, :focus-visible, :focus, :active) {
   color: var(--nbi-color-secondary) !important;
 }
 
-html[data-theme="hc-dark"] .nbi-sidebar__tab svg,
+/* Stroke en iconos de tabs y botones para Alto Contraste Oscuro y Claro */
+html[data-theme^="hc-"] .nbi-sidebar__tab svg,
 html[data-theme="hc-dark"] .nbi-btn svg {
   stroke: var(--nbi-color-white) !important;
 }
@@ -122,54 +108,18 @@ html[data-theme="hc-light"] {
   --nbi-shadow-lg: 7px 7px 0px 0px #000000;
 }
 
-html[data-theme="hc-light"] .nbi-btn {
-  color: var(--nbi-color-white) !important;
-}
-
-html[data-theme="hc-light"] .nbi-btn--danger {
+html[data-theme="hc-light"] :is(.nbi-btn--danger,
+  .nbi-btn--success,
+  .nbi-btn--action,
+  .nbi-btn.is-active,
+  .nbi-context-trigger) {
   color: var(--nbi-color-black) !important;
 }
 
-html[data-theme="hc-light"] .nbi-btn--success {
-  color: var(--nbi-color-black) !important;
-}
-
-html[data-theme="hc-light"] .nbi-btn--action {
-  color: var(--nbi-color-black) !important;
-}
-
-html[data-theme="hc-light"] .nbi-btn.is-active {
-  color: var(--nbi-color-black) !important;
-}
-
-html[data-theme="hc-light"] .nbi-context-trigger {
-  color: var(--nbi-color-black) !important;
-}
-
-/* Indicador de foco reforzado en Alto Contraste Claro */
-html[data-theme="hc-light"] *:focus-visible {
-  outline: 4px solid #0000ff !important;
-  outline-offset: 4px !important;
-  box-shadow: 0 0 0 6px #ffffff !important;
-}
-
-html[data-theme="hc-light"] .nbi-stickers__img {
-  filter: none !important;
-}
-
-html[data-theme="hc-light"] .nbi-sidebar__tab svg {
-  stroke: var(--nbi-color-white) !important;
-}
-
-html[data-theme="hc-light"] .nbi-sidebar__tab.is-active svg {
+/* Hover e indicador activo en boton sidebar de Alto Contraste Claro */
+html[data-theme="hc-light"] .nbi-sidebar__tab:is(.is-active, :hover) svg {
   stroke: var(--nbi-color-black) !important;
 }
-
-/* hover en boton sidebar activo */
-html[data-theme="hc-light"] .nbi-sidebar__tab:hover svg {
-  stroke: var(--nbi-color-black) !important;
-}
-
 
 /* --- 3. ESCALA DE TEXTO AGRANDADO --- */
 html[data-text-scale="large"] {
@@ -193,18 +143,12 @@ html[data-text-scale="xlarge"] {
 }
 
 /* Permitir flexibilidad de tamaño en los contenedores al agrandar texto */
-html[data-text-scale="large"] .nbi-properties,
-html[data-text-scale="large"] .nbi-stickers,
-html[data-text-scale="large"] .nbi-sidebar,
-html[data-text-scale="xlarge"] .nbi-properties,
-html[data-text-scale="xlarge"] .nbi-stickers,
-html[data-text-scale="xlarge"] .nbi-sidebar {
+html:is([data-text-scale="large"], [data-text-scale="xlarge"]) :is(.nbi-properties, .nbi-stickers, .nbi-sidebar) {
   height: auto !important;
   max-height: 90vh !important;
 }
 
-html[data-text-scale="large"] .nbi-export-modal__body,
-html[data-text-scale="xlarge"] .nbi-export-modal__body {
+html:is([data-text-scale="large"], [data-text-scale="xlarge"]) .nbi-export-modal__body {
   max-height: calc(90vh - 180px);
 }
 
@@ -258,10 +202,7 @@ html[data-horizontal-spacing="large"] {
 /* --- 7. REDUCIR MOVIMIENTO --- */
 /* Preferencia del sistema operativo (solo si el usuario no forzó 'false' de forma manual) */
 @media (prefers-reduced-motion: reduce) {
-
-  html:not([data-reduced-motion="false"]) *,
-  html:not([data-reduced-motion="false"]) *::before,
-  html:not([data-reduced-motion="false"]) *::after {
+  html:not([data-reduced-motion="false"]) :is(*, *::before, *::after) {
     animation-delay: -1ms !important;
     animation-duration: 1ms !important;
     animation-iteration-count: 1 !important;
@@ -273,9 +214,7 @@ html[data-horizontal-spacing="large"] {
 }
 
 /* Preferencia manual del panel lateral */
-html[data-reduced-motion="true"] *,
-html[data-reduced-motion="true"] *::before,
-html[data-reduced-motion="true"] *::after {
+html[data-reduced-motion="true"] :is(*, *::before, *::after) {
   animation-delay: -1ms !important;
   animation-duration: 1ms !important;
   animation-iteration-count: 1 !important;
@@ -287,111 +226,64 @@ html[data-reduced-motion="true"] *::after {
 
 /* --- 8. CURSOR GRANDE SEMÁNTICO --- */
 /* Cursores de la UI en alta resolución e invertidos (blancos con borde negro) */
-/* =========================================================
-   CURSORES GRANDES
-   Blancos con borde negro
-   ========================================================= */
-
-/* Cursor base: flecha */
 html[data-large-cursor="true"] {
-  cursor:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 24 24' fill='white' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4.037 4.688a.495.495 0 0 1 .651-.651l16 6.5a.5.5 0 0 1-.063.947l-6.124 1.58a2 2 0 0 0-1.438 1.435l-1.579 6.126a.5.5 0 0 1-.947.063z'/%3E%3C/svg%3E") 5 5,
-    default !important;
+  --cursor-default: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 24 24' fill='white' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4.037 4.688a.495.495 0 0 1 .651-.651l16 6.5a.5.5 0 0 1-.063.947l-6.124 1.58a2 2 0 0 0-1.438 1.435l-1.579 6.126a.5.5 0 0 1-.947.063z'/%3E%3C/svg%3E") 5 5, default;
+
+  --cursor-pointer: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 24 24'%3E%3Cpath d='M8 2a2 2 0 0 1 2 2v3a2 2 0 0 1 4 1v1a2 2 0 0 1 4 1v1a2 2 0 0 1 4 0v3a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15V4a2 2 0 0 1 1-2Z' fill='white' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M18 11v-1a2 2 0 0 0-2-2a2 2 0 0 0-2 2M14 10V9a2 2 0 0 0-2-2a2 2 0 0 0-2 2v1M10 9.5V4a2 2 0 0 0-2-2a2 2 0 0 0-2 2v10' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") 16 16, pointer;
+
+  --cursor-crosshair: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Cline x1='16' y1='2' x2='16' y2='30' stroke='black' stroke-width='4'/%3E%3Cline x1='2' y1='16' x2='30' y2='16' stroke='black' stroke-width='4'/%3E%3Cline x1='16' y1='2' x2='16' y2='30' stroke='white' stroke-width='2'/%3E%3Cline x1='2' y1='16' x2='30' y2='16' stroke='white' stroke-width='2'/%3E%3C/svg%3E") 16 16, crosshair;
+
+  --cursor-text: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 24 24' fill='none' stroke-linecap='round' stroke-linejoin='round'%3E%3Cg stroke='black' stroke-width='4'%3E%3Cpath d='M17 22h-1a4 4 0 0 1-4-4V6a4 4 0 0 1 4-4h1'/%3E%3Cpath d='M7 22h1a4 4 0 0 0 4-4'/%3E%3Cpath d='M7 2h1a4 4 0 0 1 4 4'/%3E%3C/g%3E%3Cg stroke='white' stroke-width='2'%3E%3Cpath d='M17 22h-1a4 4 0 0 1-4-4V6a4 4 0 0 1 4-4h1'/%3E%3Cpath d='M7 22h1a4 4 0 0 0 4-4'/%3E%3Cpath d='M7 2h1a4 4 0 0 1 4 4'/%3E%3C/g%3E%3C/svg%3E") 16 16, text;
+
+  --cursor-grab: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 14V6a2 2 0 0 1 4 0V4a2 2 0 0 1 4 0v2a2 2 0 0 1 4 0v2a2 2 0 0 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15Z' fill='white' stroke='none'/%3E%3Cg fill='none' stroke='black' stroke-width='2'%3E%3Cpath d='M18 11V6a2 2 0 0 0-2-2a2 2 0 0 0-2 2'/%3E%3Cpath d='M14 10V4a2 2 0 0 0-2-2a2 2 0 0 0-2 2v2'/%3E%3Cpath d='M10 10.5V6a2 2 0 0 0-2-2a2 2 0 0 0-2 2v8'/%3E%3Cpath d='M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15'/%3E%3C/g%3E%3C/svg%3E") 16 16, grab;
+
+  --cursor-grabbing: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 24 24'%3E%3Cpath d='M8 7a2 2 0 0 1 2 2 2 2 0 0 1 4-1 2 2 0 0 1 4 1v2a2 2 0 1 1 4 0v3a8 8 0 0 1-8 8h-4a8 8 0 0 1-8-8 2 2 0 1 1 4 0V9a2 2 0 0 1 2-2Z' fill='white' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M18 11.5V9a2 2 0 0 0-2-2a2 2 0 0 0-2 2v1.4M14 10V8a2 2 0 0 0-2-2a2 2 0 0 0-2 2v2M10 9.9V9a2 2 0 0 0-2-2a2 2 0 0 0-2 2v5' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") 16 16, grabbing;
+
+  --cursor-move: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 24 24' fill='none' stroke-linecap='round' stroke-linejoin='round'%3E%3Cg stroke='black' stroke-width='4'%3E%3Cpath d='M12 2v20'/%3E%3Cpath d='m15 19-3 3-3-3'/%3E%3Cpath d='m19 9 3 3-3 3'/%3E%3Cpath d='M2 12h20'/%3E%3Cpath d='m5 9-3 3 3 3'/%3E%3Cpath d='m9 5 3-3 3 3'/%3E%3C/g%3E%3Cg stroke='white' stroke-width='2'%3E%3Cpath d='M12 2v20'/%3E%3Cpath d='m15 19-3 3-3-3'/%3E%3Cpath d='m19 9 3 3-3 3'/%3E%3Cpath d='M2 12h20'/%3E%3Cpath d='m5 9-3 3 3 3'/%3E%3Cpath d='m9 5 3-3 3 3'/%3E%3C/g%3E%3C/svg%3E") 16 16, move;
+
+  cursor: var(--cursor-default) !important;
 }
 
+/* Cursor base: flecha para Fabric.js */
+html[data-large-cursor="true"] .upper-canvas[style*="cursor: default"] {
+  cursor: var(--cursor-default) !important;
+}
 
-/* =========================================================
-   ELEMENTOS INTERACTIVOS
-   Mano tipo pointer
-   ========================================================= */
-
+/* Elementos interactivos (Mano tipo pointer) */
 html[data-large-cursor="true"] :is(a,
   button,
   [role="button"],
   .nbi-color-chip,
   .nbi-map-card,
+  .upper-canvas[style*="cursor: pointer"],
   [style*="cursor: pointer"],
   [style*="cursor:pointer"]) {
-  cursor:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 24 24'%3E%3Cpath d='M8 2a2 2 0 0 1 2 2v3a2 2 0 0 1 4 1v1a2 2 0 0 1 4 1v1a2 2 0 0 1 4 0v3a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15V4a2 2 0 0 1 1-2Z' fill='white' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M18 11v-1a2 2 0 0 0-2-2a2 2 0 0 0-2 2M14 10V9a2 2 0 0 0-2-2a2 2 0 0 0-2 2v1M10 9.5V4a2 2 0 0 0-2-2a2 2 0 0 0-2 2v10' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") 16 16,
-    pointer !important;
+  cursor: var(--cursor-pointer) !important;
 }
 
-
-/* =========================================================
-   FABRIC.JS — CURSOR DEFAULT
-   ========================================================= */
-
-html[data-large-cursor="true"] .upper-canvas[style*="cursor: default"] {
-  cursor:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 24 24' fill='white' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4.037 4.688a.495.495 0 0 1 .651-.651l16 6.5a.5.5 0 0 1-.063.947l-6.124 1.58a2 2 0 0 0-1.438 1.435l-1.579 6.126a.5.5 0 0 1-.947.063z'/%3E%3C/svg%3E") 5 5,
-    default !important;
-}
-
-
-/* =========================================================
-   FABRIC.JS — POINTER
-   ========================================================= */
-
-html[data-large-cursor="true"] .upper-canvas[style*="cursor: pointer"] {
-  cursor:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 24 24'%3E%3Cpath d='M8 2a2 2 0 0 1 2 2v3a2 2 0 0 1 4 1v1a2 2 0 0 1 4 1v1a2 2 0 0 1 4 0v3a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15V4a2 2 0 0 1 1-2Z' fill='white' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M18 11v-1a2 2 0 0 0-2-2a2 2 0 0 0-2 2M14 10V9a2 2 0 0 0-2-2a2 2 0 0 0-2 2v1M10 9.5V4a2 2 0 0 0-2-2a2 2 0 0 0-2 2v10' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") 16 16,
-    pointer !important;
-}
-
-
-/* =========================================================
-   FABRIC.JS — CROSSHAIR
-   ========================================================= */
-
+/* Fabric.js — Crosshair */
 html[data-large-cursor="true"] .upper-canvas[style*="cursor: crosshair"] {
-  cursor:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Cline x1='16' y1='2' x2='16' y2='30' stroke='black' stroke-width='4'/%3E%3Cline x1='2' y1='16' x2='30' y2='16' stroke='black' stroke-width='4'/%3E%3Cline x1='16' y1='2' x2='16' y2='30' stroke='white' stroke-width='2'/%3E%3Cline x1='2' y1='16' x2='30' y2='16' stroke='white' stroke-width='2'/%3E%3C/svg%3E") 16 16,
-    crosshair !important;
+  cursor: var(--cursor-crosshair) !important;
 }
 
-
-/* =========================================================
-   FABRIC.JS — TEXTO
-   ========================================================= */
-
+/* Fabric.js — Texto */
 html[data-large-cursor="true"] .upper-canvas[style*="cursor: text"] {
-  cursor:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 24 24' fill='none' stroke-linecap='round' stroke-linejoin='round'%3E%3Cg stroke='black' stroke-width='4'%3E%3Cpath d='M17 22h-1a4 4 0 0 1-4-4V6a4 4 0 0 1 4-4h1'/%3E%3Cpath d='M7 22h1a4 4 0 0 0 4-4'/%3E%3Cpath d='M7 2h1a4 4 0 0 1 4 4'/%3E%3C/g%3E%3Cg stroke='white' stroke-width='2'%3E%3Cpath d='M17 22h-1a4 4 0 0 1-4-4V6a4 4 0 0 1 4-4h1'/%3E%3Cpath d='M7 22h1a4 4 0 0 0 4-4'/%3E%3Cpath d='M7 2h1a4 4 0 0 1 4 4'/%3E%3C/g%3E%3C/svg%3E") 16 16,
-    text !important;
+  cursor: var(--cursor-text) !important;
 }
 
-
-/* =========================================================
-   GRAB
-   Mano abierta con silueta blanca cerrada
-   ========================================================= */
-
-html[data-large-cursor="true"] .upper-canvas[style*="cursor: grab"]:not([style*="cursor: grabbing"]),
-html[data-large-cursor="true"] [style*="cursor: grab"]:not([style*="cursor: grabbing"]) {
-  cursor:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 14V6a2 2 0 0 1 4 0V4a2 2 0 0 1 4 0v2a2 2 0 0 1 4 0v2a2 2 0 0 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15Z' fill='white' stroke='none'/%3E%3Cg fill='none' stroke='black' stroke-width='2'%3E%3Cpath d='M18 11V6a2 2 0 0 0-2-2a2 2 0 0 0-2 2'/%3E%3Cpath d='M14 10V4a2 2 0 0 0-2-2a2 2 0 0 0-2 2v2'/%3E%3Cpath d='M10 10.5V6a2 2 0 0 0-2-2a2 2 0 0 0-2 2v8'/%3E%3Cpath d='M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15'/%3E%3C/g%3E%3C/svg%3E") 16 16,
-    grab !important;
+/* Grab */
+html[data-large-cursor="true"] :is(.upper-canvas[style*="cursor: grab"], [style*="cursor: grab"]):not([style*="cursor: grabbing"]) {
+  cursor: var(--cursor-grab) !important;
 }
 
-
-/* =========================================================
-   GRABBING
-   Mano cerrada con silueta blanca cerrada
-   ========================================================= */
-
-html[data-large-cursor="true"] .upper-canvas[style*="cursor: grabbing"],
-html[data-large-cursor="true"] [style*="cursor: grabbing"] {
-  cursor:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 24 24'%3E%3Cpath d='M8 7a2 2 0 0 1 2 2 2 2 0 0 1 4-1 2 2 0 0 1 4 1v2a2 2 0 1 1 4 0v3a8 8 0 0 1-8 8h-4a8 8 0 0 1-8-8 2 2 0 1 1 4 0V9a2 2 0 0 1 2-2Z' fill='white' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M18 11.5V9a2 2 0 0 0-2-2a2 2 0 0 0-2 2v1.4M14 10V8a2 2 0 0 0-2-2a2 2 0 0 0-2 2v2M10 9.9V9a2 2 0 0 0-2-2a2 2 0 0 0-2 2v5' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") 16 16,
-    grabbing !important;
+/* Grabbing */
+html[data-large-cursor="true"] :is(.upper-canvas[style*="cursor: grabbing"], [style*="cursor: grabbing"]) {
+  cursor: var(--cursor-grabbing) !important;
 }
 
-html[data-large-cursor="true"] .upper-canvas[style*="cursor: move"],
-html[data-large-cursor="true"] [style*="cursor: move"] {
-  cursor:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 24 24' fill='none' stroke-linecap='round' stroke-linejoin='round'%3E%3Cg stroke='black' stroke-width='4'%3E%3Cpath d='M12 2v20'/%3E%3Cpath d='m15 19-3 3-3-3'/%3E%3Cpath d='m19 9 3 3-3 3'/%3E%3Cpath d='M2 12h20'/%3E%3Cpath d='m5 9-3 3 3 3'/%3E%3Cpath d='m9 5 3-3 3 3'/%3E%3C/g%3E%3Cg stroke='white' stroke-width='2'%3E%3Cpath d='M12 2v20'/%3E%3Cpath d='m15 19-3 3-3-3'/%3E%3Cpath d='m19 9 3 3-3 3'/%3E%3Cpath d='M2 12h20'/%3E%3Cpath d='m5 9-3 3 3 3'/%3E%3Cpath d='m9 5 3-3 3 3'/%3E%3C/g%3E%3C/svg%3E") 16 16,
-    move !important;
+/* Move */
+html[data-large-cursor="true"] :is(.upper-canvas[style*="cursor: move"], [style*="cursor: move"]) {
+  cursor: var(--cursor-move) !important;
 }
 
 /* --- 9. FILTROS VISUALES CROMÁTICOS --- */
@@ -423,10 +315,7 @@ html {
 }
 
 /* Evitar doble inversión en elementos que deben mantener sus colores originales */
-html[data-invert-colors="true"] img,
-html[data-invert-colors="true"] .nbi-map-card__thumb,
-html[data-invert-colors="true"] .nbi-stickers__img,
-html[data-invert-colors="true"] .nbi-btn__icon {
+html[data-invert-colors="true"] :is(img, .nbi-map-card__thumb, .nbi-stickers__img, .nbi-btn__icon) {
   filter: invert(1) !important;
 }
 
