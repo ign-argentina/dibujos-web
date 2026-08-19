@@ -157,6 +157,18 @@ html[data-theme="hc-light"] .nbi-stickers__img {
   filter: none !important;
 }
 
+html[data-theme="hc-light"] .nbi-sidebar__tab svg {
+  stroke: var(--nbi-color-white) !important;
+}
+
+html[data-theme="hc-light"] .nbi-sidebar__tab.is-active svg {
+  stroke: var(--nbi-color-black) !important;
+}
+
+/* hover en boton sidebar activo */
+html[data-theme="hc-light"] .nbi-sidebar__tab:hover svg {
+  stroke: var(--nbi-color-black) !important;
+}
 
 
 /* --- 3. ESCALA DE TEXTO AGRANDADO --- */
@@ -275,41 +287,73 @@ html[data-reduced-motion="true"] *::after {
 
 /* --- 8. CURSOR GRANDE SEMÁNTICO --- */
 /* Cursores de la UI en alta resolución e invertidos (blancos con borde negro) */
+/* =========================================================
+   CURSORES GRANDES
+   Blancos con borde negro
+   ========================================================= */
+
+/* Cursor base: flecha */
 html[data-large-cursor="true"] {
   cursor:
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 24 24' fill='white' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4.037 4.688a.495.495 0 0 1 .651-.651l16 6.5a.5.5 0 0 1-.063.947l-6.124 1.58a2 2 0 0 0-1.438 1.435l-1.579 6.126a.5.5 0 0 1-.947.063z'/%3E%3C/svg%3E") 5 5,
-    pointer !important;
+    default !important;
 }
 
-html[data-large-cursor="true"] *,
-html[data-large-cursor="true"] a,
-html[data-large-cursor="true"] button,
-html[data-large-cursor="true"] [role="button"],
-html[data-large-cursor="true"] .nbi-color-chip,
-html[data-large-cursor="true"] .nbi-map-card,
-html[data-large-cursor="true"] [style*="cursor: pointer"],
-html[data-large-cursor="true"] [style*="cursor:pointer"] {
+
+/* =========================================================
+   ELEMENTOS INTERACTIVOS
+   Mano tipo pointer
+   ========================================================= */
+
+html[data-large-cursor="true"] :is(a,
+  button,
+  [role="button"],
+  .nbi-color-chip,
+  .nbi-map-card,
+  [style*="cursor: pointer"],
+  [style*="cursor:pointer"]) {
   cursor:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 24 24' fill='white' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M22 14a8 8 0 0 1-8 8'/%3E%3Cpath d='M18 11v-1a2 2 0 0 0-2-2a2 2 0 0 0-2 2'/%3E%3Cpath d='M14 10V9a2 2 0 0 0-2-2a2 2 0 0 0-2 2v1'/%3E%3Cpath d='M10 9.5V4a2 2 0 0 0-2-2a2 2 0 0 0-2 2v10'/%3E%3Cpath d='M18 11a2 2 0 1 1 4 0v3a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15'/%3E%3C/svg%3E") 16 16,
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 24 24'%3E%3Cpath d='M8 2a2 2 0 0 1 2 2v3a2 2 0 0 1 4 1v1a2 2 0 0 1 4 1v1a2 2 0 0 1 4 0v3a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15V4a2 2 0 0 1 1-2Z' fill='white' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M18 11v-1a2 2 0 0 0-2-2a2 2 0 0 0-2 2M14 10V9a2 2 0 0 0-2-2a2 2 0 0 0-2 2v1M10 9.5V4a2 2 0 0 0-2-2a2 2 0 0 0-2 2v10' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") 16 16,
     pointer !important;
 }
 
-/* Overrides para punteros semánticos interactivos sobre el Canvas de Fabric.js */
+
+/* =========================================================
+   FABRIC.JS — CURSOR DEFAULT
+   ========================================================= */
+
 html[data-large-cursor="true"] .upper-canvas[style*="cursor: default"] {
   cursor:
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 24 24' fill='white' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4.037 4.688a.495.495 0 0 1 .651-.651l16 6.5a.5.5 0 0 1-.063.947l-6.124 1.58a2 2 0 0 0-1.438 1.435l-1.579 6.126a.5.5 0 0 1-.947.063z'/%3E%3C/svg%3E") 5 5,
-    pointer !important;
+    default !important;
 }
+
+
+/* =========================================================
+   FABRIC.JS — POINTER
+   ========================================================= */
 
 html[data-large-cursor="true"] .upper-canvas[style*="cursor: pointer"] {
   cursor:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 24 24' fill='white' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M22 14a8 8 0 0 1-8 8'/%3E%3Cpath d='M18 11v-1a2 2 0 0 0-2-2a2 2 0 0 0-2 2'/%3E%3Cpath d='M14 10V9a2 2 0 0 0-2-2a2 2 0 0 0-2 2v1'/%3E%3Cpath d='M10 9.5V4a2 2 0 0 0-2-2a2 2 0 0 0-2 2v10'/%3E%3Cpath d='M18 11a2 2 0 1 1 4 0v3a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15'/%3E%3C/svg%3E") 16 16,
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 24 24'%3E%3Cpath d='M8 2a2 2 0 0 1 2 2v3a2 2 0 0 1 4 1v1a2 2 0 0 1 4 1v1a2 2 0 0 1 4 0v3a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15V4a2 2 0 0 1 1-2Z' fill='white' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M18 11v-1a2 2 0 0 0-2-2a2 2 0 0 0-2 2M14 10V9a2 2 0 0 0-2-2a2 2 0 0 0-2 2v1M10 9.5V4a2 2 0 0 0-2-2a2 2 0 0 0-2 2v10' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") 16 16,
     pointer !important;
 }
 
+
+/* =========================================================
+   FABRIC.JS — CROSSHAIR
+   ========================================================= */
+
 html[data-large-cursor="true"] .upper-canvas[style*="cursor: crosshair"] {
-  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Cline x1='16' y1='2' x2='16' y2='30' stroke='white' stroke-width='4'/%3E%3Cline x1='2' y1='16' x2='30' y2='16' stroke='white' stroke-width='4'/%3E%3Cline x1='16' y1='2' x2='16' y2='30' stroke='black' stroke-width='2'/%3E%3Cline x1='2' y1='16' x2='30' y2='16' stroke='black' stroke-width='2'/%3E%3C/svg%3E") 16 16, crosshair !important;
+  cursor:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Cline x1='16' y1='2' x2='16' y2='30' stroke='black' stroke-width='4'/%3E%3Cline x1='2' y1='16' x2='30' y2='16' stroke='black' stroke-width='4'/%3E%3Cline x1='16' y1='2' x2='16' y2='30' stroke='white' stroke-width='2'/%3E%3Cline x1='2' y1='16' x2='30' y2='16' stroke='white' stroke-width='2'/%3E%3C/svg%3E") 16 16,
+    crosshair !important;
 }
+
+
+/* =========================================================
+   FABRIC.JS — TEXTO
+   ========================================================= */
 
 html[data-large-cursor="true"] .upper-canvas[style*="cursor: text"] {
   cursor:
@@ -317,18 +361,37 @@ html[data-large-cursor="true"] .upper-canvas[style*="cursor: text"] {
     text !important;
 }
 
-html[data-large-cursor="true"] .upper-canvas[style*="cursor: grab"],
-html[data-large-cursor="true"] [style*="cursor: grab"] {
+
+/* =========================================================
+   GRAB
+   Mano abierta con silueta blanca cerrada
+   ========================================================= */
+
+html[data-large-cursor="true"] .upper-canvas[style*="cursor: grab"]:not([style*="cursor: grabbing"]),
+html[data-large-cursor="true"] [style*="cursor: grab"]:not([style*="cursor: grabbing"]) {
   cursor:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 24 24' fill='white' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M18 11V6a2 2 0 0 0-2-2a2 2 0 0 0-2 2'/%3E%3Cpath d='M14 10V4a2 2 0 0 0-2-2a2 2 0 0 0-2 2v2'/%3E%3Cpath d='M10 10.5V6a2 2 0 0 0-2-2a2 2 0 0 0-2 2v8'/%3E%3Cpath d='M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15'/%3E%3C/svg%3E") 16 16,
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 14V6a2 2 0 0 1 4 0V4a2 2 0 0 1 4 0v2a2 2 0 0 1 4 0v2a2 2 0 0 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15Z' fill='white' stroke='none'/%3E%3Cg fill='none' stroke='black' stroke-width='2'%3E%3Cpath d='M18 11V6a2 2 0 0 0-2-2a2 2 0 0 0-2 2'/%3E%3Cpath d='M14 10V4a2 2 0 0 0-2-2a2 2 0 0 0-2 2v2'/%3E%3Cpath d='M10 10.5V6a2 2 0 0 0-2-2a2 2 0 0 0-2 2v8'/%3E%3Cpath d='M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15'/%3E%3C/g%3E%3C/svg%3E") 16 16,
     grab !important;
 }
+
+
+/* =========================================================
+   GRABBING
+   Mano cerrada con silueta blanca cerrada
+   ========================================================= */
 
 html[data-large-cursor="true"] .upper-canvas[style*="cursor: grabbing"],
 html[data-large-cursor="true"] [style*="cursor: grabbing"] {
   cursor:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 24 24' fill='white' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M18 11.5V9a2 2 0 0 0-2-2a2 2 0 0 0-2 2v1.4'/%3E%3Cpath d='M14 10V8a2 2 0 0 0-2-2a2 2 0 0 0-2 2v2'/%3E%3Cpath d='M10 9.9V9a2 2 0 0 0-2-2a2 2 0 0 0-2 2v5'/%3E%3Cpath d='M6 14a2 2 0 0 0-2-2a2 2 0 0 0-2 2'/%3E%3Cpath d='M18 11a2 2 0 1 1 4 0v3a8 8 0 0 1-8 8h-4a8 8 0 0 1-8-8 2 2 0 1 1 4 0'/%3E%3C/svg%3E") 16 16,
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 24 24'%3E%3Cpath d='M8 7a2 2 0 0 1 2 2 2 2 0 0 1 4-1 2 2 0 0 1 4 1v2a2 2 0 1 1 4 0v3a8 8 0 0 1-8 8h-4a8 8 0 0 1-8-8 2 2 0 1 1 4 0V9a2 2 0 0 1 2-2Z' fill='white' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M18 11.5V9a2 2 0 0 0-2-2a2 2 0 0 0-2 2v1.4M14 10V8a2 2 0 0 0-2-2a2 2 0 0 0-2 2v2M10 9.9V9a2 2 0 0 0-2-2a2 2 0 0 0-2 2v5' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") 16 16,
     grabbing !important;
+}
+
+html[data-large-cursor="true"] .upper-canvas[style*="cursor: move"],
+html[data-large-cursor="true"] [style*="cursor: move"] {
+  cursor:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 24 24' fill='none' stroke-linecap='round' stroke-linejoin='round'%3E%3Cg stroke='black' stroke-width='4'%3E%3Cpath d='M12 2v20'/%3E%3Cpath d='m15 19-3 3-3-3'/%3E%3Cpath d='m19 9 3 3-3 3'/%3E%3Cpath d='M2 12h20'/%3E%3Cpath d='m5 9-3 3 3 3'/%3E%3Cpath d='m9 5 3-3 3 3'/%3E%3C/g%3E%3Cg stroke='white' stroke-width='2'%3E%3Cpath d='M12 2v20'/%3E%3Cpath d='m15 19-3 3-3-3'/%3E%3Cpath d='m19 9 3 3-3 3'/%3E%3Cpath d='M2 12h20'/%3E%3Cpath d='m5 9-3 3 3 3'/%3E%3Cpath d='m9 5 3-3 3 3'/%3E%3C/g%3E%3C/svg%3E") 16 16,
+    move !important;
 }
 
 /* --- 9. FILTROS VISUALES CROMÁTICOS --- */
