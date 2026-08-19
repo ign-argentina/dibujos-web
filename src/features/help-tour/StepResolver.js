@@ -4,7 +4,7 @@
 export const DEFAULT_FALLBACK_MAP = {
   '[data-tour="navbar"]': '#navbar',
   '[data-tour="sidebar-maps"]': '#tab-maps',
-  '[data-tour="canvas-area"]': '#editor-container',
+  '[data-tour="canvas-area"]': '.fabric-canvas',
   '[data-tour="tool-brush"]': '#tool-brush',
   '[data-tour="tool-stickers"]': '#tool-stickers',
   '[data-tour="properties-panel"]': '#properties-panel',

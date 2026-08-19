@@ -38,7 +38,7 @@ export class TourOverlay extends Component {
     this.onPrev = props.onPrev || null
     this.onClose = props.onClose || null
 
-    this.padding = 6 // Holgura en px alrededor del target
+    this.padding = 11 // Holgura en px alrededor del target (6 px base + 5 px extra)
     this.throttledResize = throttle(() => this.positionTooltip(), 100)
   }
 

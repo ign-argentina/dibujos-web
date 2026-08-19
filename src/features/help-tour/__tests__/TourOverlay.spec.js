@@ -69,6 +69,22 @@ describe('TourOverlay', () => {
     overlay.destroy()
   })
 
+  it('debería ampliar el recuadro resaltado 5 px adicionales por cada lado', () => {
+    const overlay = new TourOverlay(container, {
+      step: { id: 's1', title: 'Título', text: 'Texto', placement: 'bottom' },
+      targetElement: targetEl
+    })
+    overlay.mount()
+
+    const frame = container.querySelector('#tour-spotlight-frame')
+    expect(frame.style.left).toBe('89px')
+    expect(frame.style.top).toBe('89px')
+    expect(frame.style.width).toBe('142px')
+    expect(frame.style.height).toBe('70px')
+
+    overlay.destroy()
+  })
+
   it('en el primer paso el botón Anterior debe estar deshabilitado', () => {
     const overlay = new TourOverlay(container, {
       step: { id: 's1', title: 'T1', text: 'Txt1', placement: 'bottom' },

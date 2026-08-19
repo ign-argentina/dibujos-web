@@ -29,7 +29,7 @@ describe('Positioning', () => {
     // y = 250 + 10 = 260
     expect(result.y).toBe(260)
     expect(result.arrow.placement).toBe('bottom')
-    expect(result.arrow.y).toBe(0)
+    expect(result.arrow.y).toBe(-10)
   })
 
   it('debería calcular correctamente la posición superior (top)', () => {
@@ -69,7 +69,7 @@ describe('Positioning', () => {
     // y = 300 + (50 - 100)/2 = 275
     expect(result.y).toBe(275)
     expect(result.arrow.placement).toBe('right')
-    expect(result.arrow.x).toBe(0)
+    expect(result.arrow.x).toBe(-10)
   })
 
   it('debería calcular correctamente la posición izquierda (left)', () => {

@@ -54,7 +54,8 @@ import {
   Space,
   RefreshCw,
   CircleDot,
-  CircleQuestionMark
+  CircleQuestionMark,
+  Play
 } from 'lucide'
 
 // Expose lucide globally to maintain vanilla JS components compatibility
@@ -115,7 +116,8 @@ window.lucide = {
         Space,
         RefreshCw,
         CircleDot,
-        CircleQuestionMark
+        CircleQuestionMark,
+        Play
       }
     })
 }

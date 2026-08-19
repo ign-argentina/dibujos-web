@@ -11,28 +11,28 @@ export const generalTour = {
       id: 'welcome',
       target: '[data-tour="navbar"]',
       title: '¡Te damos la bienvenida a Mapas Escolares!',
-      text: 'Esta aplicación te permite explorar mapas oficiales de la República Argentina y dibujar sobre ellos de forma sencilla.',
+      text: 'Aquí podés explorar mapas oficiales de la República Argentina, dibujar sobre ellos y compartirlos.',
       placement: 'bottom'
     },
     {
       id: 'sidebar-maps',
       target: '[data-tour="sidebar-maps"]',
       title: 'Catálogo de mapas',
-      text: 'Desde esta solapa podés abrir el catálogo para buscar y elegir mapas de provincias, regiones y del continente americano.',
+      text: 'Desde esta solapa podés abrir el catálogo para buscar y elegir los mapas.',
       placement: 'right'
     },
     {
       id: 'canvas-area',
       target: '[data-tour="canvas-area"]',
       title: 'Área de dibujo',
-      text: 'Este es tu espacio principal de trabajo, donde podés ver el mapa cargado, trazar recorridos, destacar zonas y colocar información.',
+      text: 'Este es el espacio principal de trabajo, donde podés ver el mapa cargado, dibujar y agregar información.',
       placement: 'top'
     },
     {
       id: 'tools-navigation',
       target: '[data-tour="tools-navigation"]',
       title: 'Mover y seleccionar',
-      text: 'La herramienta Mano permite desplazarte arrastrando el mapa. Con la herramienta de Selección podés mover, rotar y transformar los elementos dibujados.',
+      text: 'La herramienta de Arrastre permite desplazarte por el mapa. Con la herramienta de Selección podés mover, rotar y transformar los elementos dibujados.',
       placement: 'top'
     },
     {
@@ -46,28 +46,28 @@ export const generalTour = {
       id: 'tools-shapes',
       target: '[data-tour="tools-shapes"]',
       title: 'Figuras y líneas',
-      text: 'Este conjunto de herramientas incluye rectángulos, círculos, flechas, polilíneas y polígonos para agregar figuras geométricas con precisión.',
+      text: 'Este conjunto de herramientas incluye rectángulos, círculos, flechas, líneas y polígonos para agregar distintas figuras geométricas.',
       placement: 'top'
     },
     {
       id: 'tools-annotations',
       target: '[data-tour="tools-annotations"]',
       title: 'Textos y marcadores',
-      text: 'Con estas herramientas podés escribir nombres o referencias sobre el mapa y colocar pines o marcadores en puntos geográficos destacados.',
+      text: 'Con estas herramientas podés escribir nombres o referencias sobre el mapa y colocar pines en puntos geográficos destacados.',
       placement: 'top'
     },
     {
       id: 'tool-stickers',
       target: '[data-tour="tool-stickers"]',
       title: 'Decoraciones y stickers',
-      text: 'Este botón abre la galería de stickers y decoraciones temáticas para ilustrar y enriquecer tus mapas.',
+      text: 'Este botón abre la galería de stickers temáticós para agregar a tus mapas.',
       placement: 'top'
     },
     {
       id: 'properties-panel',
       target: '[data-tour="properties-panel"]',
       title: 'Pintura y trazo',
-      text: 'En este panel podés elegir el color de dibujo de la paleta, seleccionar colores personalizados y graduar el grosor del lápiz.',
+      text: 'En este panel podés elegir el color de dibujo, seleccionar colores personalizados y cambiar el grosor del lápiz de dibujo.',
       placement: 'left'
     },
     {
@@ -88,7 +88,7 @@ export const generalTour = {
       id: 'sidebar-tabs',
       target: '[data-tour="sidebar-tabs"]',
       title: 'Accesibilidad y Ayuda',
-      text: 'En estas solapas podés configurar opciones visuales como contraste y tamaño de letra, o volver a iniciar este recorrido siempre que lo necesites.',
+      text: 'En estas solapas podés configurar opciones visuales como contraste y tamaño de letra según tus preferencias.',
       placement: 'right'
     }
   ]

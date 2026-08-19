@@ -24,14 +24,14 @@ export class HelpPanel extends Component {
             <h3 class="nbi-help-card__title">Recorrido guiado</h3>
           </div>
           <p class="nbi-help-card__description">
-            Conocé las principales herramientas y funciones de Mapas Escolares a través de un recorrido breve e interactivo por la pantalla.
+            Conocé las principales herramientas y funciones para crear tus mapas a través de un recorrido breve e interactivo por la pantalla.
           </p>
           <p class="nbi-help-card__note">
             Podés volver a iniciar el recorrido desde esta sección siempre que lo necesites.
           </p>
           <button type="button" class="nbi-btn nbi-btn--secondary nbi-help-panel__start-btn" id="btn-start-tour" aria-label="Iniciar recorrido guiado por la aplicación">
-            <i data-lucide="circle-question-mark"></i>
-            <span>Iniciar recorrido</span>
+          <i data-lucide="play"></i>
+          <span>Iniciar recorrido</span>
           </button>
         </div>
       </div>

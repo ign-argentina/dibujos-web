@@ -187,7 +187,8 @@ export class Positioning {
 
       case 'bottom':
         arrowX = Math.max(safeMarginX, Math.min(targetCenterX - tooltipX, tWidth - safeMarginX))
-        arrowY = 0
+        // El triángulo sobresale por el borde superior del tooltip.
+        arrowY = -10
         break
 
       case 'left':
@@ -196,7 +197,8 @@ export class Positioning {
         break
 
       case 'right':
-        arrowX = 0
+        // El triángulo sobresale por el borde izquierdo del tooltip.
+        arrowX = -10
         arrowY = Math.max(safeMarginY, Math.min(targetCenterY - tooltipY, tHeight - safeMarginY))
         break
 
