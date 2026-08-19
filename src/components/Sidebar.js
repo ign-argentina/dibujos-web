@@ -45,6 +45,13 @@ export class Sidebar extends Component {
         }
 
         tabButton.appendChild(icon)
+
+        const label = document.createElement('span')
+        label.className = 'nbi-sidebar__tab-label'
+        label.textContent = view.label
+        label.setAttribute('aria-hidden', 'true')
+        tabButton.appendChild(label)
+
         this.tabsContainer.appendChild(tabButton)
       })
     }

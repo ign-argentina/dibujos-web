@@ -258,16 +258,23 @@
   height: 48px;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   cursor: pointer;
   box-shadow: 2px 2px 0px 0px var(--nbi-color-black);
-  transition: transform var(--nbi-transition-fast), background-color var(--nbi-transition-fast);
+  padding: 0 12px;
+  transition: width var(--nbi-transition-fast), transform var(--nbi-transition-fast),
+    background-color var(--nbi-transition-fast), box-shadow var(--nbi-transition-fast);
   transform: translateX(2px);
+  font-family: var();
 }
 
-.nbi-sidebar__tab:hover {
+.nbi-sidebar__tab:hover,
+.nbi-sidebar__tab:focus-visible {
   background-color: var(--nbi-color-secondary);
+  width: 152px;
   transform: translateX(4px);
+  font-family: var(--nbi-font-family);
+  font-size: var(--nbi-font-size-md);
 }
 
 .nbi-sidebar__tab:focus-visible {
@@ -292,6 +299,30 @@
   width: 24px;
   height: 24px;
   object-fit: contain;
+}
+
+.nbi-sidebar__tab > svg,
+.nbi-sidebar__tab > img {
+  flex: 0 0 auto;
+}
+
+.nbi-sidebar__tab-label {
+  max-width: 0;
+  margin-left: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  opacity: 0;
+  font-size: var(--nbi-font-size-sm);
+  font-weight: var(--nbi-font-weight-bold);
+  transition: max-width var(--nbi-transition-fast), margin-left var(--nbi-transition-fast),
+    opacity var(--nbi-transition-fast);
+}
+
+.nbi-sidebar__tab:hover .nbi-sidebar__tab-label,
+.nbi-sidebar__tab:focus-visible .nbi-sidebar__tab-label {
+  max-width: 120px;
+  margin-left: var(--nbi-space-sm);
+  opacity: 1;
 }
 
 /* --- CONTENEDORES DE VISTAS --- */

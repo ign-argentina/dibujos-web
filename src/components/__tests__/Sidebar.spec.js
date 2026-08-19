@@ -48,6 +48,9 @@ describe('Sidebar', () => {
     expect(tabs[0].getAttribute('aria-label')).toBe('Mapas')
     expect(tabs[1].getAttribute('aria-label')).toBe('Accesibilidad')
     expect(tabs[2].getAttribute('aria-label')).toBe('Ayuda')
+    expect(tabs[0].querySelector('.nbi-sidebar__tab-label').textContent).toBe('Mapas')
+    expect(tabs[1].querySelector('.nbi-sidebar__tab-label').textContent).toBe('Accesibilidad')
+    expect(tabs[2].querySelector('.nbi-sidebar__tab-label').textContent).toBe('Ayuda')
 
     sidebar.destroy()
   })
