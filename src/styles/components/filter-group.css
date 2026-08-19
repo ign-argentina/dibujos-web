@@ -4,8 +4,15 @@
   gap: 6px;
 }
 
+/* El último botón del catálogo necesita espacio para su sombra y transformación */
+.nbi-sidebar__controls .nbi-filter-group {
+  min-width: 0;
+  padding-right: 6px;
+}
+
 .nbi-filter-group__btn {
   flex: 1;
+  min-width: 0;
   min-height: 36px;
   padding: 6px var(--nbi-space-xs);
   font-family: inherit;
