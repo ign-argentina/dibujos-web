@@ -8,6 +8,7 @@
   gap: var(--nbi-space-lg);
   height: 100%;
   overflow-y: auto;
+  padding: 16px 16px 24px 16px;
 }
 
 .nbi-accessibility-group {
@@ -185,4 +186,21 @@
 .nbi-btn--reset svg {
   width: 18px;
   height: 18px;
+}
+
+/* Custom scrollbar para estética brutalista */
+.nbi-accessibility-panel::-webkit-scrollbar {
+  width: 12px;
+}
+
+.nbi-accessibility-panel::-webkit-scrollbar-track {
+  background: var(--nbi-color-white);
+  border-left: var(--nbi-border-width-md) solid var(--nbi-color-black);
+  border-radius: 6px;
+}
+
+.nbi-accessibility-panel::-webkit-scrollbar-thumb {
+  background: var(--nbi-color-black);
+  border: 2px solid var(--nbi-color-white);
+  border-radius: 6px;
 }
