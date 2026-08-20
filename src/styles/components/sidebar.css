@@ -265,7 +265,7 @@
   transition: width var(--nbi-transition-fast), transform var(--nbi-transition-fast),
     background-color var(--nbi-transition-fast), box-shadow var(--nbi-transition-fast);
   transform: translateX(2px);
-  font-family: var();
+  font-family: var(--nbi-font-family);
 }
 
 .nbi-sidebar__tab:hover,

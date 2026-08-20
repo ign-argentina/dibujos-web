@@ -5,9 +5,11 @@ import { ClearConfirmModal } from '../clear-confirm-modal/ClearConfirmModal.js'
  * Componente que gestiona la barra de herramientas de dibujo y acciones globales del lienzo.
  */
 export class Toolbar extends Component {
-  constructor(container, props) {
+  constructor(container, props = {}) {
     super(container, props)
     this.canvasManager = props.canvasManager
+    this.sidebar = props.sidebar || null
+    this.onCanvasToolActivated = props.onCanvasToolActivated || null
     this.toolButtons = {}
   }
 
@@ -48,6 +50,12 @@ export class Toolbar extends Component {
     Object.entries(this.toolButtons).forEach(([toolName, btn]) => {
       if (btn) {
         this.addEvent(btn, 'click', () => {
+          if (this.sidebar && this.sidebar.isOpen && typeof this.sidebar.close === 'function') {
+            this.sidebar.close()
+          }
+          if (typeof this.onCanvasToolActivated === 'function') {
+            this.onCanvasToolActivated(toolName)
+          }
           this.canvasManager.setTool(toolName)
           this.updateActiveToolUI(toolName)
         })

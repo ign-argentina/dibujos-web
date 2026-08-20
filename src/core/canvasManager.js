@@ -397,6 +397,11 @@ export class CanvasManager {
     this.activeTool = tool
     this.updateToolbarAriaPressed(tool)
     this.announceA11y(`Herramienta ${tool} activada`)
+
+    if (typeof this.onToolChange === 'function') {
+      this.onToolChange(tool)
+    }
+
     if (!this.canvas) return
 
     if (this.toolService) {
@@ -524,18 +529,30 @@ export class CanvasManager {
       evented: true,
     })
 
-    this.canvas.setActiveObject(shape)
-    this.canvas.requestRenderAll()
-    this.canvas.fire('object:modified')
-
     if (toolWas === 'text' && typeof shape.enterEditing === 'function') {
+      this.canvas.setActiveObject(shape)
+      this.canvas.requestRenderAll()
+      this.canvas.fire('object:modified')
       shape.enterEditing()
-      shape.selectAll()
-    }
+      if (typeof shape.selectAll === 'function') {
+        shape.selectAll()
+      }
 
-    this.setTool('select')
-    if (typeof this.onToolChange === 'function') {
-      this.onToolChange('select')
+      const onEditingExited = () => {
+        if (typeof shape.off === 'function') {
+          shape.off('editing:exited', onEditingExited)
+        }
+        if (this.activeTool === 'text' && this.adapter) {
+          this.adapter.discardActiveObject()
+          this.adapter.requestRenderAll()
+        }
+      }
+      if (typeof shape.on === 'function') {
+        shape.on('editing:exited', onEditingExited)
+      }
+    } else {
+      this.canvas.requestRenderAll()
+      this.canvas.fire('object:modified')
     }
   }
 
@@ -699,7 +716,9 @@ export class CanvasManager {
     const objects = this.adapter
       .getObjects()
       .filter((obj) => obj !== this.currentMapImage && obj.isMapBase !== true)
-    const serializedObjects = objects.map((obj) => obj.toObject())
+    const serializedObjects = objects.map((obj) =>
+      typeof obj.toObject === 'function' ? obj.toObject() : { ...obj }
+    )
     return JSON.stringify(serializedObjects)
   }
 
@@ -914,11 +933,11 @@ export class CanvasManager {
   }
 
   undo() {
-    this.historyManager.undo()
+    return this.historyManager.undo()
   }
 
   redo() {
-    this.historyManager.redo()
+    return this.historyManager.redo()
   }
 
   createMemento() {

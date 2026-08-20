@@ -52,9 +52,8 @@ describe('ArrowTool', () => {
 
   it('debería inicializar correctamente al activarse', () => {
     tool.onActivate()
-    expect(mockCanvasManager.adapter.setDrawingMode).toHaveBeenCalledWith(false)
-    expect(mockCanvasManager.adapter.setSelectionEnabled).toHaveBeenCalledWith(false)
-    expect(mockCanvasManager.adapter.setDefaultCursor).toHaveBeenCalledWith('crosshair')
+    expect(tool.previewShape).toBeNull()
+    expect(tool.isDrawing).toBe(false)
   })
 
   it('debería crear el preview en mouseDown y actualizarlo en mouseMove', () => {

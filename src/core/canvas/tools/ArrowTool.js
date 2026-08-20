@@ -14,10 +14,19 @@ export class ArrowTool extends BaseTool {
     this.previewShape = null
   }
 
-  onActivate() {
-    this.canvasManager.adapter.setDrawingMode(false)
-    this.canvasManager.adapter.setSelectionEnabled(false)
-    this.canvasManager.adapter.setDefaultCursor('crosshair')
+  onActivate() {}
+
+  onDeactivate() {
+    this.cleanup()
+  }
+
+  cleanup() {
+    if (this.previewShape) {
+      this.canvasManager.adapter.removeObject(this.previewShape)
+      this.previewShape = null
+      this.canvasManager.adapter.requestRenderAll()
+    }
+    this.isDrawing = false
   }
 
   onMouseDown(opt) {

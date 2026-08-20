@@ -44,9 +44,6 @@ describe('PolylineTool', () => {
     tool.onActivate()
     expect(tool.points).toEqual([])
     expect(tool.previewShape).toBeNull()
-    expect(mockCanvasManager.adapter.setDrawingMode).toHaveBeenCalledWith(false)
-    expect(mockCanvasManager.adapter.setSelectionEnabled).toHaveBeenCalledWith(false)
-    expect(mockCanvasManager.adapter.setDefaultCursor).toHaveBeenCalledWith('crosshair')
   })
 
   it('debería agregar puntos y actualizar vista previa en mouseDown y mouseMove', () => {
@@ -97,15 +94,15 @@ describe('PolylineTool', () => {
     expect(mockCanvasManager.finishCreatedObject).toHaveBeenCalled()
   })
 
-  it('debería cancelar dibujo y resetear al presionar Escape', () => {
+  it('debería cancelar dibujo y resetear a pan al presionar Escape', () => {
     tool.onActivate()
     tool.onMouseDown({ e: { clientX: 10, clientY: 20 } })
     tool.onMouseMove({ e: { clientX: 30, clientY: 40 } })
 
     const handled = tool.onKeyDown({ key: 'Escape' })
     expect(handled).toBe(true)
-    expect(mockCanvasManager.setTool).toHaveBeenCalledWith('select')
-    expect(mockCanvasManager.onToolChange).toHaveBeenCalledWith('select')
+    expect(mockCanvasManager.setTool).toHaveBeenCalledWith('pan')
+    expect(mockCanvasManager.onToolChange).toHaveBeenCalledWith('pan')
     expect(tool.points).toEqual([])
     expect(tool.previewShape).toBeNull()
   })

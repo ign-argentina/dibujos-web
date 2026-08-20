@@ -48,8 +48,6 @@ export async function bootstrap() {
 
 
   // --- ESCUCHAR CAMBIOS EN EL ESTADO GLOBAL (REACTIVIDAD Y PERSISTENCIA) ---
-  let previousMapId = null
-
   function saveDrawingState(immediate = false) {
     const currentMapId = appStore.getState().activeMapId
     if (currentMapId && canvasManager.canvas) {
@@ -66,55 +64,14 @@ export async function bootstrap() {
     }
   }
 
-  appStore.subscribe(async (state) => {
-    if (!state.activeMapId) return
-
-    // 1. Guardar el estado del dibujo de la provincia anterior inmediatamente al cambiar
-    if (previousMapId && previousMapId !== state.activeMapId) {
-      const prevJson = canvasManager.serialize()
-      if (prevJson) {
-        persistenceService.save(`drawing_${previousMapId}`, prevJson)
-      } else {
-        persistenceService.remove(`drawing_${previousMapId}`)
-      }
-    }
-
-    // Actualizar el ID previo para la próxima iteración
-    previousMapId = state.activeMapId
-
-    // 2. Limpiar dibujos transitorios antes de cargar el nuevo mapa
-    canvasManager.clearCanvas()
-
-    // 3. Cargar el mapa en el Canvas
-    const mapData = await mapRepository.getById(state.activeMapId)
-    if (mapData) {
-      loaderOverlay.classList.remove('hidden')
-      try {
-        const mapSource = configRepository.getMapImageSource()
-        const mapUrl =
-          mapSource === 'imagePath'
-            ? mapData.imagePath
-              ? `${import.meta.env.BASE_URL.replace(/\/$/, '')}${mapData.imagePath}`
-              : mapData.imageUrl
-            : mapData.imageUrl || `${import.meta.env.BASE_URL.replace(/\/$/, '')}${mapData.imagePath}`
-        await canvasManager.loadMap(mapUrl)
-
-        // 4. Cargar dibujos guardados de la provincia activa (si existen)
-        const savedJson = persistenceService.load(`drawing_${state.activeMapId}`)
-        await canvasManager.deserialize(savedJson)
-
-        // Inicializar el historial para el nuevo mapa
-        canvasManager.historyManager.clear()
-        canvasManager.historyManager.capture()
-      } catch (err) {
-        console.error('Error cargando el mapa en el lienzo:', err)
-      } finally {
-        setTimeout(() => {
-          loaderOverlay.classList.add('hidden')
-        }, 600)
-      }
-    }
+  const mapStateSubscriber = createMapStateSubscriber({
+    canvasManager,
+    mapRepository,
+    configRepository,
+    persistenceService,
+    loaderOverlay,
   })
+  appStore.subscribe(mapStateSubscriber)
 
   // Suscribirse a eventos del canvas para autoguardado en tiempo real
   if (canvasManager.canvas) {
@@ -255,33 +212,7 @@ export async function bootstrap() {
 
 
 
-    // 3. Inicializar y montar componentes UI modulares
-    const toolbar = new Toolbar(document.getElementById('toolbar-container') || editorContainer, {
-      canvasManager,
-    })
-    toolbar.mount()
-
-    const colorPalette = new ColorPalette(
-      document.getElementById('properties-panel') || editorContainer,
-      { canvasManager }
-    )
-    colorPalette.mount()
-
-    const stickersPanel = new StickersPanel(
-      document.getElementById('stickers-panel') || editorContainer,
-      { canvasManager }
-    )
-    await stickersPanel.render()
-    stickersPanel.bindEvents()
-
-    new ContextMenu(canvasManager)
-
-    const exportModal = new ExportModal(canvasManager, mapRepository)
-    document.getElementById('action-export')?.addEventListener('click', () => {
-      exportModal.open()
-    })
-
-    // 4. Inicializar panel lateral dinámico y selector de mapas
+    // 3. Inicializar panel lateral dinámico y selector de mapas
     const sidebar = new Sidebar(sidebarContainer, {
       views: [
         {
@@ -305,6 +236,33 @@ export async function bootstrap() {
       ]
     })
     sidebar.mount()
+
+    // 4. Inicializar y montar componentes UI modulares
+    const toolbar = new Toolbar(document.getElementById('toolbar-container') || editorContainer, {
+      canvasManager,
+      sidebar,
+    })
+    toolbar.mount()
+
+    const colorPalette = new ColorPalette(
+      document.getElementById('properties-panel') || editorContainer,
+      { canvasManager }
+    )
+    colorPalette.mount()
+
+    const stickersPanel = new StickersPanel(
+      document.getElementById('stickers-panel') || editorContainer,
+      { canvasManager }
+    )
+    await stickersPanel.render()
+    stickersPanel.bindEvents()
+
+    new ContextMenu(canvasManager)
+
+    const exportModal = new ExportModal(canvasManager, mapRepository)
+    document.getElementById('action-export')?.addEventListener('click', () => {
+      exportModal.open()
+    })
 
     const mapSelector = new MapSelector(
       sidebarContainer.querySelector('#view-maps'),
@@ -371,5 +329,90 @@ export async function bootstrap() {
     console.error('Error al inicializar la aplicación:', err)
   } finally {
     loaderOverlay.classList.add('hidden')
+  }
+}
+
+/**
+ * Crea el manejador de suscripción de AppStore para la carga y reactividad de mapas.
+ * Asegura que el mapa se recargue y el historial se reinicie únicamente cuando activeMapId cambie de forma efectiva.
+ *
+ * @param {Object} params
+ * @param {Object} params.canvasManager
+ * @param {Object} params.mapRepository
+ * @param {Object} params.configRepository
+ * @param {Object} params.persistenceService
+ * @param {HTMLElement|null} [params.loaderOverlay]
+ * @returns {Function} Callback asíncrono para appStore.subscribe
+ */
+export function createMapStateSubscriber({
+  canvasManager,
+  mapRepository,
+  configRepository,
+  persistenceService,
+  loaderOverlay = null,
+}) {
+  let previousMapId = null
+
+  return async (state) => {
+    if (!state || !state.activeMapId) return
+    if (state.activeMapId === previousMapId) return
+
+    const newMapId = state.activeMapId
+
+    // 1. Guardar el estado del dibujo de la provincia anterior inmediatamente al cambiar
+    if (previousMapId && previousMapId !== newMapId && canvasManager) {
+      const prevJson = canvasManager.serialize()
+      if (prevJson) {
+        persistenceService.save(`drawing_${previousMapId}`, prevJson)
+      } else {
+        persistenceService.remove(`drawing_${previousMapId}`)
+      }
+    }
+
+    // Actualizar el ID previo antes de cualquier await para evitar condiciones de carrera
+    previousMapId = newMapId
+
+    // 2. Limpiar dibujos transitorios antes de cargar el nuevo mapa
+    if (canvasManager) {
+      canvasManager.clearCanvas()
+    }
+
+    // 3. Cargar el mapa en el Canvas
+    const mapData = await mapRepository.getById(newMapId)
+    if (mapData && canvasManager) {
+      if (loaderOverlay) {
+        loaderOverlay.classList.remove('hidden')
+      }
+      try {
+        const mapSource = configRepository.getMapImageSource()
+        const mapUrl =
+          mapSource === 'imagePath'
+            ? mapData.imagePath
+              ? `${(import.meta.env?.BASE_URL || '/').replace(/\/$/, '')}${mapData.imagePath}`
+              : mapData.imageUrl
+            : mapData.imageUrl || `${(import.meta.env?.BASE_URL || '/').replace(/\/$/, '')}${mapData.imagePath}`
+        await canvasManager.loadMap(mapUrl)
+
+        // 4. Cargar dibujos guardados de la provincia activa (si existen)
+        const savedJson = persistenceService.load(`drawing_${newMapId}`)
+        if (savedJson) {
+          await canvasManager.deserialize(savedJson)
+        }
+
+        // Inicializar el historial para el nuevo mapa
+        if (canvasManager.historyManager) {
+          canvasManager.historyManager.clear()
+          canvasManager.historyManager.capture()
+        }
+      } catch (err) {
+        console.error('Error cargando el mapa en el lienzo:', err)
+      } finally {
+        if (loaderOverlay) {
+          setTimeout(() => {
+            loaderOverlay.classList.add('hidden')
+          }, 600)
+        }
+      }
+    }
   }
 }

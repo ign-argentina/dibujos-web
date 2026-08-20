@@ -30,7 +30,7 @@ describe('HelpPanel', () => {
 
     const description = container.querySelector('.nbi-help-card__description')
     expect(description).not.toBeNull()
-    expect(description.textContent).toContain('Mapas Escolares')
+    expect(description.textContent).toContain('herramientas y funciones')
 
     const note = container.querySelector('.nbi-help-card__note')
     expect(note).not.toBeNull()

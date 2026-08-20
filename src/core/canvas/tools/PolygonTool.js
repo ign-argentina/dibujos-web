@@ -15,13 +15,14 @@ export class PolygonTool extends BaseTool {
     this.points = []
     this.previewShape = null
     this._activatedAt = Date.now()
-    this.canvasManager.adapter.setDrawingMode(false)
-    this.canvasManager.adapter.setSelectionEnabled(false)
-    this.canvasManager.adapter.setDefaultCursor('crosshair')
   }
 
   onDeactivate() {
-    this.cleanup()
+    if (this.points.length >= 3) {
+      this.finishDrawing()
+    } else {
+      this.cleanup()
+    }
   }
 
   cleanup() {
@@ -31,6 +32,14 @@ export class PolygonTool extends BaseTool {
     }
     this.points = []
     this.canvasManager.adapter.requestRenderAll()
+  }
+
+  cancelDrawing() {
+    this.cleanup()
+    this.canvasManager.setTool('pan')
+    if (typeof this.canvasManager.onToolChange === 'function') {
+      this.canvasManager.onToolChange('pan')
+    }
   }
 
   onMouseDown(opt) {
@@ -107,15 +116,15 @@ export class PolygonTool extends BaseTool {
 
   onKeyDown(e) {
     if (e.key === 'Enter') {
-      this.finishDrawing()
+      if (this.points.length >= 3) {
+        this.finishDrawing()
+      } else {
+        this.cancelDrawing()
+      }
       return true
     }
     if (e.key === 'Escape') {
-      this.cleanup()
-      this.canvasManager.setTool('select')
-      if (typeof this.canvasManager.onToolChange === 'function') {
-        this.canvasManager.onToolChange('select')
-      }
+      this.cancelDrawing()
       return true
     }
     return false
@@ -153,10 +162,6 @@ export class PolygonTool extends BaseTool {
       this.canvasManager.finishCreatedObject(finalShape, 'polygon')
     } else {
       this.cleanup()
-      this.canvasManager.setTool('select')
-      if (typeof this.canvasManager.onToolChange === 'function') {
-        this.canvasManager.onToolChange('select')
-      }
     }
     this.points = []
   }
