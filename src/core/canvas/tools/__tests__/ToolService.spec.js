@@ -18,6 +18,7 @@ describe('ToolService', () => {
         discardActiveObject: vi.fn(),
         requestRenderAll: vi.fn(),
         getActiveObject: vi.fn(),
+        getObjects: vi.fn().mockReturnValue([]),
       },
     }
   })

@@ -62,6 +62,9 @@ export class CircleTool extends BaseTool {
     const top = Math.min(this.startY, currentY)
 
     this.previewShape.set({ left, top, radius })
+    if (typeof this.previewShape.setCoords === 'function') {
+      this.previewShape.setCoords()
+    }
     this.canvasManager.adapter.requestRenderAll()
   }
 
@@ -85,6 +88,10 @@ export class CircleTool extends BaseTool {
         originX: 'left',
         originY: 'top',
       })
+    }
+
+    if (typeof this.previewShape.setCoords === 'function') {
+      this.previewShape.setCoords()
     }
 
     this.canvasManager.finishCreatedObject(this.previewShape, 'circle')

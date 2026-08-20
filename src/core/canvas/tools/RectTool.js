@@ -63,6 +63,9 @@ export class RectTool extends BaseTool {
     const height = Math.max(Math.abs(currentY - this.startY), 1)
 
     this.previewShape.set({ left, top, width, height })
+    if (typeof this.previewShape.setCoords === 'function') {
+      this.previewShape.setCoords()
+    }
     this.canvasManager.adapter.requestRenderAll()
   }
 
@@ -87,6 +90,10 @@ export class RectTool extends BaseTool {
         originX: 'left',
         originY: 'top',
       })
+    }
+
+    if (typeof this.previewShape.setCoords === 'function') {
+      this.previewShape.setCoords()
     }
 
     this.canvasManager.finishCreatedObject(this.previewShape, 'rect')

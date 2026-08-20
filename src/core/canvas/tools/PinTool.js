@@ -58,6 +58,9 @@ export class PinTool extends BaseTool {
     const scale = Math.max(0.2, Math.min(3, dist / 50))
 
     this.previewShape.set({ left: this.startX, top: this.startY, scaleX: scale, scaleY: scale })
+    if (typeof this.previewShape.setCoords === 'function') {
+      this.previewShape.setCoords()
+    }
     this.canvasManager.adapter.requestRenderAll()
   }
 
@@ -84,6 +87,10 @@ export class PinTool extends BaseTool {
         originX: 'center',
         originY: 'bottom',
       })
+    }
+
+    if (typeof this.previewShape.setCoords === 'function') {
+      this.previewShape.setCoords()
     }
 
     this.canvasManager.finishCreatedObject(this.previewShape, 'pin')

@@ -109,12 +109,12 @@ vi.mock('fabric', () => {
     constructor(opts = {}) {
       Object.assign(this, opts)
       this.type = 'rect'
+      this.setCoords = vi.fn()
     }
     set(props) {
       Object.assign(this, props)
       return this
     }
-    setCoords() {}
     toObject() {
       return { ...this }
     }
@@ -124,12 +124,12 @@ vi.mock('fabric', () => {
     constructor(opts = {}) {
       Object.assign(this, opts)
       this.type = 'circle'
+      this.setCoords = vi.fn()
     }
     set(props) {
       Object.assign(this, props)
       return this
     }
-    setCoords() {}
     toObject() {
       return { ...this }
     }
@@ -140,12 +140,12 @@ vi.mock('fabric', () => {
       this.path = path
       Object.assign(this, opts)
       this.type = 'path'
+      this.setCoords = vi.fn()
     }
     set(props) {
       Object.assign(this, props)
       return this
     }
-    setCoords() {}
     toObject() {
       return { ...this }
     }
@@ -156,12 +156,12 @@ vi.mock('fabric', () => {
       this.points = points
       Object.assign(this, opts)
       this.type = 'polyline'
+      this.setCoords = vi.fn()
     }
     set(props) {
       Object.assign(this, props)
       return this
     }
-    setCoords() {}
     toObject() {
       return { ...this }
     }
@@ -172,12 +172,12 @@ vi.mock('fabric', () => {
       this.points = points
       Object.assign(this, opts)
       this.type = 'polygon'
+      this.setCoords = vi.fn()
     }
     set(props) {
       Object.assign(this, props)
       return this
     }
-    setCoords() {}
     toObject() {
       return { ...this }
     }
@@ -189,12 +189,12 @@ vi.mock('fabric', () => {
       Object.assign(this, opts)
       this.type = 'textbox'
       this._listeners = {}
+      this.setCoords = vi.fn()
     }
     set(props) {
       Object.assign(this, props)
       return this
     }
-    setCoords() {}
     toObject() {
       return { ...this }
     }
@@ -1030,6 +1030,87 @@ describe('Tests de Regresión - Activación de Herramientas, Selección y Canvas
       expect(mockMapRepo.getById).toHaveBeenCalledTimes(1)
 
       unsubscribe()
+    })
+  })
+
+  // --- R. SINCRONIZACIÓN DE COORDENADAS PARA SELECCIÓN POR CLIC ---
+  describe('R. Sincronización de coordenadas para selección por clic (Rect, Circle, Pin)', () => {
+    it('debería actualizar setCoords al crear un rectángulo para permitir su selección por clic', () => {
+      canvasManager.setTool('rect')
+      const rectTool = canvasManager.toolService.activeTool
+
+      rectTool.onMouseDown({ e: { clientX: 20, clientY: 20 } })
+      rectTool.onMouseMove({ e: { clientX: 160, clientY: 120 } })
+      rectTool.onMouseUp({ e: { clientX: 160, clientY: 120 } })
+
+      const objects = canvasManager.canvas.getObjects().filter((o) => o.type === 'rect')
+      expect(objects.length).toBe(1)
+      const rect = objects[0]
+
+      expect(rect.selectable).toBe(true)
+      expect(rect.evented).toBe(true)
+      expect(rect.setCoords).toHaveBeenCalled()
+    })
+
+    it('debería actualizar setCoords al crear un círculo para permitir su selección por clic', () => {
+      canvasManager.setTool('circle')
+      const circleTool = canvasManager.toolService.activeTool
+
+      circleTool.onMouseDown({ e: { clientX: 30, clientY: 30 } })
+      circleTool.onMouseMove({ e: { clientX: 100, clientY: 100 } })
+      circleTool.onMouseUp({ e: { clientX: 100, clientY: 100 } })
+
+      const objects = canvasManager.canvas.getObjects().filter((o) => o.type === 'circle')
+      expect(objects.length).toBe(1)
+      const circle = objects[0]
+
+      expect(circle.selectable).toBe(true)
+      expect(circle.evented).toBe(true)
+      expect(circle.setCoords).toHaveBeenCalled()
+    })
+
+    it('debería actualizar setCoords al crear un pin/marcador para permitir su selección por clic', () => {
+      canvasManager.setTool('pin')
+      const pinTool = canvasManager.toolService.activeTool
+
+      pinTool.onMouseDown({ e: { clientX: 40, clientY: 40 } })
+      pinTool.onMouseMove({ e: { clientX: 80, clientY: 80 } })
+      pinTool.onMouseUp({ e: { clientX: 80, clientY: 80 } })
+
+      const objects = canvasManager.canvas.getObjects().filter((o) => o.type === 'path')
+      expect(objects.length).toBe(1)
+      const pin = objects[0]
+
+      expect(pin.selectable).toBe(true)
+      expect(pin.evented).toBe(true)
+      expect(pin.setCoords).toHaveBeenCalled()
+    })
+
+    it('debería ejecutar setCoords en todos los objetos del canvas al activar SelectTool', () => {
+      // Crear varias figuras
+      canvasManager.setTool('rect')
+      const rectTool = canvasManager.toolService.activeTool
+      rectTool.onMouseDown({ e: { clientX: 10, clientY: 10 } })
+      rectTool.onMouseUp({ e: { clientX: 50, clientY: 50 } })
+
+      canvasManager.setTool('circle')
+      const circleTool = canvasManager.toolService.activeTool
+      circleTool.onMouseDown({ e: { clientX: 60, clientY: 60 } })
+      circleTool.onMouseUp({ e: { clientX: 100, clientY: 100 } })
+
+      const rect = canvasManager.canvas.getObjects().find((o) => o.type === 'rect')
+      const circle = canvasManager.canvas.getObjects().find((o) => o.type === 'circle')
+
+      rect.setCoords.mockClear()
+      circle.setCoords.mockClear()
+
+      // Activar SelectTool
+      canvasManager.setTool('select')
+
+      expect(rect.setCoords).toHaveBeenCalled()
+      expect(circle.setCoords).toHaveBeenCalled()
+      expect(canvasManager.canvas.selection).toBe(true)
+      expect(canvasManager.canvas.skipTargetFind).toBe(false)
     })
   })
 })

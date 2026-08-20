@@ -529,6 +529,10 @@ export class CanvasManager {
       evented: true,
     })
 
+    if (typeof shape.setCoords === 'function') {
+      shape.setCoords()
+    }
+
     if (toolWas === 'text' && typeof shape.enterEditing === 'function') {
       this.canvas.setActiveObject(shape)
       this.canvas.requestRenderAll()
