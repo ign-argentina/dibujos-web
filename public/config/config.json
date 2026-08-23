@@ -447,17 +447,23 @@
   ],
   "ui": {
     "title": "Mapas Escolares",
-    "exportFilenamePrefix": "mapas_escolares_IGN_",
     "logoUrl": "/logo-ign-blanco.svg",
     "logoLink": "https://www.ign.gob.ar",
-    "externalLink": {
-      "visible": true,
-      "text": "Ver Mapas Oficiales",
-      "href": "https://www.ign.gob.ar/AreaServicios/Descargas/MapasEscolares"
+    "stroke": {
+      "min": 2,
+      "max": 24,
+      "default": 4
+    },
+    "export": {
+      "filenamePrefix": "mapas_escolares_IGN_",
+      "defaultFormat": "pdf",
+      "defaultPaper": "A4",
+      "defaultQuality": 2,
+      "defaultScale": 100
     },
     "theme": {
       "primary": "#41C0F0",
-      "secondary": "#9678ce ",
+      "secondary": "#9678ce",
       "accent": "#EEC461",
       "background": "#FAFAFA",
       "panelBackground": "#F5F4F4",

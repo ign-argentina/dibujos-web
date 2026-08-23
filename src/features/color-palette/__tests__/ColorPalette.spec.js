@@ -5,7 +5,9 @@ vi.mock('../../../core/repositories/ConfigRepository.js', () => ({
   configRepository: {
     getUiConfig: () => ({
       colorPalette: ['#FFA2A2', '#82D3F8', '#7ABE7D', '#E289F2', '#A5A5A5', '#000000']
-    })
+    }),
+    getColorPalette: () => ['#FFA2A2', '#82D3F8', '#7ABE7D', '#E289F2', '#A5A5A5', '#000000'],
+    getStrokeConfig: () => ({ min: 2, max: 24, default: 4 })
   }
 }))
 

@@ -44,6 +44,14 @@
   overflow-x: hidden;
 }
 
+.nbi-sidebar__scroll--panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--nbi-space-md);
+  grid-template-columns: 1fr;
+  width: 100%;
+}
+
 /* Custom scrollbar para estética brutalista */
 .nbi-sidebar__scroll::-webkit-scrollbar {
   width: 12px;

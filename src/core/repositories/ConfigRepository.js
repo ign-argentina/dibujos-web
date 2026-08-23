@@ -54,7 +54,35 @@ export class ConfigRepository {
   }
 
   getExportFilenamePrefix() {
-    return this.config?.ui?.exportFilenamePrefix || 'mapas_escolares_IGN_'
+    return (
+      this.config?.ui?.export?.filenamePrefix ||
+      this.config?.ui?.exportFilenamePrefix ||
+      'mapas_escolares_IGN_'
+    )
+  }
+
+  getStrokeConfig() {
+    return this.config?.ui?.stroke || { min: 2, max: 24, default: 4 }
+  }
+
+  getExportConfig() {
+    return (
+      this.config?.ui?.export || {
+        filenamePrefix: 'mapas_escolares_IGN_',
+        defaultFormat: 'pdf',
+        defaultPaper: 'A4',
+        defaultQuality: 2,
+        defaultScale: 100,
+      }
+    )
+  }
+
+  getThemeConfig() {
+    return this.config?.ui?.theme || null
+  }
+
+  getColorPalette() {
+    return this.config?.ui?.colorPalette || null
   }
 
   getExternalResources() {

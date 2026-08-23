@@ -41,15 +41,21 @@ export class ColorPalette extends Component {
   }
 
   render() {
-    const uiConfig = configRepository.getUiConfig()
-    const palette = uiConfig.colorPalette || [
-      '#FFA2A2',
-      '#82D3F8',
-      '#7ABE7D',
-      '#E289F2',
-      '#A5A5A5',
-      '#000000',
-    ]
+    const palette =
+      (typeof configRepository.getColorPalette === 'function'
+        ? configRepository.getColorPalette()
+        : configRepository.getUiConfig()?.colorPalette) || [
+        '#FFA2A2',
+        '#82D3F8',
+        '#7ABE7D',
+        '#E289F2',
+        '#A5A5A5',
+        '#000000',
+      ]
+    const strokeConfig =
+      (typeof configRepository.getStrokeConfig === 'function'
+        ? configRepository.getStrokeConfig()
+        : null) || { min: 2, max: 24, default: 4 }
 
     this.colorChipsContainer = document.getElementById('color-chips-container')
     this.recentColorsContainer = document.getElementById('recent-colors-container')
@@ -58,8 +64,6 @@ export class ColorPalette extends Component {
     this.customColorPicker = document.getElementById('custom-color-picker')
     this.propertiesPanel = document.getElementById('properties-panel')
     this.togglePropertiesBtn = document.getElementById('toggle-properties-btn')
-
-
 
     // Inyectar chips de colores dinámicamente según la paleta configurada
     if (this.colorChipsContainer) {
@@ -85,11 +89,13 @@ export class ColorPalette extends Component {
     }
 
     if (this.strokeSlider) {
-      const visualVal = Math.round(this.canvasManager.activeStrokeWidth / 3) || 4
+      if (strokeConfig.min) this.strokeSlider.min = strokeConfig.min
+      if (strokeConfig.max) this.strokeSlider.max = strokeConfig.max
+      const visualVal = Math.round(this.canvasManager.activeStrokeWidth / 3) || strokeConfig.default || 4
       this.strokeSlider.value = visualVal
     }
     if (this.strokeValueDisplay) {
-      const visualVal = Math.round(this.canvasManager.activeStrokeWidth / 3) || 4
+      const visualVal = Math.round(this.canvasManager.activeStrokeWidth / 3) || strokeConfig.default || 4
       this.strokeValueDisplay.textContent = `${visualVal}px`
     }
 

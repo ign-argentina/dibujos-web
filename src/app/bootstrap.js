@@ -185,6 +185,11 @@ export async function bootstrap() {
       headerTitle.textContent = uiConfig.title
     }
 
+    const headerSubtitle = document.querySelector('.nbi-navbar__subtitle')
+    if (headerSubtitle && uiConfig.subtitle) {
+      headerSubtitle.textContent = uiConfig.subtitle
+    }
+
     const headerLogo = document.querySelector('.nbi-navbar__logo')
     if (headerLogo && uiConfig.logoUrl) {
       headerLogo.src = `${import.meta.env.BASE_URL.replace(/\/$/, '')}${uiConfig.logoUrl}`
@@ -193,22 +198,6 @@ export async function bootstrap() {
     const logoLink = document.getElementById('logo-link')
     if (logoLink && uiConfig.logoLink) {
       logoLink.href = uiConfig.logoLink
-    }
-
-    const externalLink = document.getElementById('ign-link-btn')
-    if (externalLink && uiConfig.externalLink) {
-      if (uiConfig.externalLink.visible === false) {
-        externalLink.classList.add('hidden')
-      } else {
-        externalLink.classList.remove('hidden')
-        externalLink.href =
-          uiConfig.externalLink.href ||
-          'https://www.ign.gob.ar/AreaServicios/Descargas/MapasEscolares'
-        const spanText = externalLink.querySelector('.btn-text')
-        if (spanText) {
-          spanText.textContent = uiConfig.externalLink.text || 'Descargar Mapas Oficiales'
-        }
-      }
     }
 
 

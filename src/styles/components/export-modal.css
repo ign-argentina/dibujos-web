@@ -189,3 +189,47 @@
   flex-direction: column;
   gap: 2px;
 }
+
+/* --- MODAL DE CONFIRMACIÓN DE BORRADO --- */
+.nbi-confirm-modal {
+  width: 440px;
+  max-width: 90vw;
+  background-color: var(--nbi-color-panel-bg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--nbi-space-md);
+  padding: var(--nbi-space-lg);
+}
+
+.nbi-confirm-modal__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: var(--nbi-border-width-sm) solid var(--nbi-color-black);
+  padding-bottom: 8px;
+}
+
+.nbi-confirm-modal__title {
+  font-weight: var(--nbi-font-weight-bold);
+  font-size: var(--nbi-font-size-xl);
+  margin: 0;
+}
+
+.nbi-confirm-modal__body {
+  margin: 0;
+  font-weight: var(--nbi-font-weight-semibold);
+  font-size: var(--nbi-font-size-base);
+  line-height: 1.5;
+}
+
+.nbi-confirm-modal__footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--nbi-space-sm);
+  margin-top: var(--nbi-space-xs);
+}
+
+.nbi-confirm-modal__btn {
+  min-width: 80px;
+  justify-content: center;
+}
