@@ -79,7 +79,7 @@ export class CircleTool extends BaseTool {
       this.previewShape.set({
         left: this.startX,
         top: this.startY,
-        radius: 60,
+        radius: 150,
         originX: 'center',
         originY: 'center',
       })

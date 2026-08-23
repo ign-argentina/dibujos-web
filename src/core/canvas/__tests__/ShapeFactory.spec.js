@@ -65,8 +65,8 @@ describe('ShapeFactory', () => {
     expect(rect.stroke).toBe('#FF0000')
     expect(rect.left).toBe(10)
     expect(rect.top).toBe(20)
-    expect(rect.rx).toBe(4)
-    expect(rect.ry).toBe(4)
+    expect(rect.rx).toBe(12)
+    expect(rect.ry).toBe(12)
   })
 
   it('debería instanciar un Circle con opciones correctas', () => {

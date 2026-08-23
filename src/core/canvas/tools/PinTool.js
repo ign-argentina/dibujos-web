@@ -55,7 +55,7 @@ export class PinTool extends BaseTool {
     const deltaX = pointer.x - this.startX
     const deltaY = pointer.y - this.startY
     const dist = Math.hypot(deltaX, deltaY)
-    const scale = Math.max(0.2, Math.min(3, dist / 50))
+    const scale = Math.max(0.6, Math.min(10, dist / 25))
 
     this.previewShape.set({ left: this.startX, top: this.startY, scaleX: scale, scaleY: scale })
     if (typeof this.previewShape.setCoords === 'function') {
@@ -75,8 +75,8 @@ export class PinTool extends BaseTool {
       this.previewShape.set({
         left: this.startX,
         top: this.startY,
-        scaleX: 1,
-        scaleY: 1,
+        scaleX: 3,
+        scaleY: 3,
         originX: 'center',
         originY: 'bottom',
       })

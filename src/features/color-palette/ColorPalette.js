@@ -85,10 +85,12 @@ export class ColorPalette extends Component {
     }
 
     if (this.strokeSlider) {
-      this.strokeSlider.value = this.canvasManager.activeStrokeWidth
+      const visualVal = Math.round(this.canvasManager.activeStrokeWidth / 3) || 4
+      this.strokeSlider.value = visualVal
     }
     if (this.strokeValueDisplay) {
-      this.strokeValueDisplay.textContent = `${this.canvasManager.activeStrokeWidth}px`
+      const visualVal = Math.round(this.canvasManager.activeStrokeWidth / 3) || 4
+      this.strokeValueDisplay.textContent = `${visualVal}px`
     }
 
     this.renderRecentColors()

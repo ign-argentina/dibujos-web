@@ -80,8 +80,8 @@ export class RectTool extends BaseTool {
       this.previewShape.set({
         left: this.startX,
         top: this.startY,
-        width: 140,
-        height: 100,
+        width: 350,
+        height: 250,
         originX: 'center',
         originY: 'center',
       })

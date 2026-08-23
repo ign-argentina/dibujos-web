@@ -86,9 +86,9 @@ export class ArrowTool extends BaseTool {
       this.canvasManager.adapter.removeObject(this.previewShape)
       const defaultArrow = ShapeFactory.createArrow(
         this.canvasManager.createArrowPath(
-          this.startX - 50,
+          this.startX - 150,
           this.startY,
-          this.startX + 50,
+          this.startX + 150,
           this.startY
         ),
         {

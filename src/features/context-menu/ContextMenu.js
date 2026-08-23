@@ -449,7 +449,7 @@ export class ContextMenu extends Component {
     // 2. SECCIÓN DE COLOR DE BORDE / ESTILO DE LÍNEA
     if (showStrokeOption) {
       const currentStroke = obj.stroke || '#000000'
-      const currentWidth = obj.strokeWidth || 2
+      const currentWidth = obj.strokeWidth || 6
       const currentDash = obj.strokeDashArray
 
       let dashType = 'solid'
@@ -485,7 +485,7 @@ export class ContextMenu extends Component {
         <div class="nbi-context__section">
           <div class="nbi-context__stroke-width-group">
             <label for="ctx-stroke-width" class="nbi-context__label">Grosor: <span id="ctx-stroke-val">${currentWidth}px</span></label>
-            <input type="range" class="nbi-slider" id="ctx-stroke-width" min="1" max="30" value="${currentWidth}" />
+            <input type="range" class="nbi-slider" id="ctx-stroke-width" min="2" max="60" value="${currentWidth}" />
           </div>
         </div>
         <div class="nbi-context__section">
@@ -508,7 +508,7 @@ export class ContextMenu extends Component {
             <label for="ctx-corner-rx" class="nbi-context__label">Esquinas Redondeadas:</label>
             <span style="font-weight: var(--nbi-font-weight-semibold); font-size: var(--nbi-font-size-sm);" id="ctx-rx-val">${currentRx}px</span>
           </div>
-          <input class="nbi-slider" id="ctx-corner-rx" type="range" min="0" max="40" value="${currentRx}" />
+          <input class="nbi-slider" id="ctx-corner-rx" type="range" min="0" max="100" value="${currentRx}" />
         </div>
       `
     }
@@ -528,7 +528,7 @@ export class ContextMenu extends Component {
     // 5. SECCIÓN DE TEXTO AVANZADA
     if (isText) {
       const currentFont = obj.fontFamily || 'Fredoka'
-      const currentSize = obj.fontSize || 24
+      const currentSize = obj.fontSize || 64
       const isBold = obj.fontWeight === 'bold'
       const isItalic = obj.fontStyle === 'italic'
       const isUnderline = !!obj.underline
@@ -555,7 +555,7 @@ export class ContextMenu extends Component {
             <label for="ctx-font-size" class="nbi-context__label">Tamaño de Fuente:</label>
             <span style="font-weight: var(--nbi-font-weight-semibold); font-size: var(--nbi-font-size-sm);" id="ctx-size-val">${currentSize}px</span>
           </div>
-          <input class="nbi-slider" id="ctx-font-size" type="range" min="12" max="72" value="${currentSize}" />
+          <input class="nbi-slider" id="ctx-font-size" type="range" min="16" max="240" step="2" value="${currentSize}" />
         </div>
         <div class="nbi-context__section">
           <label class="nbi-context__label">Formato de Texto</label>

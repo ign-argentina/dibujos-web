@@ -34,7 +34,7 @@ export class CanvasManager {
 
     // Propiedades de herramientas NBI
     this.activeColor = '#000000'
-    this.activeStrokeWidth = 4
+    this.activeStrokeWidth = 12
     this.activeTool = 'pan'
     this.onToolChange = null
 
@@ -144,16 +144,46 @@ export class CanvasManager {
 
     if (!width || !height) return
 
-    if (this.canvasWidth !== width || this.canvasHeight !== height) {
+    const oldWidth = this.canvasWidth
+    const oldHeight = this.canvasHeight
+
+    if (oldWidth !== width || oldHeight !== height) {
       this.canvasWidth = width
       this.canvasHeight = height
 
       this.adapter.setDimensions({ width, height })
       this.adapter.calcOffset()
-      this.adapter.requestRenderAll()
 
       if (this.currentMapImage) {
-        this.fitMapToCanvas()
+        const imgWidth = this.currentMapImage.width
+        const imgHeight = this.currentMapImage.height
+
+        if (!oldWidth || !oldHeight || !imgWidth || !imgHeight) {
+          this.fitMapToCanvas()
+        } else {
+          const oldFitScale = Math.min((oldWidth * 0.9) / imgWidth, (oldHeight * 0.9) / imgHeight)
+          const newFitScale = Math.min((width * 0.9) / imgWidth, (height * 0.9) / imgHeight)
+          const oldVpt = this.adapter.getViewportTransform()
+          const currentZoom = oldVpt ? oldVpt[0] : oldFitScale
+
+          // Si el zoom estaba en el ajuste predeterminado, recalcular fitMapToCanvas directamente
+          const isAtDefaultFit = Math.abs(currentZoom - oldFitScale) < 0.005
+
+          if (isAtDefaultFit || oldFitScale <= 0) {
+            this.fitMapToCanvas()
+          } else {
+            const zoomRatio = newFitScale / oldFitScale
+            const centerMapX = (oldWidth / 2 - (oldVpt ? oldVpt[4] : 0)) / currentZoom
+            const centerMapY = (oldHeight / 2 - (oldVpt ? oldVpt[5] : 0)) / currentZoom
+            const newZoom = currentZoom * zoomRatio
+            const newTx = width / 2 - centerMapX * newZoom
+            const newTy = height / 2 - centerMapY * newZoom
+            this.adapter.setViewportTransform([newZoom, 0, 0, newZoom, newTx, newTy])
+            this.adapter.requestRenderAll()
+          }
+        }
+      } else {
+        this.adapter.requestRenderAll()
       }
     }
   }
@@ -193,33 +223,29 @@ export class CanvasManager {
     const imgWidth = this.currentMapImage.width
     const imgHeight = this.currentMapImage.height
 
-    if (!imgWidth || !imgHeight) return
+    if (!imgWidth || !imgHeight || !canvasWidth || !canvasHeight) return
 
-    const canvasRatio = canvasWidth / canvasHeight
-    const imgRatio = imgWidth / imgHeight
-
-    let scale = 1
-    if (imgRatio > canvasRatio) {
-      scale = canvasWidth / imgWidth
-    } else {
-      scale = canvasHeight / imgHeight
-    }
-
-    const left = (canvasWidth - imgWidth * scale) / 2
-    const top = (canvasHeight - imgHeight * scale) / 2
-
+    // Mantener la imagen del mapa base en origen canónico (0,0) y escala 1.0 fija
     this.currentMapImage.set({
-      scaleX: scale,
-      scaleY: scale,
-      left: left,
-      top: top,
+      left: 0,
+      top: 0,
+      scaleX: 1,
+      scaleY: 1,
+      originX: 'left',
+      originY: 'top',
     })
 
-    const zoom = 0.8
-    const xOffset = (canvasWidth - canvasWidth * zoom) / 2
-    const yOffset = (canvasHeight - canvasHeight * zoom) / 2
+    // Calcular escala de ajuste con un margen visual (90%) para encajar proporcionalmente
+    const paddingFactor = 0.9
+    const scaleX = (canvasWidth * paddingFactor) / imgWidth
+    const scaleY = (canvasHeight * paddingFactor) / imgHeight
+    const scale = Math.min(scaleX, scaleY)
 
-    this.adapter.setViewportTransform([zoom, 0, 0, zoom, xOffset, yOffset])
+    // Centrar la escena canónica en el contenedor visible
+    const xOffset = (canvasWidth - imgWidth * scale) / 2
+    const yOffset = (canvasHeight - imgHeight * scale) / 2
+
+    this.adapter.setViewportTransform([scale, 0, 0, scale, xOffset, yOffset])
     this.adapter.requestRenderAll()
   }
 
@@ -291,8 +317,8 @@ export class CanvasManager {
 
       zoom *= 0.999 ** delta
 
-      if (zoom > 8) zoom = 8
-      if (zoom < 0.5) zoom = 0.5
+      if (zoom > 20) zoom = 20
+      if (zoom < 0.02) zoom = 0.02
 
       canvas.zoomToPoint({ x: opt.e.offsetX, y: opt.e.offsetY }, zoom)
 
@@ -385,7 +411,7 @@ export class CanvasManager {
   zoomIn(factor = 1.25) {
     if (!this.canvas) return
     let zoom = this.adapter.getZoom() * factor
-    if (zoom > 8) zoom = 8
+    if (zoom > 20) zoom = 20
     this.adapter.zoomToPoint({ x: this.canvasWidth / 2, y: this.canvasHeight / 2 }, zoom)
     this.adapter.requestRenderAll()
   }
@@ -393,7 +419,7 @@ export class CanvasManager {
   zoomOut(factor = 1.25) {
     if (!this.canvas) return
     let zoom = this.adapter.getZoom() / factor
-    if (zoom < 0.5) zoom = 0.5
+    if (zoom < 0.02) zoom = 0.02
     this.adapter.zoomToPoint({ x: this.canvasWidth / 2, y: this.canvasHeight / 2 }, zoom)
     this.adapter.requestRenderAll()
   }
@@ -500,7 +526,8 @@ export class CanvasManager {
   }
 
   setActiveStrokeWidth(width, fireEvent = true) {
-    this.activeStrokeWidth = parseInt(width, 10)
+    const raw = parseInt(width, 10)
+    this.activeStrokeWidth = raw <= 24 ? raw * 3 : raw
     this.configureDrawingBrush()
 
     if (this.canvas) {
@@ -527,7 +554,7 @@ export class CanvasManager {
     }
 
     const angle = Math.atan2(dy, dx)
-    const headLen = Math.min(Math.max(15, this.activeStrokeWidth * 2.5), Math.max(15, dist * 0.35))
+    const headLen = Math.min(Math.max(35, this.activeStrokeWidth * 2.5), Math.max(35, dist * 0.35))
     const arrowAngle = Math.PI / 6
 
     const x3 = x2 - headLen * Math.cos(angle - arrowAngle)
@@ -611,12 +638,15 @@ export class CanvasManager {
     if (!this.canvas) return
     const center = this.getViewportCenter()
 
-    const arrow = ShapeFactory.createArrow('M -50 0 L 50 0 M 20 -15 L 50 0 L 20 15', {
-      left: center.left,
-      top: center.top,
-      color: this.activeColor,
-      strokeWidth: this.activeStrokeWidth,
-    })
+    const arrow = ShapeFactory.createArrow(
+      this.createArrowPath(center.left - 150, center.top, center.left + 150, center.top),
+      {
+        left: center.left,
+        top: center.top,
+        color: this.activeColor,
+        strokeWidth: this.activeStrokeWidth,
+      }
+    )
 
     this.adapter.addObject(arrow)
     this.adapter.setActiveObject(arrow)
@@ -797,8 +827,8 @@ export class CanvasManager {
       const { objects, options } = await this.adapter.loadSVG(url)
       const stickerGroup = this.adapter.groupSVGElements(objects, options)
 
-      // Escalar el sticker para que tenga un tamaño inicial adecuado (250px)
-      const targetSize = 100
+      // Escalar el sticker para que tenga un tamaño inicial adecuado en coordenadas canónicas (250px)
+      const targetSize = 250
       const width = stickerGroup.width || targetSize
       const height = stickerGroup.height || targetSize
       const scale = Math.min(targetSize / width, targetSize / height)
@@ -876,7 +906,7 @@ export class CanvasManager {
         {}
       )
 
-      const maxDim = Math.min(this.canvasWidth * 0.5, this.canvasHeight * 0.5, 400)
+      const maxDim = Math.min(this.currentMapImage ? this.currentMapImage.width * 0.4 : 600, 600)
       let scale = 1
       if (img.width > maxDim || img.height > maxDim) {
         scale = Math.min(maxDim / img.width, maxDim / img.height)

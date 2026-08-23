@@ -59,7 +59,7 @@ export class TextTool extends BaseTool {
 
     const left = Math.min(this.startX, currentX)
     const top = Math.min(this.startY, currentY)
-    const width = Math.max(Math.abs(currentX - this.startX), 120)
+    const width = Math.max(Math.abs(currentX - this.startX), 350)
 
     this.previewShape.set({ left, top, width })
     this.canvasManager.adapter.requestRenderAll()
@@ -76,7 +76,7 @@ export class TextTool extends BaseTool {
       this.previewShape.set({
         left: this.startX,
         top: this.startY,
-        width: 180,
+        width: 450,
         originX: 'center',
         originY: 'center',
         textAlign: 'center',
