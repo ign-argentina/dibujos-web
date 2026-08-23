@@ -141,3 +141,51 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* Advertencia de configuración para impresión física */
+.nbi-export-modal__warning {
+  background-color: #fff9db;
+  border: var(--nbi-border-width-sm) solid var(--nbi-color-black);
+  border-radius: var(--nbi-radius-teen);
+  box-shadow: 2px 2px 0px 0px var(--nbi-color-black);
+  padding: 10px 12px;
+  font-size: var(--nbi-font-size-xs);
+  color: var(--nbi-color-black);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.nbi-export-modal__warning.hidden {
+  display: none !important;
+}
+
+.nbi-export-modal__warning-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--nbi-font-size-sm);
+  font-weight: var(--nbi-font-weight-bold);
+  color: #92400e;
+}
+
+.nbi-export-modal__warning-icon {
+  width: 18px;
+  height: 18px;
+  stroke: #92400e;
+  flex-shrink: 0;
+}
+
+.nbi-export-modal__warning-text {
+  margin: 0;
+  line-height: 1.35;
+}
+
+.nbi-export-modal__warning-list {
+  margin: 0;
+  padding-left: 18px;
+  line-height: 1.35;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}

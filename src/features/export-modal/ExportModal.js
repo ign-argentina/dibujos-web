@@ -46,6 +46,9 @@ export class ExportModal extends Component {
     this.closeBtn = document.getElementById('export-modal-close')
     this.cancelBtn = document.getElementById('exp-btn-cancel')
     this.submitBtn = document.getElementById('exp-btn-submit')
+    this.printWarning = document.getElementById('exp-print-warning')
+    this.warnOrient = document.getElementById('exp-warn-orient')
+    this.warnPaper = document.getElementById('exp-warn-paper')
   }
 
   bindEvents() {
@@ -88,6 +91,7 @@ export class ExportModal extends Component {
     if (paperSelect) {
       this.addEvent(paperSelect, 'change', async (e) => {
         this.paperSizeKey = e.target.value
+        this.updatePrintWarning()
         await this.updatePreview()
       })
     }
@@ -143,6 +147,18 @@ export class ExportModal extends Component {
     }
   }
 
+  updatePrintWarning() {
+    if (this.warnOrient) {
+      this.warnOrient.textContent = this.orientation === 'portrait' ? 'Vertical' : 'Horizontal'
+    }
+    if (this.warnPaper) {
+      this.warnPaper.textContent = this.paperSizeKey === 'A4' ? 'A4' : 'Oficio / Legal'
+    }
+    if (window.lucide) {
+      window.lucide.createIcons()
+    }
+  }
+
   setDestination(dest) {
     this.destination = dest
 
@@ -163,6 +179,8 @@ export class ExportModal extends Component {
       } else {
         qualitySection?.classList.add('hidden')
       }
+
+      this.printWarning?.classList.add('hidden')
     } else {
       destPrintBtn?.classList.add('is-active')
       destPrintBtn?.setAttribute('aria-pressed', 'true')
@@ -171,6 +189,9 @@ export class ExportModal extends Component {
 
       formatSection?.classList.add('hidden')
       qualitySection?.classList.add('hidden')
+
+      this.printWarning?.classList.remove('hidden')
+      this.updatePrintWarning()
     }
 
     this.updateSubmitButtonUI()
@@ -216,6 +237,7 @@ export class ExportModal extends Component {
       portraitBtn?.setAttribute('aria-pressed', 'false')
     }
 
+    this.updatePrintWarning()
     await this.updatePreview()
   }
 

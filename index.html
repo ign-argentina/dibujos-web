@@ -349,6 +349,23 @@
                 <option value="3">Alta Resolución (3x / 300 DPI)</option>
               </select>
             </div>
+
+            <!-- ADVERTENCIA DE IMPRESIÓN (SOLO VISIBLE AL IMPRIMIR) -->
+            <div class="nbi-export-modal__warning hidden" id="exp-print-warning" role="alert">
+              <div class="nbi-export-modal__warning-header">
+                <i data-lucide="alert-triangle" class="nbi-export-modal__warning-icon" aria-hidden="true"></i>
+                <span>Recomendación de Impresión</span>
+              </div>
+              <p class="nbi-export-modal__warning-text">
+                Para mantener el <strong>tamaño real escolar (19 × 24 cm)</strong> en la hoja impresa, verificá en la ventana de impresión:
+              </p>
+              <ul class="nbi-export-modal__warning-list">
+                <li><strong>Posición de la hoja:</strong> <span id="exp-warn-orient">Vertical</span></li>
+                <li><strong>Tamaño de papel:</strong> <span id="exp-warn-paper">A4</span></li>
+                <li><strong>Márgenes:</strong> <strong>Sin márgenes</strong> (o "Ninguno")</li>
+                <li><strong>Escala:</strong> <strong>100%</strong> (o "Tamaño real")</li>
+              </ul>
+            </div>
           </div>
 
           <!-- COLUMNA DERECHA: VISTA PREVIA EN TIEMPO REAL -->
