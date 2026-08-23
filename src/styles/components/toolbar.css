@@ -33,3 +33,15 @@
   align-items: center;
   gap: var(--nbi-space-sm);
 }
+
+/* --- TAMAÑO UNIFORME DE ICONOS EN TOOLBAR (20x20px) --- */
+.nbi-toolbar svg,
+.nbi-toolbar .lucide,
+.nbi-toolbar .nbi-btn svg,
+.nbi-toolbar .nbi-btn .lucide {
+  width: 20px;
+  height: 20px;
+  min-width: 20px;
+  min-height: 20px;
+  flex-shrink: 0;
+}

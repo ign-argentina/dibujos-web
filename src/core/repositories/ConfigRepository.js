@@ -56,6 +56,10 @@ export class ConfigRepository {
   getExportFilenamePrefix() {
     return this.config?.ui?.exportFilenamePrefix || 'mapas_escolares_IGN_'
   }
+
+  getExternalResources() {
+    return this.config?.ui?.externalResources || null
+  }
 }
 
 export const configRepository = new ConfigRepository()

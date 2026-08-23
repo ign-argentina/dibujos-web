@@ -17,6 +17,7 @@ import { TourController } from '../features/help-tour/TourController.js'
 import { generalTour } from '../features/help-tour/tours/generalTour.js'
 import { TourWelcomeModal } from '../features/help-tour/TourWelcomeModal.js'
 import { TourStorage } from '../features/help-tour/TourStorage.js'
+import { ExternalLinksPanel } from '../components/ExternalLinksPanel.js'
 
 /**
  * Inicializa y configura todas las capas y componentes de la aplicación.
@@ -213,6 +214,14 @@ export async function bootstrap() {
 
 
     // 3. Inicializar panel lateral dinámico y selector de mapas
+    const externalResourcesConfig = configRepository.getExternalResources()
+    const linksTabConfig = externalResourcesConfig?.tab || {
+      id: 'links',
+      label: 'Enlaces',
+      title: 'Recursos del IGN',
+      icon: 'external-link'
+    }
+
     const sidebar = new Sidebar(sidebarContainer, {
       views: [
         {
@@ -232,6 +241,12 @@ export async function bootstrap() {
           label: 'Ayuda',
           title: 'Ayuda',
           icon: 'circle-question-mark'
+        },
+        {
+          id: linksTabConfig.id || 'links',
+          label: linksTabConfig.label || 'Enlaces',
+          title: linksTabConfig.title || 'Recursos del IGN',
+          icon: linksTabConfig.icon || 'external-link'
         }
       ]
     })
@@ -307,6 +322,15 @@ export async function bootstrap() {
         }
       })
       helpPanel.mount()
+    }
+
+    const linksViewContainer = sidebarContainer.querySelector('#view-links')
+    if (linksViewContainer) {
+      const linksPanel = new ExternalLinksPanel(linksViewContainer, {
+        intro: externalResourcesConfig?.intro,
+        resources: externalResourcesConfig?.items
+      })
+      linksPanel.mount()
     }
 
     if (window.lucide) {

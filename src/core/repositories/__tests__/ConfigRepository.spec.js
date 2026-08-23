@@ -36,4 +36,17 @@ describe('ConfigRepository', () => {
     }
     expect(configRepository.getMapImageSource()).toBe('imageUrl')
   })
+
+  it('debería retornar externalResources configurado o null por defecto', () => {
+    expect(configRepository.getExternalResources()).toBeNull()
+
+    const mockResources = {
+      tab: { id: 'links', label: 'Enlaces', title: 'Recursos', icon: 'external-link' },
+      items: [{ id: '1', title: 'IGN', url: 'https://www.ign.gob.ar' }]
+    }
+    configRepository.config = {
+      ui: { externalResources: mockResources }
+    }
+    expect(configRepository.getExternalResources()).toEqual(mockResources)
+  })
 })

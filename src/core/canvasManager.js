@@ -90,19 +90,34 @@ export class CanvasManager {
       'Lienzo interactivo de dibujo sobre el mapa. Presioná Delete o Supr para borrar figuras seleccionadas o Escape para deseleccionar.'
     )
 
-    // Escuchador de eventos de teclado en el canvas para accesibilidad
-    this.canvasEl.addEventListener('keydown', (e) => {
-      if (this.toolService && this.toolService.activeTool && typeof this.toolService.activeTool.onKeyDown === 'function') {
-        const handled = this.toolService.activeTool.onKeyDown(e)
-        if (handled) {
-          e.preventDefault()
-          return
-        }
-      }
+    // Escuchador de eventos de teclado en el canvas para accesibilidad y atajos
+    this.canvasEl.addEventListener('keydown', (e) => this.handleKeyDown(e))
 
-      if (e.key === 'Delete' || e.key === 'Backspace') {
-        const activeObj = this.canvas?.getActiveObject()
-        if (activeObj && !(activeObj.type === 'textbox' && activeObj.isEditing)) {
+    this.container.appendChild(this.canvasEl)
+  }
+
+  handleKeyDown(e) {
+    const activeElement = document.activeElement
+    const isInputFocused =
+      activeElement &&
+      (activeElement.tagName === 'INPUT' ||
+        activeElement.tagName === 'TEXTAREA' ||
+        activeElement.isContentEditable)
+
+    const activeObject = this.canvas?.getActiveObject()
+    const isEditingText = activeObject && activeObject.type === 'textbox' && activeObject.isEditing
+
+    if (this.toolService && this.toolService.activeTool && typeof this.toolService.activeTool.onKeyDown === 'function') {
+      const handled = this.toolService.activeTool.onKeyDown(e)
+      if (handled) {
+        e.preventDefault()
+        return
+      }
+    }
+
+    if (!isInputFocused && !isEditingText) {
+      if (e.key === 'Delete' || e.key === 'Backspace' || e.key === 'Del') {
+        if (activeObject && activeObject !== this.currentMapImage) {
           e.preventDefault()
           this.deleteSelected()
         }
@@ -113,9 +128,7 @@ export class CanvasManager {
           this.announceA11y('Selección cancelada')
         }
       }
-    })
-
-    this.container.appendChild(this.canvasEl)
+    }
   }
 
   configureDrawingBrush() {
@@ -247,6 +260,8 @@ export class CanvasManager {
         } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'y') {
           e.preventDefault()
           this.redo()
+        } else {
+          this.handleKeyDown(e)
         }
       }
     })
@@ -644,12 +659,22 @@ export class CanvasManager {
   deleteSelected() {
     if (!this.canvas) return
     const activeObject = this.adapter.getActiveObject()
-    if (activeObject && activeObject !== this.currentMapImage) {
+    if (!activeObject || activeObject === this.currentMapImage) return
+
+    if (activeObject.type === 'activeSelection' && typeof activeObject.forEachObject === 'function') {
+      activeObject.forEachObject((obj) => {
+        if (obj !== this.currentMapImage) {
+          this.adapter.removeObject(obj)
+        }
+      })
+    } else {
       this.adapter.removeObject(activeObject)
-      this.adapter.discardActiveObject()
-      this.adapter.requestRenderAll()
-      this.adapter.fire('object:modified')
     }
+
+    this.adapter.discardActiveObject()
+    this.adapter.requestRenderAll()
+    this.adapter.fire('object:modified')
+    this.announceA11y('Elemento eliminado')
   }
 
   async duplicateSelected() {

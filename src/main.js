@@ -36,6 +36,8 @@ import {
   Lock,
   Unlock,
   Copy,
+  BringToFront,
+  SendToBack,
   ArrowUp,
   ArrowDown,
   Trash2,
@@ -55,7 +57,10 @@ import {
   RefreshCw,
   CircleDot,
   CircleQuestionMark,
-  Play
+  Play,
+  ExternalLink,
+  Globe,
+  BookOpen
 } from 'lucide'
 
 // Expose lucide globally to maintain vanilla JS components compatibility
@@ -98,6 +103,9 @@ window.lucide = {
         Lock,
         Unlock,
         Copy,
+        BringToFront,
+        SendToFront: BringToFront,
+        SendToBack,
         ArrowUp,
         ArrowDown,
         Trash2,
@@ -117,7 +125,10 @@ window.lucide = {
         RefreshCw,
         CircleDot,
         CircleQuestionMark,
-        Play
+        Play,
+        ExternalLink,
+        Globe,
+        BookOpen
       }
     })
 }

@@ -101,4 +101,95 @@ describe('ContextMenu XSS Protection', () => {
     // La variable global no debe ser alterada (lo que confirma que no se ejecutó el onerror)
     expect(window.__xss).toBeUndefined()
   })
+
+  it('debería mantener la posición personalizada del menú tras moverlo y no restablecerla al modificar propiedades', () => {
+    const rectObject = {
+      type: 'rect',
+      set: vi.fn(),
+      setCoords: vi.fn(),
+      oCoords: {
+        tl: { x: 50, y: 50 },
+        tr: { x: 150, y: 50 },
+      },
+    }
+
+    mockCanvas.getActiveObject.mockReturnValue(rectObject)
+    contextMenu.openPopover()
+
+    // Verificar posición inicial calculada
+    expect(contextMenu.popoverMenu.style.left).not.toBe('')
+    expect(contextMenu.popoverMenu.style.top).not.toBe('')
+
+    // Simular arrastre manual del header
+    const header = contextMenu.popoverMenu.querySelector('.nbi-context__header')
+    expect(header).toBeTruthy()
+
+    // Establecer posición personalizada simulada por arrastre
+    contextMenu.popoverMenu.style.left = '350px'
+    contextMenu.popoverMenu.style.top = '220px'
+    contextMenu.hasCustomPosition = true
+
+    // Simular evento object:modified (por ejemplo al cambiar color o grosor)
+    const onObjectModified = mockCanvas.on.mock.calls.find(call => call[0] === 'object:modified')?.[1]
+    expect(onObjectModified).toBeDefined()
+    onObjectModified()
+
+    // La posición debe mantenerse exactamente en 350px y 220px
+    expect(contextMenu.popoverMenu.style.left).toBe('350px')
+    expect(contextMenu.popoverMenu.style.top).toBe('220px')
+  })
+
+  it('debería ocultar/colapsar sidebar-catalog y properties-panel al abrirse el menú contextual', () => {
+    // Crear sidebars en el DOM
+    const sidebarCatalog = document.createElement('aside')
+    sidebarCatalog.id = 'sidebar-catalog'
+    sidebarCatalog.className = 'nbi-sidebar'
+    document.body.appendChild(sidebarCatalog)
+
+    const propertiesPanel = document.createElement('aside')
+    propertiesPanel.id = 'properties-panel'
+    propertiesPanel.className = 'nbi-properties'
+    document.body.appendChild(propertiesPanel)
+
+    const circleObject = {
+      type: 'circle',
+      set: vi.fn(),
+      setCoords: vi.fn(),
+      oCoords: {
+        tl: { x: 20, y: 20 },
+        tr: { x: 80, y: 20 },
+      },
+    }
+
+    mockCanvas.getActiveObject.mockReturnValue(circleObject)
+    contextMenu.openPopover()
+
+    expect(sidebarCatalog.classList.contains('is-collapsed')).toBe(true)
+    expect(propertiesPanel.classList.contains('is-collapsed')).toBe(true)
+
+    sidebarCatalog.remove()
+    propertiesPanel.remove()
+  })
+
+  it('debería renderizar los botones de acción con los iconos correspondientes (copy, bring-to-front/send-to-front, send-to-back)', () => {
+    const rectObject = {
+      type: 'rect',
+      set: vi.fn(),
+      setCoords: vi.fn(),
+      oCoords: {
+        tl: { x: 50, y: 50 },
+        tr: { x: 150, y: 50 },
+      },
+    }
+
+    contextMenu.buildPopoverContent(rectObject)
+
+    const duplicateBtn = container.querySelector('#ctx-act-duplicate')
+    const frontBtn = container.querySelector('#ctx-act-front')
+    const backBtn = container.querySelector('#ctx-act-back')
+
+    expect(duplicateBtn.querySelector('i[data-lucide="copy"]')).toBeTruthy()
+    expect(frontBtn.querySelector('i[data-lucide="bring-to-front"], i[data-lucide="send-to-front"]')).toBeTruthy()
+    expect(backBtn.querySelector('i[data-lucide="send-to-back"]')).toBeTruthy()
+  })
 })

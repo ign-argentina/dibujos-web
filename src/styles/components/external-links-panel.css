@@ -1,0 +1,138 @@
+/* ==========================================================================
+   ESTILOS PARA EL PANEL DE ENLACES EXTERNOS Y RECURSOS DEL IGN (ITCSS)
+   ========================================================================== */
+
+.nbi-links-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--nbi-space-md);
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+  padding: 16px 16px 24px 16px;
+  box-sizing: border-box;
+}
+
+/* Custom scrollbar para estética brutalista */
+.nbi-links-panel::-webkit-scrollbar {
+  width: 12px;
+}
+
+.nbi-links-panel::-webkit-scrollbar-track {
+  background: var(--nbi-color-white);
+  border-left: var(--nbi-border-width-md) solid var(--nbi-color-black);
+  border-radius: 6px;
+}
+
+.nbi-links-panel::-webkit-scrollbar-thumb {
+  background: var(--nbi-color-black);
+  border: 2px solid var(--nbi-color-white);
+  border-radius: 6px;
+}
+
+.nbi-links-panel__intro {
+  background-color: var(--nbi-color-white);
+  border: var(--nbi-border-width-md) solid var(--nbi-color-black);
+  border-radius: var(--nbi-radius-panel);
+  box-shadow: var(--nbi-shadow-sm);
+  padding: 12px 14px;
+}
+
+.nbi-links-panel__intro-text {
+  font-size: var(--nbi-font-size-sm);
+  line-height: 1.45;
+  color: var(--nbi-color-black);
+  margin: 0;
+  font-weight: var(--nbi-font-weight-medium);
+}
+
+.nbi-links-panel__list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--nbi-space-md);
+}
+
+/* Tarjeta individual de recurso externo */
+.nbi-link-card {
+  background-color: var(--nbi-color-white);
+  border: var(--nbi-border-width-md) solid var(--nbi-color-black);
+  border-radius: var(--nbi-radius-panel);
+  box-shadow: var(--nbi-shadow-md);
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--nbi-space-xs);
+  transition: transform var(--nbi-transition-fast), box-shadow var(--nbi-transition-fast);
+}
+
+.nbi-link-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--nbi-shadow-lg);
+}
+
+.nbi-link-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2px;
+}
+
+.nbi-link-card__badge {
+  font-size: 0.72rem;
+  font-weight: var(--nbi-font-weight-bold);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  background-color: var(--nbi-color-primary);
+  color: var(--nbi-color-black);
+  border: 1px solid var(--nbi-color-black);
+  border-radius: var(--nbi-radius-button);
+  padding: 2px 8px;
+  box-shadow: 1px 1px 0px 0px var(--nbi-color-black);
+}
+
+.nbi-link-card__icon {
+  width: 20px;
+  height: 20px;
+  color: var(--nbi-secondary-color);
+  flex-shrink: 0;
+}
+
+.nbi-link-card__title {
+  font-size: var(--nbi-font-size-base);
+  font-weight: var(--nbi-font-weight-bold);
+  color: var(--nbi-color-black);
+  margin: 0;
+  line-height: 1.3;
+}
+
+.nbi-link-card__description {
+  font-size: var(--nbi-font-size-sm);
+  color: var(--nbi-color-black);
+  line-height: 1.45;
+  margin: 0;
+}
+
+.nbi-link-card__footer {
+  margin-top: var(--nbi-space-xs);
+  display: flex;
+  justify-content: flex-end;
+}
+
+.nbi-link-card__btn {
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--nbi-space-xs);
+  font-size: var(--nbi-font-size-sm);
+  padding: 6px 12px;
+  min-height: 36px;
+  width: 100%;
+  font-weight: var(--nbi-font-weight-bold);
+}
+
+.nbi-link-card__btn svg {
+  width: 16px;
+  height: 16px;
+  stroke-width: 2.5;
+}

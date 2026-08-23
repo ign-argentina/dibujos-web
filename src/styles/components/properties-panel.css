@@ -326,3 +326,15 @@
   border-right: var(--nbi-border-width-md) solid var(--nbi-color-black);
   transition: width var(--nbi-transition-fast) cubic-bezier(0.4, 0, 0.2, 1);
 }
+
+/* --- TAMAÑO UNIFORME DE ICONOS EN PANEL DE PROPIEDADES (20x20px) --- */
+.nbi-properties svg,
+.nbi-properties .lucide,
+.nbi-properties .nbi-btn svg,
+.nbi-properties .nbi-btn .lucide {
+  width: 20px;
+  height: 20px;
+  min-width: 20px;
+  min-height: 20px;
+  flex-shrink: 0;
+}

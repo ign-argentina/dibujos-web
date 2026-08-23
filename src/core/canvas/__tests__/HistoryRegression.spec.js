@@ -427,4 +427,114 @@ describe('Historial Undo/Redo - Caracterización e Integración', () => {
     window.dispatchEvent(eventY)
     expect(redoSpy).toHaveBeenCalledTimes(1)
   })
+
+  it('debería borrar cualquier elemento seleccionado con la tecla Delete/Backspace y registrarlo en el historial para deshacer/rehacer', async () => {
+    const elementTypes = [
+      'circle',
+      'rect',
+      'path', // dibujo libre
+      'image', // sticker
+      'group', // marcador / pin
+      'textbox', // texto
+      'arrow', // flecha
+      'polygon', // polígono
+      'polyline' // polilínea
+    ]
+
+    for (const type of elementTypes) {
+      // Limpiar canvas e historial para cada tipo
+      canvasManager.canvas._objects = []
+      canvasManager.canvas._activeObject = null
+      canvasManager.historyManager.clear()
+      canvasManager.historyManager.capture() // Estado inicial vacío
+
+      const obj = {
+        type,
+        toObject: () => ({ type }),
+        set: vi.fn(),
+        isEditing: false
+      }
+      canvasManager.canvas.add(obj)
+      canvasManager.canvas.setActiveObject(obj)
+      canvasManager.canvas.fire('object:modified') // Estado 1 con objeto
+
+      expect(canvasManager.canvas.getObjects().length).toBe(1)
+      expect(canvasManager.canvas.getActiveObject()).toBe(obj)
+
+      // Simular presión de la tecla Delete en window
+      const deleteEvent = new KeyboardEvent('keydown', {
+        key: 'Delete',
+        bubbles: true
+      })
+      window.dispatchEvent(deleteEvent)
+
+      // Verificar que el objeto fue eliminado del canvas y deseleccionado
+      expect(canvasManager.canvas.getObjects().length).toBe(0)
+      expect(canvasManager.canvas.getActiveObject()).toBeNull()
+
+      // Verificar que la acción quedó registrada en el historial
+      expect(canvasManager.historyManager.canUndo()).toBe(true)
+
+      // Deshacer (Undo) -> el elemento vuelve a aparecer
+      await canvasManager.undo()
+      expect(canvasManager.canvas.getObjects().length).toBe(1)
+
+      // Rehacer (Redo) -> el elemento vuelve a ser eliminado
+      await canvasManager.redo()
+      expect(canvasManager.canvas.getObjects().length).toBe(0)
+    }
+  })
+
+  it('no debería borrar el texto si el textbox se encuentra en modo edición (isEditing: true)', () => {
+    const textbox = {
+      type: 'textbox',
+      isEditing: true,
+      toObject: () => ({ type: 'textbox' }),
+      set: vi.fn()
+    }
+    canvasManager.canvas.add(textbox)
+    canvasManager.canvas.setActiveObject(textbox)
+    canvasManager.canvas.fire('object:modified')
+
+    expect(canvasManager.canvas.getObjects().length).toBe(1)
+
+    // Simular Delete mientras se edita texto
+    const deleteEvent = new KeyboardEvent('keydown', {
+      key: 'Delete',
+      bubbles: true
+    })
+    window.dispatchEvent(deleteEvent)
+
+    // El objeto NO debe ser borrado
+    expect(canvasManager.canvas.getObjects().length).toBe(1)
+    expect(canvasManager.canvas.getActiveObject()).toBe(textbox)
+  })
+
+  it('no debería borrar objetos del canvas si el foco está en un input del DOM', () => {
+    const input = document.createElement('input')
+    document.body.appendChild(input)
+    input.focus()
+
+    const rect = {
+      type: 'rect',
+      toObject: () => ({ type: 'rect' }),
+      set: vi.fn()
+    }
+    canvasManager.canvas.add(rect)
+    canvasManager.canvas.setActiveObject(rect)
+    canvasManager.canvas.fire('object:modified')
+
+    expect(canvasManager.canvas.getObjects().length).toBe(1)
+
+    // Simular Delete mientras el input tiene foco
+    const deleteEvent = new KeyboardEvent('keydown', {
+      key: 'Delete',
+      bubbles: true
+    })
+    window.dispatchEvent(deleteEvent)
+
+    // El objeto NO debe ser borrado
+    expect(canvasManager.canvas.getObjects().length).toBe(1)
+    input.remove()
+  })
 })

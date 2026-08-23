@@ -12,6 +12,8 @@ export class ContextMenu extends Component {
     this.triggerBtn = null
     this.popoverMenu = null
     this.isOpen = false
+    this.hasCustomPosition = false
+    this.currentAttachedObject = null
     this.presetColors = [
       "#FFFFFF", // Blanco
       "#9E9E9E", // Gris
@@ -95,11 +97,29 @@ export class ContextMenu extends Component {
     this.canvas = this.canvasManager.canvas
     if (!this.canvas) return
 
-    const updatePositionHandler = () => {
+    const onSelectionChange = () => {
+      const activeObj = this.canvas.getActiveObject()
+      if (activeObj && activeObj !== this.canvasManager.currentMapImage) {
+        if (this.currentAttachedObject !== activeObj) {
+          this.hasCustomPosition = false
+          this.currentAttachedObject = activeObj
+        }
+        this.updateTriggerPosition(activeObj)
+        if (this.isOpen) {
+          this.updatePopoverPosition(activeObj)
+        }
+      } else {
+        this.currentAttachedObject = null
+        this.hasCustomPosition = false
+        this.hideAll()
+      }
+    }
+
+    const onObjectTransform = () => {
       const activeObj = this.canvas.getActiveObject()
       if (activeObj && activeObj !== this.canvasManager.currentMapImage) {
         this.updateTriggerPosition(activeObj)
-        if (this.isOpen) {
+        if (this.isOpen && !this.hasCustomPosition) {
           this.updatePopoverPosition(activeObj)
         }
       } else {
@@ -107,16 +127,20 @@ export class ContextMenu extends Component {
       }
     }
 
-    this.canvas.on('selection:created', updatePositionHandler)
-    this.canvas.on('selection:updated', updatePositionHandler)
-    this.canvas.on('selection:cleared', () => this.hideAll())
+    this.canvas.on('selection:created', onSelectionChange)
+    this.canvas.on('selection:updated', onSelectionChange)
+    this.canvas.on('selection:cleared', () => {
+      this.currentAttachedObject = null
+      this.hasCustomPosition = false
+      this.hideAll()
+    })
 
-    this.canvas.on('object:moving', updatePositionHandler)
-    this.canvas.on('object:scaling', updatePositionHandler)
-    this.canvas.on('object:rotating', updatePositionHandler)
-    this.canvas.on('object:modified', updatePositionHandler)
+    this.canvas.on('object:moving', onObjectTransform)
+    this.canvas.on('object:scaling', onObjectTransform)
+    this.canvas.on('object:rotating', onObjectTransform)
+    this.canvas.on('object:modified', onObjectTransform)
 
-    this.canvas.on('mouse:wheel', updatePositionHandler)
+    this.canvas.on('mouse:wheel', onObjectTransform)
     this.canvas.on('mouse:move', () => {
       if (this.canvas.isDrawingMode || this.canvasManager.isDrawingShape) {
         this.hideAll()
@@ -183,9 +207,13 @@ export class ContextMenu extends Component {
     }
   }
 
-  updatePopoverPosition(activeObj) {
+  updatePopoverPosition(activeObj, force = false) {
     if (!activeObj || activeObj === this.canvasManager.currentMapImage) {
       this.closePopover()
+      return
+    }
+
+    if (this.hasCustomPosition && !force) {
       return
     }
 
@@ -226,17 +254,22 @@ export class ContextMenu extends Component {
     const activeObj = this.canvas?.getActiveObject()
     if (!activeObj) return
 
+    this.hideSidebars()
+
     this.isOpen = true
     this.triggerBtn.setAttribute('aria-expanded', 'true')
     this.triggerBtn.classList.add('is-active')
     this.popoverMenu.classList.remove('hidden')
 
     this.buildPopoverContent(activeObj)
-    this.updatePopoverPosition(activeObj)
+    if (!this.hasCustomPosition) {
+      this.updatePopoverPosition(activeObj, true)
+    }
   }
 
   closePopover() {
     this.isOpen = false
+    this.hasCustomPosition = false
     this.triggerBtn.setAttribute('aria-expanded', 'false')
     this.triggerBtn.classList.remove('is-active')
     this.popoverMenu.classList.add('hidden')
@@ -244,7 +277,40 @@ export class ContextMenu extends Component {
 
   hideAll() {
     this.closePopover()
+    this.hasCustomPosition = false
     this.triggerBtn.classList.add('hidden')
+  }
+
+  hideSidebars() {
+    const sidebarCatalog = document.getElementById('sidebar-catalog')
+    if (sidebarCatalog && !sidebarCatalog.classList.contains('is-collapsed')) {
+      sidebarCatalog.classList.add('is-collapsed')
+      const activeTabs = sidebarCatalog.querySelectorAll('.nbi-sidebar__tab.is-active')
+      activeTabs.forEach((tab) => {
+        tab.classList.remove('is-active')
+        tab.setAttribute('aria-selected', 'false')
+      })
+    }
+
+    const propertiesPanel = document.getElementById('properties-panel')
+    if (propertiesPanel && !propertiesPanel.classList.contains('is-collapsed')) {
+      propertiesPanel.classList.add('is-collapsed')
+      const toggleBtn = propertiesPanel.querySelector('#toggle-properties-btn')
+      if (toggleBtn) {
+        toggleBtn.setAttribute('title', 'Expandir Panel')
+        toggleBtn.setAttribute('aria-label', 'Expandir panel de color')
+        toggleBtn.setAttribute('aria-expanded', 'false')
+        toggleBtn.innerHTML = '<i data-lucide="chevron-left"></i>'
+      }
+      const recentColors = propertiesPanel.querySelector('#recent-colors-container')
+      if (recentColors) {
+        recentColors.classList.add('hidden')
+      }
+    }
+
+    if (window.lucide) {
+      window.lucide.createIcons()
+    }
   }
 
   getFriendlyTypeName(obj) {
@@ -289,6 +355,7 @@ export class ContextMenu extends Component {
       const styleTop = parseInt(this.popoverMenu.style.top, 10) || 0
 
       const onMouseMove = (moveEvent) => {
+        this.hasCustomPosition = true
         const deltaX = moveEvent.clientX - startX
         const deltaY = moveEvent.clientY - startY
 
@@ -370,7 +437,7 @@ export class ContextMenu extends Component {
           </div>
           <div style="display: flex; flex-direction: row; gap: 6px; margin-top: 6px; align-items: center;">
             <label for="ctx-fill-picker" style="font-weight: var(--nbi-font-weight-semibold); font-size: var(--nbi-font-size-sm); display: flex; align-items: center; gap: 4px; cursor: pointer; margin: 0;">
-              <i data-lucide="palette" style="width: 14px; height: 14px;" aria-hidden="true"></i>
+              <i data-lucide="palette" style="width: 16px; height: 16px;" aria-hidden="true"></i>
               Más colores:
             </label>
             <input type="color" id="ctx-fill-picker" class="nbi-color-picker" value="${currentFill}" title="Color personalizado" />
@@ -409,7 +476,7 @@ export class ContextMenu extends Component {
           </div>
           <div style="display: flex; flex-direction: row; gap: 6px; margin-top: 6px; align-items: center;">
             <label for="ctx-stroke-picker" style="font-weight: var(--nbi-font-weight-semibold); font-size: var(--nbi-font-size-sm); display: flex; align-items: center; gap: 4px; cursor: pointer; margin: 0;">
-              <i data-lucide="palette" style="width: 14px; height: 14px;" aria-hidden="true"></i>
+              <i data-lucide="palette" style="width: 16px; height: 16px;" aria-hidden="true"></i>
               Personalizar:
             </label>
             <input type="color" id="ctx-stroke-picker" class="nbi-color-picker" value="${currentStroke}" title="Color de borde personalizado" />
@@ -579,10 +646,10 @@ export class ContextMenu extends Component {
           <i data-lucide="copy"></i> Clonar
         </button>
         <button class="nbi-btn nbi-btn--sm" id="ctx-act-front" title="Traer al frente">
-          <i data-lucide="arrow-up"></i> Frente
+          <i data-lucide="bring-to-front"></i> Frente
         </button>
         <button class="nbi-btn nbi-btn--sm" id="ctx-act-back" title="Enviar al fondo">
-          <i data-lucide="arrow-down"></i> Fondo
+          <i data-lucide="send-to-back"></i> Fondo
         </button>
         <button class="nbi-btn nbi-btn--sm nbi-btn--danger" id="ctx-act-delete" title="Eliminar figura">
           <i data-lucide="trash-2"></i>

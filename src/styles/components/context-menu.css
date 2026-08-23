@@ -173,3 +173,24 @@
   outline: none;
   cursor: pointer;
 }
+
+/* --- TAMAÑO DE ICONOS EN MENÚ CONTEXTUAL (MÍNIMO 16x16px) --- */
+.nbi-context svg,
+.nbi-context .lucide,
+.nbi-context .nbi-btn svg,
+.nbi-context .nbi-btn .lucide {
+  width: 16px;
+  height: 16px;
+  min-width: 16px;
+  min-height: 16px;
+  flex-shrink: 0;
+}
+
+.nbi-context-trigger svg,
+.nbi-context-trigger .lucide {
+  width: 20px;
+  height: 20px;
+  min-width: 20px;
+  min-height: 20px;
+  flex-shrink: 0;
+}

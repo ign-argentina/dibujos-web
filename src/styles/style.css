@@ -19,6 +19,7 @@
 @import './components/help-panel.css';
 @import './components/tour-overlay.css';
 @import './components/tour-welcome-modal.css';
+@import './components/external-links-panel.css';
 @import './themes/accessibility.css';
 @import './utilities/helpers.css';
 

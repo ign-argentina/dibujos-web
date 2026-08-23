@@ -23,6 +23,7 @@ describe('Sidebar', () => {
         </div>
         <div class="nbi-sidebar__view hidden" id="view-accessibility"></div>
         <div class="nbi-sidebar__view hidden" id="view-help"></div>
+        <div class="nbi-sidebar__view hidden" id="view-links"></div>
       </div>
     `
     document.body.appendChild(container)
@@ -30,7 +31,8 @@ describe('Sidebar', () => {
     views = [
       { id: 'maps', label: 'Mapas', title: 'Elegí tu Mapa', icon: 'map' },
       { id: 'accessibility', label: 'Accesibilidad', title: 'Accesibilidad', icon: 'accessibility' },
-      { id: 'help', label: 'Ayuda', title: 'Ayuda', icon: 'circle-question-mark' }
+      { id: 'help', label: 'Ayuda', title: 'Ayuda', icon: 'circle-question-mark' },
+      { id: 'links', label: 'Enlaces', title: 'Recursos del IGN', icon: 'external-link' }
     ]
   })
 
@@ -44,13 +46,15 @@ describe('Sidebar', () => {
     sidebar.mount()
 
     const tabs = container.querySelectorAll('.nbi-sidebar__tab')
-    expect(tabs.length).toBe(3)
+    expect(tabs.length).toBe(4)
     expect(tabs[0].getAttribute('aria-label')).toBe('Mapas')
     expect(tabs[1].getAttribute('aria-label')).toBe('Accesibilidad')
     expect(tabs[2].getAttribute('aria-label')).toBe('Ayuda')
+    expect(tabs[3].getAttribute('aria-label')).toBe('Enlaces')
     expect(tabs[0].querySelector('.nbi-sidebar__tab-label').textContent).toBe('Mapas')
     expect(tabs[1].querySelector('.nbi-sidebar__tab-label').textContent).toBe('Accesibilidad')
     expect(tabs[2].querySelector('.nbi-sidebar__tab-label').textContent).toBe('Ayuda')
+    expect(tabs[3].querySelector('.nbi-sidebar__tab-label').textContent).toBe('Enlaces')
 
     sidebar.destroy()
   })
@@ -173,13 +177,14 @@ describe('Sidebar', () => {
     sidebar.destroy()
   })
 
-  it('debería admitir navegación por teclado (flechas) entre las 3 solapas con ciclo continuo', () => {
+  it('debería admitir navegación por teclado (flechas) entre las 4 solapas con ciclo continuo', () => {
     const sidebar = new Sidebar(container, { views })
     sidebar.mount()
 
     const tabMaps = container.querySelector('#tab-maps')
     const tabAccess = container.querySelector('#tab-accessibility')
     const tabHelp = container.querySelector('#tab-help')
+    const tabLinks = container.querySelector('#tab-links')
 
     tabMaps.focus()
     expect(document.activeElement).toBe(tabMaps)
@@ -192,13 +197,17 @@ describe('Sidebar', () => {
     tabAccess.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true }))
     expect(document.activeElement).toBe(tabHelp)
 
-    // Flecha abajo -> cicla y vuelve a maps
+    // Flecha abajo -> enfoca enlaces
     tabHelp.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true }))
+    expect(document.activeElement).toBe(tabLinks)
+
+    // Flecha abajo -> cicla y vuelve a maps
+    tabLinks.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true }))
     expect(document.activeElement).toBe(tabMaps)
 
-    // Flecha arriba -> cicla hacia atrás a ayuda
+    // Flecha arriba -> cicla hacia atrás a enlaces
     tabMaps.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowUp', bubbles: true }))
-    expect(document.activeElement).toBe(tabHelp)
+    expect(document.activeElement).toBe(tabLinks)
 
     sidebar.destroy()
   })
