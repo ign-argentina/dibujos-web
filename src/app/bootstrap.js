@@ -191,7 +191,7 @@ export async function bootstrap() {
     }
 
     const headerLogo = document.querySelector('.nbi-navbar__logo')
-    if (headerLogo && uiConfig.logoUrl) {
+    if (headerLogo && headerLogo.tagName.toLowerCase() === 'img' && uiConfig.logoUrl) {
       headerLogo.src = `${import.meta.env.BASE_URL.replace(/\/$/, '')}${uiConfig.logoUrl}`
     }
 

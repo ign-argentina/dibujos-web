@@ -72,6 +72,19 @@ html[data-theme="hc-dark"] .nbi-btn svg {
   stroke: var(--nbi-color-white) !important;
 }
 
+/* Color del logo del navbar en Alto Contraste Oscuro y Claro */
+html[data-theme="hc-dark"] .nbi-navbar__logo,
+html[data-theme="hc-dark"] .nbi-navbar__logo path {
+  fill: #000000 !important;
+  color: #000000 !important;
+}
+
+html[data-theme="hc-light"] .nbi-navbar__logo,
+html[data-theme="hc-light"] .nbi-navbar__logo path {
+  fill: #ffffff !important;
+  color: #ffffff !important;
+}
+
 /* --- 2. MODO ALTO CONTRASTE CLARO --- */
 html[data-theme="hc-light"] {
   /* Forzar colores de alto contraste claro en variables del sistema */
