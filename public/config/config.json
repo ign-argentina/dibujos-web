@@ -496,10 +496,26 @@
       "intro": "Recursos y herramientas cartográficas oficiales de la República Argentina para consultar, descargar y trabajar en la escuela.",
       "items": [
         {
+          "id": "ign-mapas-escolares",
+          "title": "Mapas Escolares | Instituto Geográfico Nacional",
+          "url": "https://www.ign.gob.ar/AreaServicios/Descargas/MapasEscolares",
+          "description": "Catálogo de mapas mudos, físicos y políticos de Argentina y sus provincias listos para descargar e imprimir en formato escolar.",
+          "tag": "Descargas",
+          "icon": "file-down"
+        },
+        {
+          "id": "ign-anida",
+          "title": "ANIDA",
+          "url": "https://anida.ign.gob.ar/",
+          "description": "Atlas Nacional Interactivo de Argentina con mapas dinámicos temáticos y material educativo para el aula.",
+          "tag": "Atlas Digital",
+          "icon": "book-open"
+        },
+        {
           "id": "ign-portal",
-          "title": "Instituto Geográfico Nacional | de la República Argentina",
+          "title": "Instituto Geográfico Nacional de la República Argentina",
           "url": "https://www.ign.gob.ar/",
-          "description": "Sitio oficial con información cartográfica, geodésica, publicaciones y proyectos espaciales de la República Argentina.",
+          "description": "Sitio oficial con información cartográfica de la República Argentina.",
           "tag": "Portal Oficial",
           "icon": "globe"
         },
@@ -507,25 +523,9 @@
           "id": "ign-visor",
           "title": "Visor del IGN",
           "url": "https://mapa.ign.gob.ar/",
-          "description": "Geovisualizador interactivo oficial con capas de información territorial, límites, relieve e imágenes satelitales.",
+          "description": "Visualizador interactivo oficial con capas de información territorial.",
           "tag": "Visualizador",
           "icon": "map"
-        },
-        {
-          "id": "ign-anida",
-          "title": "ANIDA - Atlas Geográfico Digital de Argentina",
-          "url": "https://anida.ign.gob.ar/",
-          "description": "Atlas Nacional Interactivo Digital de Argentina con mapas dinámicos temáticos y material educativo para el aula.",
-          "tag": "Atlas Digital",
-          "icon": "book-open"
-        },
-        {
-          "id": "ign-mapas-escolares",
-          "title": "Mapas Escolares | Instituto Geográfico Nacional",
-          "url": "https://www.ign.gob.ar/AreaServicios/Descargas/MapasEscolares",
-          "description": "Catálogo de mapas mudos, físicos y políticos de Argentina y sus provincias listos para descargar e imprimir en formato escolar.",
-          "tag": "Descargas",
-          "icon": "file-down"
         }
       ]
     }

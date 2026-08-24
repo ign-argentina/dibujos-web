@@ -5,40 +5,36 @@ import { Component } from '../features/Component.js'
  */
 export const EXTERNAL_RESOURCES = [
   {
-    id: 'ign-portal',
-    title: 'Instituto Geográfico Nacional | de la República Argentina',
-    url: 'https://www.ign.gob.ar/',
-    description:
-      'Sitio oficial con información cartográfica, geodésica, publicaciones y proyectos espaciales de la República Argentina.',
-    tag: 'Portal Oficial',
-    icon: 'globe'
+    "id": "ign-mapas-escolares",
+    "title": "Mapas Escolares | Instituto Geográfico Nacional",
+    "url": "https://www.ign.gob.ar/AreaServicios/Descargas/MapasEscolares",
+    "description": "Catálogo de mapas mudos, físicos y políticos de Argentina y sus provincias listos para descargar e imprimir en formato escolar.",
+    "tag": "Descargas",
+    "icon": "file-down"
   },
   {
-    id: 'ign-visor',
-    title: 'Visor del IGN',
-    url: 'https://mapa.ign.gob.ar/',
-    description:
-      'Geovisualizador interactivo oficial con capas de información territorial, límites, relieve e imágenes satelitales.',
-    tag: 'Visualizador',
-    icon: 'map'
+    "id": "ign-anida",
+    "title": "ANIDA",
+    "url": "https://anida.ign.gob.ar/",
+    "description": "Atlas Nacional Interactivo de Argentina con mapas dinámicos temáticos y material educativo para el aula.",
+    "tag": "Atlas Digital",
+    "icon": "book-open"
   },
   {
-    id: 'ign-anida',
-    title: 'ANIDA - Atlas Geográfico Digital de Argentina',
-    url: 'https://anida.ign.gob.ar/',
-    description:
-      'Atlas Nacional Interactivo Digital de Argentina con mapas dinámicos temáticos y material educativo para el aula.',
-    tag: 'Atlas Digital',
-    icon: 'book-open'
+    "id": "ign-portal",
+    "title": "Instituto Geográfico Nacional de la República Argentina",
+    "url": "https://www.ign.gob.ar/",
+    "description": "Sitio oficial con información cartográfica de la República Argentina.",
+    "tag": "Portal Oficial",
+    "icon": "globe"
   },
   {
-    id: 'ign-mapas-escolares',
-    title: 'Mapas Escolares | Instituto Geográfico Nacional',
-    url: 'https://www.ign.gob.ar/AreaServicios/Descargas/MapasEscolares',
-    description:
-      'Catálogo de mapas mudos, físicos y políticos de Argentina y sus provincias listos para descargar e imprimir en formato escolar.',
-    tag: 'Descargas',
-    icon: 'file-down'
+    "id": "ign-visor",
+    "title": "Visor del IGN",
+    "url": "https://mapa.ign.gob.ar/",
+    "description": "Visualizador interactivo oficial con capas de información territorial.",
+    "tag": "Visualizador",
+    "icon": "map"
   }
 ]
 
@@ -71,8 +67,8 @@ export class ExternalLinksPanel extends Component {
         </div>
         <div class="nbi-links-panel__list">
           ${this.resources
-            .map(
-              (item) => `
+        .map(
+          (item) => `
             <article class="nbi-link-card" id="link-card-${item.id}">
               <div class="nbi-link-card__header">
                 <span class="nbi-link-card__badge">${item.tag || 'Enlace'}</span>
@@ -94,8 +90,8 @@ export class ExternalLinksPanel extends Component {
               </div>
             </article>
           `
-            )
-            .join('')}
+        )
+        .join('')}
         </div>
       </div>
     `
