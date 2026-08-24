@@ -27,6 +27,8 @@ describe('TourWelcomeModal', () => {
     expect(modalEl.getAttribute('aria-describedby')).toBe('tour-welcome-desc')
 
     expect(container.querySelector('#tour-welcome-title').textContent).toContain('¿Querés conocer las herramientas?')
+    expect(container.querySelector('.nbi-tour-welcome-app-name').textContent).toBe('Mapas Escolares')
+    expect(container.querySelector('.nbi-tour-welcome-logo')).not.toBeNull()
     expect(container.querySelector('#tour-welcome-dont-show')).not.toBeNull()
     expect(container.querySelector('#tour-welcome-start')).not.toBeNull()
     expect(container.querySelector('#tour-welcome-dismiss')).not.toBeNull()

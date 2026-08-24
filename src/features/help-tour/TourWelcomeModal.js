@@ -31,21 +31,28 @@ export class TourWelcomeModal extends Component {
     modalOverlay.innerHTML = `
       <div class="nbi-window-floating nbi-tour-welcome-dialog">
         <div class="nbi-tour-welcome-header">
-          <div class="nbi-tour-welcome-title-group">
-            <i data-lucide="circle-question-mark" class="nbi-tour-welcome-icon" aria-hidden="true"></i>
-            <h2 id="tour-welcome-title" class="nbi-tour-welcome-title">¿Querés conocer las herramientas?</h2>
+          <div class="nbi-tour-welcome-brand">
+            <img src="${import.meta.env.BASE_URL}logo-ign-azul.svg" alt="Instituto Geográfico Nacional" class="nbi-tour-welcome-logo" />
+            <div class="nbi-tour-welcome-brand-text">
+              <span class="nbi-tour-welcome-app-name">Mapas Escolares</span>
+              <span class="nbi-tour-welcome-org-name">Instituto Geográfico Nacional</span>
+            </div>
           </div>
           <button type="button" class="nbi-btn nbi-btn--close-popover" id="tour-welcome-close" title="Cerrar (Escape)" aria-label="Cerrar ventana de bienvenida">
             <i data-lucide="x"></i>
           </button>
         </div>
         <div class="nbi-tour-welcome-body">
+          <div class="nbi-tour-welcome-greeting">
+            <i data-lucide="circle-question-mark" class="nbi-tour-welcome-icon" aria-hidden="true"></i>
+            <h2 id="tour-welcome-title" class="nbi-tour-welcome-title">¿Querés conocer las herramientas?</h2>
+          </div>
           <p id="tour-welcome-desc" class="nbi-tour-welcome-desc">
-            Te invitamos a realizar un breve recorrido guiado para descubrir cómo explorar mapas oficiales de Argentina y utilizar las herramientas de dibujo y anotación.
+            Te invitamos a realizar un breve recorrido guiado para descubrir cómo explorar los mapas oficiales de Argentina y utilizar todas las herramientas de dibujo, figuras y anotación.
           </p>
-          <p class="nbi-tour-welcome-note">
-            Este recorrido es opcional. Siempre podrás iniciarlo o repetirlo desde la solapa <strong>Ayuda</strong> en el panel lateral.
-          </p>
+          <div class="nbi-tour-welcome-note">
+            <span>Este recorrido es opcional. Siempre podrás iniciarlo o repetirlo desde la solapa <strong>Ayuda</strong> en el panel lateral.</span>
+          </div>
           <label class="nbi-tour-welcome-checkbox-label" for="tour-welcome-dont-show">
             <input type="checkbox" id="tour-welcome-dont-show" />
             <span>No volver a mostrar este mensaje al iniciar</span>
@@ -56,7 +63,7 @@ export class TourWelcomeModal extends Component {
             <span>Ahora no</span>
           </button>
           <button type="button" class="nbi-btn nbi-btn--success" id="tour-welcome-start" aria-label="Comenzar el recorrido guiado">
-            <i data-lucide="circle-question-mark"></i>
+            <i data-lucide="play"></i>
             <span>Iniciar recorrido</span>
           </button>
         </div>
